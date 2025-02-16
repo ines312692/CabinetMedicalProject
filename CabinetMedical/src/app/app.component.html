@@ -1,0 +1,41 @@
+<ion-app>
+  <!-- Menu Sidebar -->
+  <ion-menu menuId="main-menu" contentId="main-content">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Menu</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-item routerLink="/accueil">
+          <span class="material-icons" slot="start">home</span>
+          <ion-label>Accueil</ion-label>
+        </ion-item>
+        <ion-item routerLink="/appointments">
+          <span class="material-icons" slot="start">calendar_today</span>
+          <ion-label>Rendez-vous</ion-label>
+        </ion-item>
+        <ion-item routerLink="/patients">
+          <span class="material-icons" slot="start">people</span>
+          <ion-label>Patients</ion-label>
+        </ion-item>
+        <ion-item routerLink="/prescriptions">
+          <span class="material-icons" slot="start">medical_services</span>
+          <ion-label>Ordonnances</ion-label>
+        </ion-item>
+
+        <ion-item routerLink="/settings">
+          <span class="material-icons" slot="start">settings</span>
+          <ion-label>Paramètres</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <!-- Contenu Principal -->
+  <ion-router-outlet id="main-content"></ion-router-outlet>
+
+  <!-- Onglets en bas -->
+  <app-tabs></app-tabs>
+</ion-app>

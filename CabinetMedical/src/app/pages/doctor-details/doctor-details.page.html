@@ -1,0 +1,31 @@
+<ion-content *ngIf="doctor">
+  <ion-card>
+    <ion-card-header>
+      <ion-avatar>
+        <img [src]="'assets/img/' + doctor.image" alt="Doctor Avatar" height="2002" width="3000">
+      </ion-avatar>
+      <ion-card-title>{{ doctor.name }}</ion-card-title>
+      <ion-card-subtitle>{{ doctor.specialty }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>{{ doctor.description }}</p>
+      <ion-item>
+        <ion-icon name="location-outline" slot="start"></ion-icon>
+        <ion-label>{{ doctor.address }}</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-icon name="call-outline" slot="start"></ion-icon>
+        <ion-label>{{ doctor.phone }}</ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Localisation</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div id="map" style="height: 300px;"></div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

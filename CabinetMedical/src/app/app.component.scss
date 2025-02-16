@@ -1,0 +1,82 @@
+/* === Style général du menu === */
+ion-menu {
+  --width: 280px;
+  --background: #f4f6f9;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* === Style de l'en-tête du menu === */
+ion-header {
+  color: #ffffff;
+  text-align: center;
+}
+
+ion-toolbar {
+  --background: transparent;
+  font-size: 18px;
+  padding: 16px 0;
+}
+
+/* === Liste des éléments du menu === */
+ion-list {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  margin: 0; /* Supprime les marges inutiles */
+}
+
+/* === Style des éléments du menu (Sans interligne) === */
+ion-item {
+  --background: transparent;
+  --border-radius: 12px;
+  --color: #132d5e;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 15px 20px;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+  border-bottom: none !important; /* Supprime toute ligne sous les items */
+  margin: 0; /* Supprime l’espace sous chaque élément */
+  display: flex;
+  align-items: center; /* Aligne le texte et l’icône verticalement */
+}
+
+/* === Espacement entre les éléments du menu (Sans interligne) === */
+ion-item + ion-item {
+  margin-top: 8px; /* Espacement personnalisé entre les éléments */
+}
+
+/* === Effet au survol === */
+ion-item:hover {
+  background: rgba(44, 62, 80, 0.15);
+  transform: translateX(5px);
+}
+
+/* === Icônes des éléments du menu === */
+ion-icon {
+  font-size: 26px;
+  color: #2980b9;
+  margin-right: 12px;
+}
+
+/* === Bouton pour ouvrir le menu === */
+ion-fab-button {
+  --background: #2980b9;
+  --color: #ffffff;
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+ion-fab-button:hover {
+  --background: #2980b9;
+  transform: scale(1.05);
+}
+
+/* === Contenu principal pour un effet de décalage du menu === */
+ion-router-outlet {
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.menu-open ion-router-outlet {
+  margin-left: 280px;
+}

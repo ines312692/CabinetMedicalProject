@@ -1,0 +1,7 @@
+{
+  "name": "CabinetMedical",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
