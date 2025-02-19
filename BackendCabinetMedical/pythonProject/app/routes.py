@@ -36,7 +36,9 @@ def list_documents():
 @app.route('/doctors', methods=['GET'])
 def list_doctors():
     doctors = mongo.db.doctors.find()
-    return jsonify([doctor for doctor in doctors]), 200
+    response = make_response(jsonify([doctor for doctor in doctors]), 200)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.route('/doctors/<id>', methods=['GET'])
