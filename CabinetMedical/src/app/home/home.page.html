@@ -6,3 +6,14 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
+<ion-content>
+  <swiper-container (slideChange)="swiperSlideChanged($event)" [loop]="true" [pagination]="true">
+    <swiper-slide *ngFor="let doctor of doctors">
+      <div class="swiper-zoom-container">
+        <img height="100%" [src]="'assets/img/' + doctor.image" alt="Doctor Avatar" alt="" />
+    </div>
+  </swiper-slide>
+  </swiper-container>
+  <ion-searchbar show-clear-button="always" clear-icon="trash-bin" value="Custom Clear Icon"></ion-searchbar>
+</ion-content>

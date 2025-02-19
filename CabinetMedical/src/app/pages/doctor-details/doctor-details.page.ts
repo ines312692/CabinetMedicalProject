@@ -33,7 +33,7 @@ export class DoctorDetailsPage implements OnInit {
       this.doctor = doctor;
       setTimeout(() => {
         this.loadMap();
-      }, 100); // Delay to ensure the DOM is fully loaded
+      }, 100); 
     });
   }
 

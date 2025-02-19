@@ -1,4 +1,4 @@
-#container {
+/*#container {
   text-align: center;
 
   position: absolute;
@@ -24,4 +24,21 @@
 
 #container a {
   text-decoration: none;
+}*/
+
+
+
+swiper-container {
+  margin-top: 2%;
+  width: 100%;
+  height: 50%;
+  --swiper-pagination-bullet-inactive-color: var(--ion-color-step-200, #cccccc);
+  --swiper-pagination-color: var(--ion-color-primary, #3880ff);
+}
+
+swiper-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }

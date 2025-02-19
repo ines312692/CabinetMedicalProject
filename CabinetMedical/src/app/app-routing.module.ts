@@ -33,6 +33,10 @@ const routes: Routes = [
     loadChildren: () => import('./pages/doctor-details/doctor-details.module').then( m => m.DoctorDetailsPageModule)
   },
   { path: 'doctor-details/:id', component: DoctorDetailsPage },
+  {
+    path: 'doctor-details',
+    loadChildren: () => import('./pages/doctor-details/doctor-details.module').then( m => m.DoctorDetailsPageModule)
+  },
 
 
 

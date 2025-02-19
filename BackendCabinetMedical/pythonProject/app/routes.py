@@ -3,7 +3,8 @@ from werkzeug.utils import secure_filename
 import os
 from . import mongo
 from .services import get_doctor_by_id
-
+from flask_cors import CORS
+CORS(app)
 
 @app.route('/')
 def index():
