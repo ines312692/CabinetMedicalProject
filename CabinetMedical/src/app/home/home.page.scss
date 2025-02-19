@@ -26,7 +26,11 @@
   text-decoration: none;
 }*/
 
-
+ion-header {
+  background-color: transparent !important; /* Supprime la couleur de fond */
+  box-shadow: none !important; /* Supprime l'ombre */
+  border: none !important; /* Supprime les bordures */
+}
 
 swiper-container {
   margin-top: 2%;

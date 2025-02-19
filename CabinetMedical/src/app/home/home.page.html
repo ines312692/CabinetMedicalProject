@@ -1,10 +1,15 @@
-<ion-header>
-  <ion-toolbar>
+<ion-header >
+  <ion-buttons slot="start" style="color: #132d5e;">
+    <ion-menu-button menu="main-menu" ></ion-menu-button>
+    <ion-searchbar show-clear-button="always" clear-icon="trash-bin" placeholder="Rechercher" ></ion-searchbar>
+   
+  </ion-buttons>
+  <!-- <ion-toolbar>
     <ion-title>Home</ion-title>
     <ion-buttons slot="start">
       <ion-menu-button menu="main-menu"></ion-menu-button>
     </ion-buttons>
-  </ion-toolbar>
+  </ion-toolbar> -->
 </ion-header>
 
 <ion-content>
@@ -15,5 +20,5 @@
     </div>
   </swiper-slide>
   </swiper-container>
-  <ion-searchbar show-clear-button="always" clear-icon="trash-bin" value="Custom Clear Icon"></ion-searchbar>
+  
 </ion-content>
