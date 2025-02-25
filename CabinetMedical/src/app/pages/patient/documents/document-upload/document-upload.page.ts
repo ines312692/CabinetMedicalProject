@@ -4,13 +4,15 @@ import { AlertController } from '@ionic/angular';
 import { IonicModule } from "@ionic/angular";
 import { NgIf } from "@angular/common";
 
+
 @Component({
   selector: 'app-document-upload',
   templateUrl: './document-upload.page.html',
   styleUrls: ['./document-upload.page.scss'],
   imports: [
     IonicModule,
-    NgIf
+    NgIf,
+
   ],
   standalone: true
 })

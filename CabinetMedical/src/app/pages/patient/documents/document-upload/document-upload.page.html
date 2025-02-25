@@ -1,18 +1,12 @@
-<ion-content>
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Upload Document</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div id="container">
-    <div class="upload-area" (drop)="onFileDrop($event)" (dragover)="onDragOver($event)">
-      <input type="file" (change)="onFileSelected($event)" hidden #fileInput />
-      <ion-icon name="cloud-upload-outline" size="large"></ion-icon>
-      <p>Drag & Drop files here or click to select files</p>
-      <ion-button expand="block" (click)="fileInput.click()">Select File</ion-button>
-      <ion-button expand="block" color="primary" (click)="onUpload()">Upload Document</ion-button>
-    </div>
+<div id="container">
+  <div class="upload-area" (drop)="onFileDrop($event)" (dragover)="onDragOver($event)">
+    <input type="file" (change)="onFileSelected($event)" hidden #fileInput />
+    <ion-icon name="cloud-upload-outline" size="large"></ion-icon>
+    <p>Drag & Drop files here or click to select files</p>
+    <ion-button expand="block" (click)="fileInput.click()">Select File</ion-button>
+    <ion-button expand="block" color="primary" (click)="onUpload()">Upload Document</ion-button>
+  </div>
+  <div class="file-info">
     <div *ngIf="selectedFileName" class="file-name">
       <p>Selected File: {{ selectedFileName }}</p>
     </div>
@@ -21,4 +15,4 @@
       <p>Upload Progress: {{ uploadPercentage }}%</p>
     </div>
   </div>
-</ion-content>
+</div>
