@@ -1,11 +1,13 @@
 from flask import request, jsonify, current_app as app, make_response
 from werkzeug.utils import secure_filename
+from .models import File
+from bson import ObjectId
 import os
 from . import mongo
 from .services import get_doctor_by_id
 from flask_cors import CORS
 
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS"]}})
 
 @app.route('/')
 def index():
@@ -34,11 +36,24 @@ def upload_file():
         response.status_code = 201
         return response
 
-
 @app.route('/documents', methods=['GET'])
 def list_documents():
     documents = mongo.db.documents.find()
-    return jsonify([doc for doc in documents]), 200
+    files = [File.from_mongo(doc) for doc in documents]
+    return jsonify([file.__dict__ for file in files]), 200
+
+
+@app.route('/documents/<id>', methods=['DELETE'])
+def delete_document(id):
+    result = mongo.db.documents.delete_one({"_id": ObjectId(id)})
+    if result.deleted_count == 1:
+        response = jsonify({"message": "Document deleted successfully"})
+        response.status_code = 200
+    else:
+        response = jsonify({"error": "Document not found"})
+        response.status_code = 404
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.route('/doctors', methods=['GET'])
@@ -98,6 +113,10 @@ def delete_all_doctors():
 def delete_doctor(id):
     result = mongo.db.doctors.delete_one({"id": id})
     if result.deleted_count == 1:
-        return jsonify({"message": "Doctor deleted successfully"}), 200
+        response = jsonify({"message": "Doctor deleted successfully"})
+        response.status_code = 200
     else:
-        return jsonify({"error": "Doctor not found"}), 404
+        response = jsonify({"error": "Doctor not found"})
+        response.status_code = 404
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response

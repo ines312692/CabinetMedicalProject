@@ -1,28 +1,43 @@
-.upload-area {
-  border: 2px dashed #ccc;
-  border-radius: 4px;
-  padding: 20px;
-  text-align: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+#container {
+  .upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    transition: border-color 0.3s;
+
+    &:hover {
+      border-color: #007bff;
+    }
+
+    ion-icon {
+      margin-bottom: 10px;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    ion-button {
+      margin-top: 10px;
+    }
+  }
+
+  .file-name {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    font-weight: bold;
+    color: #495057;
+  }
 }
 
-.upload-area:hover {
-  background-color: #f9f9f9;
-}
-
-.upload-area p {
-  margin: 10px 0;
-  font-size: 16px;
-  color: #666;
-}
-
-.upload-area ion-icon {
-  font-size: 48px;
-  color: #666;
-  margin-bottom: 10px;
-}
-
-.upload-area ion-button {
-  margin-top: 10px;
-}

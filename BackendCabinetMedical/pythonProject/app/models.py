@@ -26,3 +26,20 @@ class Doctor:
             longitude=doc['longitude'],
             image=doc['image']
         )
+
+
+from bson import ObjectId
+
+class File:
+    def __init__(self, id, filename, status):
+        self.id = id
+        self.filename = filename
+        self.status = status
+
+    @staticmethod
+    def from_mongo(doc):
+        return File(
+            id=doc['_id'],
+            filename=doc['filename'],
+            status=doc['status']
+        )

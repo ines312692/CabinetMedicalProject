@@ -15,6 +15,10 @@ export class DocumentService {
   }
 
   getDocuments(): Observable<unknown> {
-    return this.http.get(`${this.apiUrl}`);
+    return this.http.get(`${this.apiUrl}/documents`);
+  }
+
+  deleteDocument(documentId: string): Observable<unknown> {
+    return this.http.delete(`${this.apiUrl}/documents/${documentId}`);
   }
 }

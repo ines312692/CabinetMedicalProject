@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { HttpClient, HttpEventType } from '@angular/common/http';
-import {IonicModule} from "@ionic/angular";
-import {NgIf} from "@angular/common";
+import { AlertController } from '@ionic/angular';
+import { IonicModule } from "@ionic/angular";
+import { NgIf } from "@angular/common";
 
 @Component({
   selector: 'app-document-upload',
@@ -17,8 +18,19 @@ export class DocumentUploadPage {
   selectedFile: File | null = null;
   selectedFileName: string | null = null;
   uploadProgress: number = -1;
+  uploadPercentage: number = 0;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private alertController: AlertController) {}
+
+  async showAlert(message: string, cssClass: string) {
+    const alert = await this.alertController.create({
+      header: 'Alert',
+      message: message,
+      cssClass: cssClass,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -30,6 +42,7 @@ export class DocumentUploadPage {
 
   onUpload() {
     if (!this.selectedFile) {
+      this.showAlert('No file selected!', 'error-alert');
       return;
     }
 
@@ -43,13 +56,18 @@ export class DocumentUploadPage {
       if (event.type === HttpEventType.UploadProgress) {
         if (event.total) {
           this.uploadProgress = event.loaded / event.total;
+          this.uploadPercentage = Math.round((event.loaded / event.total) * 100);
         }
       } else if (event.type === HttpEventType.Response) {
         this.uploadProgress = -1; // Reset progress bar
+        this.uploadPercentage = 0;
+        this.showAlert('Upload complete!', 'success-alert');
         console.log('Upload complete', event.body);
       }
     }, error => {
       this.uploadProgress = -1; // Reset progress bar
+      this.uploadPercentage = 0;
+      this.showAlert('Upload failed!', 'error-alert');
       console.error('Upload failed', error);
     });
   }

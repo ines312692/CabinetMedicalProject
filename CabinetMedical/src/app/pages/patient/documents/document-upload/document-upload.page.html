@@ -1,4 +1,4 @@
-<ion-content >
+<ion-content>
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">Upload Document</ion-title>
@@ -13,9 +13,12 @@
       <ion-button expand="block" (click)="fileInput.click()">Select File</ion-button>
       <ion-button expand="block" color="primary" (click)="onUpload()">Upload Document</ion-button>
     </div>
-    <div *ngIf="selectedFileName">
+    <div *ngIf="selectedFileName" class="file-name">
       <p>Selected File: {{ selectedFileName }}</p>
     </div>
     <ion-progress-bar *ngIf="uploadProgress >= 0" [value]="uploadProgress"></ion-progress-bar>
+    <div *ngIf="uploadProgress >= 0">
+      <p>Upload Progress: {{ uploadPercentage }}%</p>
+    </div>
   </div>
 </ion-content>
