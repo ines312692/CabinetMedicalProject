@@ -3,7 +3,9 @@ from werkzeug.utils import secure_filename
 import os
 from . import mongo
 from .services import get_doctor_by_id
+from flask_cors import CORS
 
+CORS(app)
 
 @app.route('/')
 def index():
@@ -13,10 +15,14 @@ def index():
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
+        response = jsonify({"error": "No file part"})
+        response.status_code = 400
+        return response
     file = request.files['file']
     if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
+        response = jsonify({"error": "No selected file"})
+        response.status_code = 400
+        return response
     if file:
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -24,7 +30,9 @@ def upload_file():
             "filename": filename,
             "status": "not viewed"
         })
-        return jsonify({"message": "File uploaded successfully"}), 201
+        response = jsonify({"message": "File uploaded successfully"})
+        response.status_code = 201
+        return response
 
 
 @app.route('/documents', methods=['GET'])

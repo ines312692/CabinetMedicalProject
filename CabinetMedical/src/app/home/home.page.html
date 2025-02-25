@@ -1,8 +1,15 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Home</ion-title>
-    <ion-buttons slot="start">
-      <ion-menu-button menu="main-menu"></ion-menu-button>
-    </ion-buttons>
-  </ion-toolbar>
+  <ion-buttons slot="start" style="color: #132d5e;">
+    <ion-menu-button menu="main-menu"></ion-menu-button>
+  </ion-buttons>
 </ion-header>
+
+<ion-content>
+  <div *ngIf="doctors.length > 0">
+    <div class="swiper-zoom-container">
+      <img height="100%" [src]="'assets/img/' + doctors[currentDoctorIndex].image" alt="Doctor Avatar" />
+    </div>
+  </div>
+  <ion-searchbar show-clear-button="always" clear-icon="trash-bin" placeholder="Rechercher"></ion-searchbar>
+  <app-doctor-grid></app-doctor-grid>
+</ion-content>

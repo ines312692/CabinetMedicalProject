@@ -1,0 +1,28 @@
+.upload-area {
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.upload-area:hover {
+  background-color: #f9f9f9;
+}
+
+.upload-area p {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #666;
+}
+
+.upload-area ion-icon {
+  font-size: 48px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.upload-area ion-button {
+  margin-top: 10px;
+}

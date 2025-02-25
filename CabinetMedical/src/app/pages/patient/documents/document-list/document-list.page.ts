@@ -13,8 +13,6 @@ import {IonicModule} from "@ionic/angular";
 export class DocumentListPage implements OnInit {
   constructor() {
   }
-
   ngOnInit() {
-
   }
 }
