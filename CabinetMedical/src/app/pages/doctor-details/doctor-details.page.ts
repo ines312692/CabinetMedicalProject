@@ -11,6 +11,7 @@ import OSM from 'ol/source/OSM';
 import View from 'ol/View';
 import Overlay from 'ol/Overlay';
 import { fromLonLat } from 'ol/proj';
+import {CalenderPage} from "../calender/calender.page";
 
 @Component({
   selector: 'app-doctor-details',
@@ -20,6 +21,7 @@ import { fromLonLat } from 'ol/proj';
   imports: [
     IonicModule,
     NgIf,
+    CalenderPage,
   ]
 })
 export class DoctorDetailsPage implements OnInit {

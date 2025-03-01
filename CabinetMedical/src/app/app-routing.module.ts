@@ -40,6 +40,10 @@ const routes: Routes = [
     path: 'doctor-grid',
     loadChildren: () => import('./pages/doctor-grid/doctor-grid.module').then( m => m.DoctorGridPageModule)
   },
+  {
+    path: 'calender',
+    loadChildren: () => import('./pages/calender/calender.module').then( m => m.CalenderPageModule)
+  },
 
 
 
