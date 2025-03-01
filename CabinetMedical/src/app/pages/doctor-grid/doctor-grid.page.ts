@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import { DoctorService } from '../../services/doctor.service';
 import {Doctor} from "../../models/Docter.interface";
 import {DoctorCardPage} from "../doctor-card/doctor-card.page";
@@ -18,7 +18,8 @@ import {NgForOf} from "@angular/common";
   ]
 })
 export class DoctorGridPage implements OnInit {
-  doctors: Doctor[] = [];
+  @Input() doctors: Doctor[] = [];
+
 
   constructor(private doctorService: DoctorService) { }
 

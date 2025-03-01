@@ -10,8 +10,10 @@ import {DoctorService} from "../services/doctor.service";
 })
 export class HomePage implements OnInit, OnDestroy {
   doctors: any[] = [];
+  filteredDoctors: any[] = [];
   currentDoctorIndex: number = 0;
   intervalId: any;
+  searchQuery: string = '';
 
   constructor(private route: ActivatedRoute, private doctorService: DoctorService) {}
 
@@ -30,6 +32,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.doctorService.getDoctors().subscribe(
       (data) => {
         this.doctors = data;
+        this.filteredDoctors = data;
         console.log('Médecins récupérés :', this.doctors);
       },
       (error) => {
@@ -40,7 +43,15 @@ export class HomePage implements OnInit, OnDestroy {
 
   startImageRotation() {
     this.intervalId = setInterval(() => {
-      this.currentDoctorIndex = (this.currentDoctorIndex + 1) % this.doctors.length;
+      this.currentDoctorIndex = (this.currentDoctorIndex + 1) % this.filteredDoctors.length;
     }, 3000); // Change image every 3 seconds
+  }
+
+  searchDoctors(event: any) {
+    const query = event.target.value.toLowerCase();
+    this.filteredDoctors = this.doctors.filter(doctor =>
+      doctor.name.toLowerCase().includes(query) ||
+      doctor.specialty.toLowerCase().includes(query)
+    );
   }
 }

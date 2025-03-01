@@ -12,3 +12,71 @@
   height: 100%;
   object-fit: cover;
 }
+/* styles.css */
+ion-header {
+  --background: #ffffff;
+  --color: #132d5e;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+ion-toolbar {
+  --background: #ffffff;
+  --color: #132d5e;
+}
+
+ion-title {
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+}
+
+ion-card {
+  margin: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+ion-card-title {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.5em;
+  color: #132d5e;
+}
+
+ion-card-subtitle {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1em;
+  color: #6c757d;
+}
+
+ion-card-content p {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1em;
+  color: #6c757d;
+}
+
+ion-button {
+  margin: 20px;
+  --background: #132d5e;
+  --color: #ffffff;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+ion-button:hover {
+  --background: #0f2247;
+}
+
+.swiper-zoom-container img {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+ion-searchbar {
+  margin: 20px;
+  --background: #f8f9fa;
+  --color: #132d5e;
+  border-radius: 5px;
+}
+
+app-doctor-grid {
+  margin: 20px;
+}
