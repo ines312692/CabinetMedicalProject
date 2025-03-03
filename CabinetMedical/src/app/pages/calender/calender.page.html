@@ -1,0 +1,30 @@
+<div class="calendar">
+  <div class="calendar-header">
+    <button (click)="prevMonth()">&#8249;</button>
+    <span>{{ monthNames[currentMonth] }} {{ currentYear }}</span>
+    <button (click)="nextMonth()">&#8250;</button>
+  </div>
+  <div class="calendar-body">
+    <div class="calendar-weekdays">
+      <div *ngFor="let day of weekDays">{{ day }}</div>
+    </div>
+    <div class="calendar-days">
+      <div *ngFor="let day of daysInMonth" [class.today]="isToday(day)" [class.empty]="day === 0">
+        <span *ngIf="day !== 0">{{ day }}</span>
+        <div class="availability" *ngFor="let event of getEventsForDay(day)">
+          {{ event.title }}
+          <button *ngIf="day !== 0" (click)="bookAppointment(day, event)">Book</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ion-modal>
+  <div class="modal-content">
+    <h2>Confirm Booking</h2>
+    <p>Are you sure you want to book an appointment on {{ selectedDate | date: 'fullDate' }}?</p>
+    <button (click)="confirmBooking()">Confirm</button>
+    <button (click)="closeModal()">Cancel</button>
+  </div>
+</ion-modal>

@@ -1,0 +1,90 @@
+.calendar {
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.calendar-body {
+  padding: 10px;
+}
+
+.calendar-weekdays, .calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-weekdays div, .calendar-days div {
+  text-align: center;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.calendar-days div {
+  background-color: #f9f9f9;
+  position: relative;
+}
+
+.calendar-days div.today {
+  background-color: #007bff;
+  color: white;
+}
+
+.calendar-days div.empty {
+  background-color: transparent;
+}
+
+.availability {
+  background-color: #28a745;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 0.8em;
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  right: 5px;
+  text-align: center;
+}
+
+button {
+  margin-top: 5px;
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.modal-content {
+  padding: 20px;
+  background-color: white;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+}
+
+.modal-content button {
+  margin: 10px;
+}

@@ -1,11 +1,15 @@
 from flask import request, jsonify, current_app as app, make_response
 from werkzeug.utils import secure_filename
+from .models import File
+from bson import ObjectId
 import os
 import bcrypt
 from bson.objectid import ObjectId
 from . import mongo
 from .services import get_doctor_by_id
+from flask_cors import CORS
 
+CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS"]}})
 
 @app.route('/')
 def index():
@@ -21,10 +25,14 @@ def add_cors_headers(response):
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
+        response = jsonify({"error": "No file part"})
+        response.status_code = 400
+        return response
     file = request.files['file']
     if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
+        response = jsonify({"error": "No selected file"})
+        response.status_code = 400
+        return response
     if file:
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -32,13 +40,28 @@ def upload_file():
             "filename": filename,
             "status": "not viewed"
         })
-        return jsonify({"message": "File uploaded successfully"}), 201
-
+        response = jsonify({"message": "File uploaded successfully"})
+        response.status_code = 201
+        return response
 
 @app.route('/documents', methods=['GET'])
 def list_documents():
     documents = mongo.db.documents.find()
-    return jsonify([doc for doc in documents]), 200
+    files = [File.from_mongo(doc) for doc in documents]
+    return jsonify([file.__dict__ for file in files]), 200
+
+
+@app.route('/documents/<id>', methods=['DELETE'])
+def delete_document(id):
+    result = mongo.db.documents.delete_one({"_id": ObjectId(id)})
+    if result.deleted_count == 1:
+        response = jsonify({"message": "Document deleted successfully"})
+        response.status_code = 200
+    else:
+        response = jsonify({"error": "Document not found"})
+        response.status_code = 404
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @app.route('/doctors', methods=['GET'])
@@ -98,8 +121,10 @@ def delete_all_doctors():
 def delete_doctor(id):
     result = mongo.db.doctors.delete_one({"id": id})
     if result.deleted_count == 1:
-        return jsonify({"message": "Doctor deleted successfully"}), 200
+        response = jsonify({"message": "Doctor deleted successfully"})
+        response.status_code = 200
     else:
+<<<<<<< HEAD
         return jsonify({"error": "Doctor not found"}), 404
 
 @app.route('/signup', methods=['POST'])
@@ -185,3 +210,9 @@ def login():
 
     
     return jsonify({"error": "Adresse email introuvable"}), 404
+=======
+        response = jsonify({"error": "Doctor not found"})
+        response.status_code = 404
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+>>>>>>> 7351cd2dd80db713f466e0eab572a8ab0f4bb710

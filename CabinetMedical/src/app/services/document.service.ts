@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentService {
-  private apiUrl = `${environment.apiUrl}/documents`;
+  private apiUrl = 'http://127.0.0.1:5000';
 
   constructor(private http: HttpClient) {}
 
@@ -16,6 +15,10 @@ export class DocumentService {
   }
 
   getDocuments(): Observable<unknown> {
-    return this.http.get(`${this.apiUrl}`);
+    return this.http.get(`${this.apiUrl}/documents`);
+  }
+
+  deleteDocument(documentId: string): Observable<unknown> {
+    return this.http.delete(`${this.apiUrl}/documents/${documentId}`);
   }
 }

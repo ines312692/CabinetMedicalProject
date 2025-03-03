@@ -1,8 +1,28 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Home</ion-title>
-    <ion-buttons slot="start">
+    <ion-buttons slot="start" style="color: #132d5e;">
       <ion-menu-button menu="main-menu"></ion-menu-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Welcome to the Medical Cabinet</ion-card-title>
+      <ion-card-subtitle>Find and book appointments with doctors</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Use the search bar below to find doctors by name or specialty.</p>
+    </ion-card-content>
+  </ion-card>
+
+  <div *ngIf="filteredDoctors.length > 0">
+    <div class="swiper-zoom-container">
+      <img height="100%" [src]="'assets/img/' + filteredDoctors[currentDoctorIndex].image" alt="Doctor Avatar" />
+    </div>
+  </div>
+  <ion-searchbar show-clear-button="always" clear-icon="trash-bin" placeholder="Rechercher" (ionInput)="searchDoctors($event)"></ion-searchbar>
+  <app-doctor-grid [doctors]="filteredDoctors"></app-doctor-grid>
+</ion-content>

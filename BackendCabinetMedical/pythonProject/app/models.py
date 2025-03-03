@@ -30,6 +30,7 @@ class Doctor:
             role=doc.get('role', 'doctor')
         )
 
+<<<<<<< HEAD
 class Patient:
     def __init__(self, id, first_name, last_name, birth_date, email, password, role="patient"):
         self.id = id
@@ -72,4 +73,21 @@ class Administrator:  # Correction du nom et indentation au niveau principal
             email=doc['email'],
             password=doc['password'],
             role=doc.get('role', 'admin')  
+=======
+
+from bson import ObjectId
+
+class File:
+    def __init__(self, id, filename, status):
+        self.id = id
+        self.filename = filename
+        self.status = status
+
+    @staticmethod
+    def from_mongo(doc):
+        return File(
+            id=doc['_id'],
+            filename=doc['filename'],
+            status=doc['status']
+>>>>>>> 7351cd2dd80db713f466e0eab572a8ab0f4bb710
         )

@@ -4,9 +4,8 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { HomePage } from './home.page';
 import { HomePageRoutingModule } from './home-routing.module';
-import { DocumentUploadPageModule } from '../pages/patient/documents/document-upload/document-upload.module';
-import { DocumentListPageModule } from '../pages/patient/documents/document-list/document-list.module';
-import { DocumentViewPageModule } from '../pages/patient/documents/document-view/document-view.module';
+import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import {DoctorGridPage} from "../pages/doctor-grid/doctor-grid.page";
 
 @NgModule({
   imports: [
@@ -14,10 +13,11 @@ import { DocumentViewPageModule } from '../pages/patient/documents/document-view
     FormsModule,
     IonicModule,
     HomePageRoutingModule,
-    DocumentUploadPageModule,
-    DocumentListPageModule,
-    DocumentViewPageModule
+    DoctorGridPage
   ],
-  declarations: [HomePage]
+  declarations: [HomePage],
+  schemas:[CUSTOM_ELEMENTS_SCHEMA]
 })
-export class HomePageModule {}
+export class HomePageModule {
+
+}
