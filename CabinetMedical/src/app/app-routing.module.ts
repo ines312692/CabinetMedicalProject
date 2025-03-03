@@ -49,8 +49,6 @@ const routes: Routes = [
     path: 'doctor-grid',
     loadChildren: () => import('./pages/doctor-grid/doctor-grid.module').then( m => m.DoctorGridPageModule)
   },
-<<<<<<< HEAD
-  
   {
     path: 'signup',
     loadChildren: () => import('./pages/signup/signup.module').then( m => m.SignupPageModule)
@@ -66,19 +64,11 @@ const routes: Routes = [
   {
     path: 'admin-profile',
     loadChildren: () => import('./pages/admin-profile/admin-profile.module').then( m => m.AdminProfilePageModule)
-=======
+  },
   {
     path: 'calender',
     loadChildren: () => import('./pages/calender/calender.module').then( m => m.CalenderPageModule)
->>>>>>> 7351cd2dd80db713f466e0eab572a8ab0f4bb710
-  },
-
- 
-  
-
-
-
-
+  }
 
 ];
 
