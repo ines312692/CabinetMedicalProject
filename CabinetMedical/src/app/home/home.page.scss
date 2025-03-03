@@ -80,3 +80,18 @@ ion-searchbar {
 app-doctor-grid {
   margin: 20px;
 }
+
+swiper-container {
+  //margin-top: 2%;
+  width: 100%;
+  height: 50%;
+  --swiper-pagination-bullet-inactive-color: var(--ion-color-step-200, #cccccc);
+  --swiper-pagination-color: var(--ion-color-primary, #3880ff);
+}
+
+swiper-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
