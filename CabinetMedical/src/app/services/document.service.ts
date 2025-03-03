@@ -21,4 +21,8 @@ export class DocumentService {
   deleteDocument(documentId: string): Observable<unknown> {
     return this.http.delete(`${this.apiUrl}/documents/${documentId}`);
   }
+
+  getDocumentById(documentId: string) {
+    return this.http.get(`${this.apiUrl}/documents/${documentId}`);
+  }
 }

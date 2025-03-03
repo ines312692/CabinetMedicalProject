@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AlertController, IonicModule } from "@ionic/angular";
 import { DocumentService } from "../../../../services/document.service";
 import { NgForOf } from "@angular/common";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-document-list',
@@ -16,7 +17,11 @@ import { NgForOf } from "@angular/common";
 export class DocumentListPage implements OnInit {
   documents: any[] = [];
 
-  constructor(private documentService: DocumentService, private alertController: AlertController) {}
+  constructor(
+    private documentService: DocumentService,
+    private alertController: AlertController,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.loadDocuments();
@@ -38,12 +43,8 @@ export class DocumentListPage implements OnInit {
   }
 
   async viewDocument(document: any) {
-    const alert = await this.alertController.create({
-      header: 'View Document',
-      message: `<iframe src="${document.url}" width="100%" height="400px"></iframe>`,
-      buttons: ['OK']
-    });
-    await alert.present();
+    await this.router.navigate(['/document-view', {document: JSON.stringify(document)}]);
+   
   }
 
   deleteDocument(documentId: string) {
@@ -57,6 +58,4 @@ export class DocumentListPage implements OnInit {
       console.error('Error deleting document', error);
     });
   }
-
-  protected readonly document = document;
 }

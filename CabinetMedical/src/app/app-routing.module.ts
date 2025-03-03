@@ -32,7 +32,8 @@ const routes: Routes = [
     path: 'doctor-details',
     loadChildren: () => import('./pages/doctor-details/doctor-details.module').then( m => m.DoctorDetailsPageModule)
   },
-  { path: 'doctor-details/:id', component: DoctorDetailsPage },  {
+  { path: 'doctor-details/:id', component: DoctorDetailsPage },
+  {
     path: 'doctor-card',
     loadChildren: () => import('./pages/doctor-card/doctor-card.module').then( m => m.DoctorCardPageModule)
   },
@@ -43,6 +44,26 @@ const routes: Routes = [
   {
     path: 'calender',
     loadChildren: () => import('./pages/calender/calender.module').then( m => m.CalenderPageModule)
+  },
+  {
+    path: 'signup',
+    loadChildren: () => import('./pages/signup/signup.module').then( m => m.SignupPageModule)
+  },
+  {
+    path: 'login',
+    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
+  },
+  {
+    path: 'patient-profile',
+    loadChildren: () => import('./pages/patient-profile/patient-profile.module').then( m => m.PatientProfilePageModule)
+  },
+  {
+    path: 'patient-profile',
+    loadChildren: () => import('./pages/patient-profile/patient-profile.module').then( m => m.PatientProfilePageModule)
+  },
+  {
+    path: 'patient-history/:id',
+    loadChildren: () => import('./pages/patient-history/patient-history.module').then(m => m.PatientHistoryPageModule)
   },
 
 

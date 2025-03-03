@@ -1,0 +1,53 @@
+.card {
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #b2dfdb;
+  margin-bottom: 24px;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: #00796b;
+}
+
+.card h2 {
+  display: flex;
+  align-items: center;
+  font-size: 1.75em;
+  margin-bottom: 12px;
+  color: #00796b;
+}
+
+.card h2 ion-icon {
+  margin-right: 12px;
+  color: #00796b;
+}
+
+.card ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.card ul li {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #b2dfdb;
+  transition: background-color 0.3s ease, padding-left 0.3s ease;
+}
+
+.card ul li:hover {
+  background-color: #b2dfdb;
+  padding-left: 8px;
+}
+
+.card ul li ion-icon {
+  margin-right: 12px;
+  color: #00796b;
+}
+
+.card ul li:last-child {
+  border-bottom: none;
+}

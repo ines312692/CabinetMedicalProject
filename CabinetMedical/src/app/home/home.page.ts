@@ -1,5 +1,4 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
 import {DoctorService} from "../services/doctor.service";
 
 @Component({
@@ -13,9 +12,7 @@ export class HomePage implements OnInit, OnDestroy {
   filteredDoctors: any[] = [];
   currentDoctorIndex: number = 0;
   intervalId: any;
-  searchQuery: string = '';
-
-  constructor(private route: ActivatedRoute, private doctorService: DoctorService) {}
+  constructor(private doctorService: DoctorService) {}
 
   ngOnInit() {
     this.loadDoctors();

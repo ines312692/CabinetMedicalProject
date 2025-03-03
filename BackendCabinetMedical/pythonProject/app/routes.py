@@ -6,6 +6,7 @@ import os
 from . import mongo
 from .services import get_doctor_by_id
 from flask_cors import CORS
+import bcrypt
 
 CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS"]}})
 
@@ -120,3 +121,188 @@ def delete_doctor(id):
         response.status_code = 404
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    data = request.json
+    if not data:
+        response = jsonify({"error": "No data provided"})
+        response.status_code = 400
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
+    required_fields = ["firstName", "lastName", "birthDate", "email", "password"]
+    for field in required_fields:
+        if field not in data:
+            response = jsonify({"error": f"Missing field: {field}"})
+            response.status_code = 400
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response
+
+    if mongo.db.patients.find_one({"email": data["email"]}):
+        response = jsonify({"error": "Email already exists"})
+        response.status_code = 409
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
+    hashed_password = bcrypt.hashpw(data["password"].encode('utf-8'), bcrypt.gensalt())
+
+    patient = {
+        "_id": ObjectId(),
+        "first_name": data["firstName"],
+        "last_name": data["lastName"],
+        "birth_date": data["birthDate"],
+        "email": data["email"],
+        "password": hashed_password.decode('utf-8'),
+        "role": "patient",
+    }
+
+    result = mongo.db.patients.insert_one(patient)
+    if result.inserted_id:
+        response = jsonify({"message": "Account created successfully", "id": patient["_id"]})
+        response.status_code = 201
+    else:
+        response = jsonify({"error": "Failed to create account"})
+        response.status_code = 500
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    if not data or 'email' not in data or 'password' not in data:
+        response = jsonify({"error": "Email et mot de passe requis"})
+        response.status_code = 400
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
+    email = data['email']
+    password = data['password'].encode('utf-8')
+    print("Email reçu:", email)
+
+    patient = mongo.db.patients.find_one({"email": email})
+    print("Patient trouvé:", patient)
+    if patient:
+        if bcrypt.checkpw(password, patient['password'].encode('utf-8')):
+            response = jsonify({
+                "message": "Connexion réussie",
+                "role": patient.get('role', 'patient'),
+                "id": str(patient['_id'])
+            })
+            response.status_code = 200
+        else:
+            response = jsonify({"error": "Mot de passe incorrect"})
+            response.status_code = 401
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
+    doctor = mongo.db.doctors.find_one({"email": email})
+    print("Doctor trouvé:", doctor)
+    if doctor:
+        if bcrypt.checkpw(password, doctor['password'].encode('utf-8')):
+            response = jsonify({
+                "message": "Connexion réussie",
+                "role": doctor.get('role', 'doctor'),
+                "id": str(doctor['_id'])
+            })
+            response.status_code = 200
+        else:
+            response = jsonify({"error": "Mot de passe incorrect"})
+            response.status_code = 401
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
+    administrator = mongo.db.administrators.find_one({"email": email})
+    print("Administrator trouvé:", administrator)
+    if administrator:
+        if bcrypt.checkpw(password, administrator['password'].encode('utf-8')):
+            response = jsonify({
+                "message": "Connexion réussie",
+                "role": administrator.get('role', 'admin'),
+                "id": str(administrator['_id'])
+            })
+            response.status_code = 200
+        else:
+            response = jsonify({"error": "Mot de passe incorrect"})
+            response.status_code = 401
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
+    response = jsonify({"error": "Adresse email introuvable"})
+    response.status_code = 404
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+from .models import History, Appointment, Consultation, DiagnosticsData, Diagnostic, Prescription
+
+@app.route('/patient/<patient_id>/history', methods=['GET'])
+def get_patient_history(patient_id):
+    patient = mongo.db.patients.find_one({"_id": ObjectId(patient_id)})
+    if not patient:
+        response = jsonify({"error": "Patient not found"})
+        response.status_code = 404
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
+    appointments = [Appointment(app['date'], app['reason']) for app in mongo.db.appointments.find({"patient_id": patient_id})]
+    consultations = [Consultation(con['date'], con['notes']) for con in mongo.db.consultations.find({"patient_id": patient_id})]
+
+    history = History(appointments, consultations)
+
+    response = jsonify(history.__dict__)
+    response.status_code = 200
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/patient/<patient_id>/diagnostics', methods=['GET'])
+def get_patient_diagnostics(patient_id):
+    try:
+        # Validate the patient_id format
+        patient_id_obj = ObjectId(patient_id)
+        print("Valid ObjectId format")
+    except Exception as e:
+        response = jsonify({"error": "Invalid patient ID format"})
+        response.status_code = 400
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
+    # Check if the patient exists
+    patient = mongo.db.patients.find_one({"_id": patient_id_obj})
+    print("Patient query result:", patient)
+    if not patient:
+        response = jsonify({"error": "Patient not found"})
+        response.status_code = 404
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
+    # Retrieve diagnostics and prescriptions
+    diagnostics = list(mongo.db.diagnostics.find({"patient_id": patient_id_obj}))
+    prescriptions = list(mongo.db.prescriptions.find({"patient_id": patient_id_obj}))
+
+    print("Diagnostics query result:", diagnostics)
+    print("Prescriptions query result:", prescriptions)
+
+    if not diagnostics and not prescriptions:
+        response = jsonify({"error": "No diagnostics or prescriptions found"})
+        response.status_code = 404
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
+    diagnostics_data = [Diagnostic(diag['date'], diag['result']).__dict__ for diag in diagnostics]
+    prescriptions_data = [Prescription(pres['date'], pres['medication']).__dict__ for pres in prescriptions]
+
+    data = DiagnosticsData(diagnostics_data, prescriptions_data).__dict__
+
+    response = jsonify(data)
+    response.status_code = 200
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
+@app.route('/patients', methods=['GET'])
+def list_patients():
+    patients = mongo.db.patients.find()
+    response = make_response(jsonify([patient for patient in patients]), 200)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+

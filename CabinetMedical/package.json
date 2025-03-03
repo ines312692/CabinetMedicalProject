@@ -28,6 +28,8 @@
     "@capacitor/haptics": "7.0.0",
     "@capacitor/keyboard": "7.0.0",
     "@capacitor/status-bar": "7.0.0",
+    "@ionic-native/core": "^5.36.0",
+    "@ionic-native/file-opener": "^5.36.0",
     "@ionic/angular": "^8.4.3",
     "angular-calendar": "^0.31.1",
     "date-fns": "^4.1.0",

@@ -1,0 +1,49 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Historique du Patient</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Historique du Patient</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div *ngIf="history" class="card">
+    <h2><ion-icon name="calendar-outline"></ion-icon> Rendez-vous</h2>
+    <ul>
+      <li *ngFor="let appointment of history.appointments">
+        <ion-icon name="time-outline"></ion-icon> {{ appointment.date }} - {{ appointment.reason }}
+      </li>
+    </ul>
+  </div>
+
+  <div *ngIf="history" class="card">
+    <h2><ion-icon name="chatbubbles-outline"></ion-icon> Consultations</h2>
+    <ul>
+      <li *ngFor="let consultation of history.consultations">
+        <ion-icon name="document-text-outline"></ion-icon> {{ consultation.date }} - {{ consultation.notes }}
+      </li>
+    </ul>
+  </div>
+
+  <div *ngIf="diagnostics" class="card">
+    <h2><ion-icon name="medkit-outline"></ion-icon> Diagnostics</h2>
+    <ul>
+      <li *ngFor="let diagnostic of diagnostics.diagnostics">
+        <ion-icon name="flask-outline"></ion-icon> {{ diagnostic.date }} - {{ diagnostic.result }}
+      </li>
+    </ul>
+  </div>
+
+  <div *ngIf="diagnostics" class="card">
+    <h2><ion-icon name="clipboard-outline"></ion-icon> Ordonnances</h2>
+    <ul>
+      <li *ngFor="let prescription of diagnostics.prescriptions">
+        <ion-icon name="pill-outline"></ion-icon> {{ prescription.date }} - {{ prescription.medication }}
+      </li>
+    </ul>
+  </div>
+</ion-content>
