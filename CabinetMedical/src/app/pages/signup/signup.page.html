@@ -1,0 +1,142 @@
+<ion-content [fullscreen]="true">
+  <ion-header class="ion-no-border">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button mode="md" defaultHref="/home" color="white"></ion-back-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+</ion-content>
+
+<ion-footer>
+  <ion-list lines="full">
+    <ion-list-header class="ion-margin">
+      <ion-label>
+        Création de compte
+      </ion-label>
+    </ion-list-header>
+    <div class="scrollable-form">
+    <ion-item-group class="ion-margin-horizontal">  
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <!-- Champ Prénom -->
+        <div class="ion-margin-vertical">
+          <ion-item>
+            <ion-label position="stacked">Prénom</ion-label>
+            <ion-input formControlName="firstName" type="text" placeholder="Prenom">
+              <ion-icon name="person" slot="start" color="medium"></ion-icon>
+            </ion-input>
+          </ion-item>
+          <ion-text class="error" color="danger" 
+            *ngIf="form.get('firstName')?.touched && !form.get('firstName')?.valid">
+            <ion-text *ngIf="form.get('firstName')?.hasError('required')">
+              * Veuillez introduire votre Prénom!
+            </ion-text>
+          </ion-text>
+        </div>
+
+        <!-- Champ Nom -->
+        <div class="ion-margin-vertical">
+          <ion-item>
+            <ion-label position="stacked">Nom</ion-label>
+            <ion-input formControlName="lastName" type="text" placeholder="Nom">
+              <ion-icon name="person" slot="start" color="medium"></ion-icon>
+            </ion-input>
+          </ion-item>
+          <ion-text class="error" color="danger" 
+            *ngIf="form.get('lastName')?.touched && !form.get('lastName')?.valid">
+            <ion-text *ngIf="form.get('lastName')?.hasError('required')">
+              * Veuillez introduire votre Nom!
+            </ion-text>
+          </ion-text>
+        </div>
+
+        <!-- Champ Date de naissance -->
+        <div class="ion-margin-vertical">
+          <ion-item>
+            <ion-label position="stacked">Date de naissance</ion-label>
+            <ion-input formControlName="birthDate" type="date" placeholder="Date de naissance">
+              <ion-icon name="calendar" slot="start" color="medium"></ion-icon>
+            </ion-input>
+          </ion-item>
+          <ion-text class="error" color="danger" 
+            *ngIf="form.get('birthDate')?.touched && !form.get('birthDate')?.valid">
+            <ion-text *ngIf="form.get('birthDate')?.hasError('required')">
+              * Veuillez introduire votre Date de naissance!
+            </ion-text>
+            <ion-text *ngIf="form.get('birthDate')?.hasError('underage') && form.get('birthDate')?.touched">
+              * Vous devez avoir au moins 16 ans!
+            </ion-text>
+          </ion-text>
+        </div>
+
+        <!-- Champ Email -->
+        <div class="ion-margin-vertical">
+          <ion-item>
+            <ion-label position="stacked">Email</ion-label>
+            <ion-input formControlName="email" type="email" placeholder="Adresse Email">
+              <ion-icon name="mail" slot="start" color="medium"></ion-icon>
+            </ion-input>
+          </ion-item>
+          <ion-text class="error" color="danger" 
+            *ngIf="form.get('email')?.touched && !form.get('email')?.valid">
+            <ion-text *ngIf="form.get('email')?.hasError('required')">
+              * Veuillez introduire votre Adresse Email
+            </ion-text>
+            <ion-text *ngIf="form.get('email')?.hasError('email') && !form.get('email')?.hasError('required')">
+              * Veuillez introduire une Adresse Email valide!
+            </ion-text>
+          </ion-text>
+        </div>
+
+        <!-- Champ Mot de passe -->
+        <div class="ion-margin-vertical">
+          <ion-item>
+            <ion-label position="stacked">Mot de passe</ion-label>
+            <ion-input formControlName="password" type="password" placeholder="Mot de passe">
+              <ion-icon name="key" slot="start" color="medium"></ion-icon>
+            </ion-input>
+          </ion-item>
+          <ion-text class="error" color="danger" 
+            *ngIf="form.get('password')?.touched && !form.get('password')?.valid">
+            <ion-text *ngIf="form.get('password')?.hasError('required')">
+              * Please enter your Password
+            </ion-text>
+            <ion-text *ngIf="form.get('password')?.hasError('minlength') && !form.get('password')?.hasError('required')">
+              * Password must be at least 8 characters
+            </ion-text>
+          </ion-text>
+        </div>
+
+        <!-- Champ Confirmer le mot de passe -->
+        <div class="ion-margin-vertical">
+          <ion-item>
+            <ion-label position="stacked">Confirmer Mot de passe</ion-label>
+            <ion-input formControlName="confirmPassword" type="password" placeholder="Confirmer Mot de passe">
+              <ion-icon name="key" slot="start" color="medium"></ion-icon>
+            </ion-input>
+          </ion-item>
+          <ion-text class="error" color="danger" 
+            *ngIf="form.get('confirmPassword')?.touched && (form.hasError('mismatch') || !form.get('confirmPassword')?.valid)">
+            <ion-text *ngIf="form.get('confirmPassword')?.hasError('required')">
+              * Veuillez confirmer votre Mot de passe!
+            </ion-text>
+            <ion-text *ngIf="form.hasError('mismatch') && !form.get('confirmPassword')?.hasError('required')">
+              * Les mots de passes ne correspondent pas!
+            </ion-text>
+          </ion-text>
+        </div>
+
+        <ion-button 
+          size="large" 
+          expand="block" 
+          shape="round" 
+          color="primary" 
+          type="submit">
+          <ion-text style="color: white;">S'inscrire</ion-text>
+        </ion-button>
+      </form>
+    </ion-item-group>
+  </div>
+  </ion-list>
+</ion-footer>

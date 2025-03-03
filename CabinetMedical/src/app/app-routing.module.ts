@@ -17,6 +17,14 @@ const routes: Routes = [
     loadChildren: () => import('./pages/patient/documents/document-upload/document-upload.module').then( m => m.DocumentUploadPageModule)
   },
   {
+    path: 'login',
+    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
+  },
+  {
+    path: 'signup',
+    loadChildren: () => import('./pages/signup/signup.module').then( m => m.SignupPageModule)
+  },
+  {
     path: 'document-list',
     loadChildren: () => import('./pages/patient/documents/document-list/document-list.module').then( m => m.DocumentListPageModule)
   },
@@ -32,7 +40,8 @@ const routes: Routes = [
     path: 'doctor-details',
     loadChildren: () => import('./pages/doctor-details/doctor-details.module').then( m => m.DoctorDetailsPageModule)
   },
-  { path: 'doctor-details/:id', component: DoctorDetailsPage },  {
+  { path: 'doctor-details/:id', component: DoctorDetailsPage },
+  {
     path: 'doctor-card',
     loadChildren: () => import('./pages/doctor-card/doctor-card.module').then( m => m.DoctorCardPageModule)
   },
@@ -40,6 +49,27 @@ const routes: Routes = [
     path: 'doctor-grid',
     loadChildren: () => import('./pages/doctor-grid/doctor-grid.module').then( m => m.DoctorGridPageModule)
   },
+  
+  {
+    path: 'signup',
+    loadChildren: () => import('./pages/signup/signup.module').then( m => m.SignupPageModule)
+  },
+  {
+    path: 'patient-profile',
+    loadChildren: () => import('./pages/patient-profile/patient-profile.module').then( m => m.PatientProfilePageModule)
+  },
+  {
+    path: 'doctor-profile',
+    loadChildren: () => import('./pages/doctor-profile/doctor-profile.module').then( m => m.DoctorProfilePageModule)
+  },
+  {
+    path: 'admin-profile',
+    loadChildren: () => import('./pages/admin-profile/admin-profile.module').then( m => m.AdminProfilePageModule)
+  },
+
+ 
+  
+
 
 
 

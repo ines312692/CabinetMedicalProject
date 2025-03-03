@@ -1,6 +1,8 @@
 from flask import request, jsonify, current_app as app, make_response
 from werkzeug.utils import secure_filename
 import os
+import bcrypt
+from bson.objectid import ObjectId
 from . import mongo
 from .services import get_doctor_by_id
 
@@ -9,6 +11,12 @@ from .services import get_doctor_by_id
 def index():
     return "Welcome to the Medical Backend API"
 
+@app.after_request
+def add_cors_headers(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    response.headers.add('Access-Control-Allow-Methods', 'POST')
+    return response
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -93,3 +101,87 @@ def delete_doctor(id):
         return jsonify({"message": "Doctor deleted successfully"}), 200
     else:
         return jsonify({"error": "Doctor not found"}), 404
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    data = request.json
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    required_fields = ["firstName", "lastName", "birthDate", "email", "password"]
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"Missing field: {field}"}), 400
+
+    if mongo.db.patients.find_one({"email": data["email"]}):
+        return jsonify({"error": "Email already exists"}), 409
+
+    
+    hashed_password = bcrypt.hashpw(data["password"].encode('utf-8'), bcrypt.gensalt())
+
+    patient = {
+        "_id": str(ObjectId()),
+        "first_name": data["firstName"],
+        "last_name": data["lastName"],
+        "birth_date": data["birthDate"],
+        "email": data["email"],
+        "password": hashed_password.decode('utf-8'),
+        "role": "patient",
+    }
+
+    result = mongo.db.patients.insert_one(patient)
+    if result.inserted_id:
+        return jsonify({"message": "Account created successfully", "id": patient["_id"]}), 201
+    else:
+        return jsonify({"error": "Failed to create account"}), 500
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    if not data or 'email' not in data or 'password' not in data:
+        return jsonify({"error": "Email et mot de passe requis"}), 400
+
+    email = data['email']
+    password = data['password'].encode('utf-8')
+    print("Email reçu:", email)
+
+    
+    patient = mongo.db.patients.find_one({"email": email})
+    print("Patient trouvé:", patient)
+    if patient:
+        if bcrypt.checkpw(password, patient['password'].encode('utf-8')):
+            return jsonify({
+                "message": "Connexion réussie",
+                "role": patient.get('role', 'patient'),
+                "id": str(patient['_id'])  # Convertir ObjectId en string
+            }), 200
+        else:
+            return jsonify({"error": "Mot de passe incorrect"}), 401
+
+   
+    doctor = mongo.db.doctors.find_one({"email": email})
+    print("Doctor trouvé:", doctor)
+    if doctor:
+        if bcrypt.checkpw(password, doctor['password'].encode('utf-8')):
+            return jsonify({
+                "message": "Connexion réussie",
+                "role": doctor.get('role', 'doctor'),
+                "id": str(doctor['_id'])  # Convertir ObjectId en string
+            }), 200
+        else:
+            return jsonify({"error": "Mot de passe incorrect"}), 401
+
+    
+    administrator = mongo.db.administrators.find_one({"email": email})
+    print("Administrator trouvé:", administrator)
+    if administrator:
+        if bcrypt.checkpw(password, administrator['password'].encode('utf-8')):
+            return jsonify({
+                "message": "Connexion réussie",
+                "role": administrator.get('role', 'admin'),
+                "id": str(administrator['_id'])  # Corriger 'id' en '_id' et convertir en string
+            }), 200
+        else:
+            return jsonify({"error": "Mot de passe incorrect"}), 401
+
+    
+    return jsonify({"error": "Adresse email introuvable"}), 404

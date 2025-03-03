@@ -9,10 +9,19 @@ import {TabsPage} from "./pages/tabs/tabs.page";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {HttpClientModule} from "@angular/common/http";
 import {DoctorDetailsPage} from "./pages/doctor-details/doctor-details.page";
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, TabsPageModule, TabsPage, BrowserAnimationsModule, HttpClientModule, DoctorDetailsPage, DoctorDetailsPage],
+  imports: [BrowserModule, IonicModule.forRoot(),
+     AppRoutingModule, 
+     TabsPageModule, 
+     TabsPage,
+      BrowserAnimationsModule,
+       HttpClientModule,
+        DoctorDetailsPage,
+         DoctorDetailsPage,
+         ReactiveFormsModule,],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent]
 })

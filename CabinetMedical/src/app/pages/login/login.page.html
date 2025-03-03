@@ -1,0 +1,81 @@
+<ion-content [fullscreen]="true">
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-back-button mode="md" defaultHref="/home" color="white"></ion-back-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+  
+  <ion-footer>
+    <ion-list lines="full">
+      <ion-list-header class="ion-margin">
+        <ion-label>Connexion</ion-label>
+      </ion-list-header>
+  
+      <ion-item-group class="ion-margin-horizontal">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="ion-margin-vertical">
+            <ion-item>
+              <ion-label position="stacked">Email</ion-label>
+              <ion-input formControlName="email" type="email" placeholder="Adresse Email">
+                <ion-icon name="mail" slot="start" color="medium"></ion-icon>
+              </ion-input>
+            </ion-item>
+            <ion-text class="error" color="danger" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+              <ion-text *ngIf="form.get('email')?.hasError('required')">
+                * Veuillez introduire votre adresse email!
+              </ion-text>
+              <ion-text *ngIf="form.get('email')?.hasError('email')">
+                * Veuillez entrer une adresse email valide!
+              </ion-text>
+            </ion-text>
+          </div>
+  
+          <div class="ion-margin-vertical">
+            <ion-item>
+              <ion-label position="stacked">Mot de passe</ion-label>
+              <ion-input formControlName="password" type="password" placeholder="Mot de passe">
+                <ion-icon name="key" color="medium" slot="start"></ion-icon>
+              </ion-input>
+            </ion-item>
+            <ion-text class="error" color="danger" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+              <ion-text *ngIf="form.get('password')?.hasError('required')">
+                * Veuillez introduire votre mot de passe!
+              </ion-text>
+              <ion-text *ngIf="form.get('password')?.hasError('minlength')">
+                * Mot de passe doit contenir au moins 8 caractères!
+              </ion-text>
+            </ion-text>
+          </div>
+  
+          <p class="ion-text-right">
+            <ion-text color="primary" (click)="goToSignup()">Vous n'êtes pas encore inscrits?</ion-text>
+          </p>
+  
+          <ion-button 
+            size="large" 
+            expand="block" 
+            shape="round" 
+            color="primary" 
+            type="submit">
+            
+            <ion-text style="color: white;">Se connecter</ion-text>
+          </ion-button>
+          <ion-text class="error" color="danger" *ngIf="loginError">
+            {{ loginError }}
+          </ion-text>
+        </form>
+      </ion-item-group>
+  
+      <p class="ion-text-center">
+        <ion-text>ou se connecter avec</ion-text>
+      </p>
+  
+      <p class="ion-text-center">
+        <ion-icon name="logo-facebook" color="tertiary"></ion-icon>
+        <ion-icon name="logo-google" color="danger"></ion-icon>
+        <ion-icon name="logo-twitter" color="secondary"></ion-icon>
+      </p>
+    </ion-list>
+  </ion-footer>
