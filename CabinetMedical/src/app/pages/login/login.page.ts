@@ -18,7 +18,7 @@ export class LoginPage implements OnInit {
     this.initForm();
   }
 
-  // Méthode pour afficher un toast
+  
   async presentToast(message: string, color: string = 'danger') {
     const toast = await this.toastController.create({
       message: message,
@@ -54,9 +54,7 @@ export class LoginPage implements OnInit {
     this.authService.login(loginData).subscribe({
       next: (response) => {
         console.log('Login successful', response);
-        // Optionnel : Toast de succès
         this.presentToast('Connexion réussie!', 'success');
-        // Redirection selon le rôle
         if (response.role === 'doctor') {
           this.router.navigate(['/doctor-profile']);
         } else if (response.role === 'patient') {
@@ -68,7 +66,7 @@ export class LoginPage implements OnInit {
       error: (error) => {
         console.error('Login failed', error);
         const errorMessage = error.error?.error || 'Erreur de connexion. Vérifiez vos identifiants.';
-        this.presentToast(errorMessage); // Toast uniquement pour les erreurs backend
+        this.presentToast(errorMessage); 
       }
     });
   }

@@ -7,5 +7,5 @@ export interface Doctor {
   phone: string;
   latitude: number;
   longitude: number;
-  image: string; // Add this line
+  image: string; 
 }
