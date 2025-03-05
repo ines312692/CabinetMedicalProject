@@ -1,0 +1,28 @@
+[{
+  "_id": {
+    "$oid": "67b19f35dc2f304696d52d07"
+  },
+  "id": "1",
+  "name": "Dr. John Doe",
+  "specialty": "Cardiology",
+  "description": "Experienced cardiologist with over 20 years of practice.",
+  "address": "123 Heartbeat Lane, Health City",
+  "phone": "123-456-7890",
+  "latitude": 40.7128,
+  "longitude": -74.006,
+  "image": "doctor.jpg"
+},
+{
+  "_id": {
+    "$oid": "67b1a68babb8719e4f63606b"
+  },
+  "id": "2",
+  "name": "Dr. Mohamed Ben Ali",
+  "specialty": "Cardiologie",
+  "description": "Cardiologue expérimenté avec plus de 20 ans de pratique.",
+  "address": "12 Avenue Habib Bourguiba, Tunis",
+  "phone": "216-71-123-456",
+  "latitude": 36.8065,
+  "longitude": 10.1815,
+  "image": "doctortn.jpg"
+}]

@@ -1,0 +1,30 @@
+[{
+  "_id": {
+    "$oid": "67c613bafaa7888ffdfc538a"
+  },
+  "patient_id": {
+    "$oid": "67c60b5093571287063294be"
+  },
+  "date": "2023-01-15",
+  "medication": "Vitamin D"
+},
+{
+  "_id": {
+    "$oid": "67c61d2b15244ee02ab62847"
+  },
+  "patient_id": {
+    "$oid": "67c6186f68b9c75e329439e8"
+  },
+  "date": "2025-01-20",
+  "medication": "Medication 1"
+},
+{
+  "_id": {
+    "$oid": "67c61d2b15244ee02ab62848"
+  },
+  "patient_id": {
+    "$oid": "67c6186f68b9c75e329439e8"
+  },
+  "date": "2025-02-20",
+  "medication": "Medication 2"
+}]

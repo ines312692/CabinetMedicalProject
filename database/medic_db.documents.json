@@ -1,0 +1,14 @@
+[{
+  "_id": {
+    "$oid": "67be16638e0ebb047b728245"
+  },
+  "filename": "algo.pdf",
+  "status": "not viewed"
+},
+{
+  "_id": {
+    "$oid": "67beeaf472fa3313793f3542"
+  },
+  "filename": "3.jpg",
+  "status": "not viewed"
+}]

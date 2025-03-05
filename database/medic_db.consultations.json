@@ -1,0 +1,30 @@
+[{
+  "_id": {
+    "$oid": "67c613bafaa7888ffdfc5388"
+  },
+  "patient_id": {
+    "$oid": "67c60b5093571287063294be"
+  },
+  "date": "2023-01-15",
+  "notes": "Patient is in good health."
+},
+{
+  "_id": {
+    "$oid": "67c61d2b15244ee02ab62843"
+  },
+  "patient_id": {
+    "$oid": "67c6186f68b9c75e329439e8"
+  },
+  "date": "2025-01-01",
+  "notes": "Consultation notes 1"
+},
+{
+  "_id": {
+    "$oid": "67c61d2b15244ee02ab62844"
+  },
+  "patient_id": {
+    "$oid": "67c6186f68b9c75e329439e8"
+  },
+  "date": "2025-02-01",
+  "notes": "Consultation notes 2"
+}]

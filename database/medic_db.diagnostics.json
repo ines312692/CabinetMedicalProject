@@ -1,0 +1,30 @@
+[{
+  "_id": {
+    "$oid": "67c613bafaa7888ffdfc5389"
+  },
+  "patient_id": {
+    "$oid": "67c60b5093571287063294be"
+  },
+  "date": "2023-01-15",
+  "result": "Blood test normal"
+},
+{
+  "_id": {
+    "$oid": "67c61d2b15244ee02ab62845"
+  },
+  "patient_id": {
+    "$oid": "67c6186f68b9c75e329439e8"
+  },
+  "date": "2025-01-15",
+  "result": "Diagnostic result 1"
+},
+{
+  "_id": {
+    "$oid": "67c61d2b15244ee02ab62846"
+  },
+  "patient_id": {
+    "$oid": "67c6186f68b9c75e329439e8"
+  },
+  "date": "2025-02-15",
+  "result": "Diagnostic result 2"
+}]

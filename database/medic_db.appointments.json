@@ -1,0 +1,10 @@
+[{
+  "_id": {
+    "$oid": "67c613bafaa7888ffdfc5387"
+  },
+  "patient_id": {
+    "$oid": "67c60b5093571287063294be"
+  },
+  "date": "2023-01-15",
+  "reason": "Routine check-up"
+}]

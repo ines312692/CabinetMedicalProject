@@ -1,0 +1,31 @@
+[{
+  "_id": "67c60b5093571287063294be",
+  "first_name": "tmimi",
+  "last_name": "ines",
+  "birth_date": "2002-10-28",
+  "email": "inestmimi1234@gmail.com",
+  "password": "$2b$12$iQ9nrpAKC1Cne5t1OwC1qe.XH5jiE80szj/YcH670XWkHFXw60fqq",
+  "role": "patient"
+},
+{
+  "_id": {
+    "$oid": "67c6186f68b9c75e329439e8"
+  },
+  "first_name": "John",
+  "last_name": "Doe",
+  "birth_date": "1990-01-01",
+  "email": "john.doe@example.com",
+  "password": "$2b$12$wzzd3.aq97g0mVhtHf1fCOEMRFi8yY0gEhynGCKMbB4qV7TE0ZlW6",
+  "role": "patient"
+},
+{
+  "_id": {
+    "$oid": "67c82d2787e7af2624c9f42d"
+  },
+  "first_name": "foulena",
+  "last_name": "foulen",
+  "birth_date": "2002-05-15",
+  "email": "foulena@gmail.com",
+  "password": "$2b$12$B1TumoKNprMLuIA4vtNAeOMUqkVKyTeIbuEpCvM3yabv.Whgs2PLW",
+  "role": "patient"
+}]
