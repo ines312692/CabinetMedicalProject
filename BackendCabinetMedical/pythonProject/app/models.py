@@ -1,17 +1,18 @@
 from bson import ObjectId
 
-
 class Doctor:
-    def __init__(self, id, name, specialty, description, address, phone, latitude, longitude, image):
+    def __init__(self, id, name, specialty, description, address, phone, password, latitude, longitude, image, role="doctor"):
         self.id = id
         self.name = name
         self.specialty = specialty
         self.description = description
         self.address = address
         self.phone = phone
+        self.password = password
         self.latitude = latitude
         self.longitude = longitude
         self.image = image
+        self.role = role
 
     @staticmethod
     def from_mongo(doc):
@@ -22,9 +23,11 @@ class Doctor:
             description=doc['description'],
             address=doc['address'],
             phone=doc['phone'],
+            password=doc['password'],
             latitude=doc['latitude'],
             longitude=doc['longitude'],
-            image=doc['image']
+            image=doc['image'],
+            role=doc.get('role', 'doctor')
         )
 
 class Patient:
@@ -35,7 +38,7 @@ class Patient:
         self.birth_date = birth_date
         self.email = email
         self.password = password
-        self.role = role
+        self.role = role  
 
     @staticmethod
     def from_mongo(doc):
@@ -46,7 +49,7 @@ class Patient:
             birth_date=doc['birth_date'],
             email=doc['email'],
             password=doc['password'],
-            role=doc.get('role', 'patient')
+            role=doc.get('role', 'patient')  
         )
 
 class Administrator:
@@ -57,7 +60,7 @@ class Administrator:
         self.birth_date = birth_date
         self.email = email
         self.password = password
-        self.role = role
+        self.role = role  
 
     @staticmethod
     def from_mongo(doc):
@@ -68,11 +71,8 @@ class Administrator:
             birth_date=doc['birth_date'],
             email=doc['email'],
             password=doc['password'],
-            role=doc.get('role', 'admin')
+            role=doc.get('role', 'admin')  
         )
-
-
-from bson import ObjectId
 
 class File:
     def __init__(self, id, filename, status):
@@ -87,36 +87,3 @@ class File:
             filename=doc['filename'],
             status=doc['status']
         )
-
-
-from typing import List, Dict
-
-class Appointment:
-    def __init__(self, date: str, reason: str):
-        self.date = date
-        self.reason = reason
-
-class Consultation:
-    def __init__(self, date: str, notes: str):
-        self.date = date
-        self.notes = notes
-
-class History:
-    def __init__(self, appointments: List[Appointment], consultations: List[Consultation]):
-        self.appointments = appointments
-        self.consultations = consultations
-
-class Diagnostic:
-    def __init__(self, date: str, result: str):
-        self.date = date
-        self.result = result
-
-class Prescription:
-    def __init__(self, date: str, medication: str):
-        self.date = date
-        self.medication = medication
-
-class DiagnosticsData:
-    def __init__(self, diagnostics: List[Diagnostic], prescriptions: List[Prescription]):
-        self.diagnostics = diagnostics
-        self.prescriptions = prescriptions

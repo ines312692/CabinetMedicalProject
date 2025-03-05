@@ -1,0 +1,79 @@
+ion-content {
+    --background: url('/assets/img/bg.jpg') no-repeat center center/cover; /* Chemin ajusté */
+    ion-header {
+      ion-toolbar {
+        --background: transparent;
+      }
+    }
+   
+}
+  
+  ion-footer {
+    ion-list {
+      border-radius: 20px 20px 0 0;
+      background: #fff; /* Fond blanc pour le formulaire */
+      
+      ion-list-header {
+        ion-label, p {
+          font-weight: bold;
+          font-size: 1.5rem;
+          letter-spacing: 0.5px;
+        }
+      }
+  
+      .scrollable-form {
+       max-height: 60vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 20px;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+      &::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: linear-gradient(to bottom, #00f, #00b);
+        border-radius: 10px;
+      }
+      &::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(to bottom, #00a, #007);
+      }
+      }
+  
+      ion-item {            
+        ion-input, ion-label {
+          font-size: 0.9em;
+        }   
+        ion-input {
+          ion-icon {
+            margin-right: 1vh;
+          }
+        } 
+      }
+      
+      .error {
+        font-size: 0.75em !important;
+      }
+      
+      p {
+        ion-text {
+          font-size: 0.8em !important;
+        }
+        ion-icon {
+          margin: 0 1vh;
+          font-size: 1.6em;
+        }
+      }
+  
+      ion-button {
+        margin: 5vh 0 2vh 0;
+        ion-text {
+          font-size: 0.9em;
+          text-transform: none;
+        }
+      }
+    }
+  }

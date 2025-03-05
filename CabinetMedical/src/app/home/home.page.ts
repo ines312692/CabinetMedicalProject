@@ -43,7 +43,9 @@ export class HomePage implements OnInit, OnDestroy {
       this.currentDoctorIndex = (this.currentDoctorIndex + 1) % this.filteredDoctors.length;
     }, 3000); // Change image every 3 seconds
   }
-
+  swiperSlideChanged(e:any) {
+    console.log('slide changed', e);
+  }
   searchDoctors(event: any) {
     const query = event.target.value.toLowerCase();
     this.filteredDoctors = this.doctors.filter(doctor =>
@@ -51,4 +53,7 @@ export class HomePage implements OnInit, OnDestroy {
       doctor.specialty.toLowerCase().includes(query)
     );
   }
+ 
+
+ 
 }
