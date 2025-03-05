@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import {DoctorDetailsPage} from "./pages/doctor-details/doctor-details.page";
+import { DoctorDetailsPage } from "./pages/doctor-details/doctor-details.page";
 
 const routes: Routes = [
   {
     path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
+    loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)
   },
   {
     path: '',
@@ -14,93 +14,64 @@ const routes: Routes = [
   },
   {
     path: 'document-upload',
-    loadChildren: () => import('./pages/patient/documents/document-upload/document-upload.module').then( m => m.DocumentUploadPageModule)
+    loadChildren: () => import('./pages/patient/documents/document-upload/document-upload.module').then(m => m.DocumentUploadPageModule)
   },
   {
-<<<<<<< HEAD
-=======
     path: 'login',
-    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
+    loadChildren: () => import('./pages/login/login.module').then(m => m.LoginPageModule)
   },
   {
     path: 'signup',
-    loadChildren: () => import('./pages/signup/signup.module').then( m => m.SignupPageModule)
+    loadChildren: () => import('./pages/signup/signup.module').then(m => m.SignupPageModule)
   },
   {
->>>>>>> a1466ef77d73bc0405defc76acdad8d677bc86da
     path: 'document-list',
-    loadChildren: () => import('./pages/patient/documents/document-list/document-list.module').then( m => m.DocumentListPageModule)
+    loadChildren: () => import('./pages/patient/documents/document-list/document-list.module').then(m => m.DocumentListPageModule)
   },
   {
     path: 'document-view',
-    loadChildren: () => import('./pages/patient/documents/document-view/document-view.module').then( m => m.DocumentViewPageModule)
+    loadChildren: () => import('./pages/patient/documents/document-view/document-view.module').then(m => m.DocumentViewPageModule)
   },
   {
     path: 'tabs',
-    loadChildren: () => import('./pages/tabs/tabs.module').then( m => m.TabsPageModule)
+    loadChildren: () => import('./pages/tabs/tabs.module').then(m => m.TabsPageModule)
   },
   {
     path: 'doctor-details',
-    loadChildren: () => import('./pages/doctor-details/doctor-details.module').then( m => m.DoctorDetailsPageModule)
+    loadChildren: () => import('./pages/doctor-details/doctor-details.module').then(m => m.DoctorDetailsPageModule)
   },
-  { path: 'doctor-details/:id', component: DoctorDetailsPage },
+  {
+    path: 'doctor-details/:id',
+    component: DoctorDetailsPage
+  },
   {
     path: 'doctor-card',
-    loadChildren: () => import('./pages/doctor-card/doctor-card.module').then( m => m.DoctorCardPageModule)
+    loadChildren: () => import('./pages/doctor-card/doctor-card.module').then(m => m.DoctorCardPageModule)
   },
   {
     path: 'doctor-grid',
-    loadChildren: () => import('./pages/doctor-grid/doctor-grid.module').then( m => m.DoctorGridPageModule)
-  },
-  {
-    path: 'signup',
-    loadChildren: () => import('./pages/signup/signup.module').then( m => m.SignupPageModule)
+    loadChildren: () => import('./pages/doctor-grid/doctor-grid.module').then(m => m.DoctorGridPageModule)
   },
   {
     path: 'patient-profile',
-    loadChildren: () => import('./pages/patient-profile/patient-profile.module').then( m => m.PatientProfilePageModule)
+    loadChildren: () => import('./pages/patient-profile/patient-profile.module').then(m => m.PatientProfilePageModule)
   },
   {
     path: 'doctor-profile',
-    loadChildren: () => import('./pages/doctor-profile/doctor-profile.module').then( m => m.DoctorProfilePageModule)
+    loadChildren: () => import('./pages/doctor-profile/doctor-profile.module').then(m => m.DoctorProfilePageModule)
   },
   {
     path: 'admin-profile',
-    loadChildren: () => import('./pages/admin-profile/admin-profile.module').then( m => m.AdminProfilePageModule)
+    loadChildren: () => import('./pages/admin-profile/admin-profile.module').then(m => m.AdminProfilePageModule)
   },
   {
     path: 'calender',
-    loadChildren: () => import('./pages/calender/calender.module').then( m => m.CalenderPageModule)
-<<<<<<< HEAD
-  },
-  {
-    path: 'signup',
-    loadChildren: () => import('./pages/signup/signup.module').then( m => m.SignupPageModule)
-  },
-  {
-    path: 'login',
-    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
-  },
-  {
-    path: 'patient-profile',
-    loadChildren: () => import('./pages/patient-profile/patient-profile.module').then( m => m.PatientProfilePageModule)
-  },
-  {
-    path: 'patient-profile',
-    loadChildren: () => import('./pages/patient-profile/patient-profile.module').then( m => m.PatientProfilePageModule)
+    loadChildren: () => import('./pages/calender/calender.module').then(m => m.CalenderPageModule)
   },
   {
     path: 'patient-history/:id',
     loadChildren: () => import('./pages/patient-history/patient-history.module').then(m => m.PatientHistoryPageModule)
-  },
-
-
-
-
-=======
   }
-
->>>>>>> a1466ef77d73bc0405defc76acdad8d677bc86da
 ];
 
 @NgModule({

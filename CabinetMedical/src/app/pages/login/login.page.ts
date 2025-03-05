@@ -1,50 +1,30 @@
 import { Component, OnInit } from '@angular/core';
-<<<<<<< HEAD
-import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-
-import {IonicModule, ToastController} from '@ionic/angular';
-import {AuthService, LoginData} from "../../services/auth.service";
-import {NgIf} from "@angular/common";
-=======
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthService, LoginData } from 'src/app/services/auth.service';
-import { ToastController } from '@ionic/angular';
->>>>>>> a1466ef77d73bc0405defc76acdad8d677bc86da
+import { IonicModule, ToastController } from '@ionic/angular';
+import { AuthService, LoginData } from "../../services/auth.service";
+import { NgIf } from "@angular/common";
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
-<<<<<<< HEAD
   imports: [
     IonicModule,
     ReactiveFormsModule,
     NgIf
   ],
   standalone: true
-=======
-  standalone: false
->>>>>>> a1466ef77d73bc0405defc76acdad8d677bc86da
 })
 export class LoginPage implements OnInit {
 
   form: FormGroup | any;
   loginError: string | null = null;
-<<<<<<< HEAD
+
   constructor(private router: Router, private authService: AuthService, private toastController: ToastController) {
     this.initForm();
   }
 
-  // Méthode pour afficher un toast
-=======
-  constructor(private router: Router, private authService: AuthService, private toastController: ToastController) { 
-    this.initForm();
-  }
-
-  
->>>>>>> a1466ef77d73bc0405defc76acdad8d677bc86da
   async presentToast(message: string, color: string = 'danger') {
     const toast = await this.toastController.create({
       message: message,
@@ -54,6 +34,7 @@ export class LoginPage implements OnInit {
     });
     await toast.present();
   }
+
   ngOnInit() {}
 
   initForm() {
@@ -63,13 +44,10 @@ export class LoginPage implements OnInit {
     });
   }
 
-<<<<<<< HEAD
   goToSignup() {
-=======
-  goToSignup() { 
->>>>>>> a1466ef77d73bc0405defc76acdad8d677bc86da
     this.router.navigate(['/signup']);
   }
+
   onSubmit() {
     if (!this.form.valid) {
       this.form.markAllAsTouched();
@@ -82,41 +60,24 @@ export class LoginPage implements OnInit {
     };
 
     this.authService.login(loginData).subscribe({
-<<<<<<< HEAD
-      next: (response: { role: string; }) => {
+      next: (response: { role: string }) => {
         console.log('Login successful', response);
-        // Optionnel : Toast de succès
         this.presentToast('Connexion réussie!', 'success');
+
         // Redirection selon le rôle
-=======
-      next: (response) => {
-        console.log('Login successful', response);
-        this.presentToast('Connexion réussie!', 'success');
->>>>>>> a1466ef77d73bc0405defc76acdad8d677bc86da
         if (response.role === 'doctor') {
           this.router.navigate(['/doctor-profile']);
         } else if (response.role === 'patient') {
           this.router.navigate(['/patient-profile']);
-        }else if (response.role === 'admin') {
+        } else if (response.role === 'admin') {
           this.router.navigate(['/admin-profile']);
         }
       },
-<<<<<<< HEAD
-      error: (error: { error: { error: string; }; }) => {
+      error: (error: { error: { error: string } }) => {
         console.error('Login failed', error);
         const errorMessage = error.error?.error || 'Erreur de connexion. Vérifiez vos identifiants.';
-        this.presentToast(errorMessage); // Toast uniquement pour les erreurs backend
+        this.presentToast(errorMessage);
       }
     });
   }
 }
-=======
-      error: (error) => {
-        console.error('Login failed', error);
-        const errorMessage = error.error?.error || 'Erreur de connexion. Vérifiez vos identifiants.';
-        this.presentToast(errorMessage); 
-      }
-    });
-  }
-}
->>>>>>> a1466ef77d73bc0405defc76acdad8d677bc86da
