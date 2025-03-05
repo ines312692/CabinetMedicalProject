@@ -1,0 +1,8 @@
+# Les collaborateurs pour tout le projet
+* @collaborator1 @collaborator2
+
+# Les collaborateurs pour un répertoire spécifique
+src/app/ @MolkaToubale
+
+
+src/app/pages/signup/signup.page.html @collaborator5

@@ -1,3 +1,5 @@
 Flask
 pymongo
 Flask-PyMongo
+flask-cors
+bcrypt
