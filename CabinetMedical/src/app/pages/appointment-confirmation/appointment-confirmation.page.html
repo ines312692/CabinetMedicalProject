@@ -1,0 +1,43 @@
+<!-- appointment-confirmation.component.html -->
+<ion-content *ngIf="appointment">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Appointment Confirmation</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-avatar slot="start">
+          <img [src]="'assets/img/' + appointment.doctor.image" alt="Doctor Avatar">
+        </ion-avatar>
+        <ion-label>
+          <h2>Doctor: {{ appointment.doctor.name }}</h2>
+          <p>Specialty: {{ appointment.doctor.specialty }}</p>
+          <p>Address: {{ appointment.doctor.address }}</p>
+          <p>Phone: {{ appointment.doctor.phone }}</p>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-icon name="medkit-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2>Service: {{ appointment.service }}</h2>
+        </ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-icon name="calendar-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2>Date: {{ appointment.date }}</h2>
+          <h2>Time: {{ appointment.time }}</h2>
+        </ion-label>
+      </ion-item>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Location</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <div id="map" style="height: 300px;"></div>
+        </ion-card-content>
+      </ion-card>
+      <ion-button expand="full" color="primary" (click)="confirmAppointment()">Confirm Appointment</ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

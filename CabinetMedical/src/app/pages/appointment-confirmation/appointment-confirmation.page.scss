@@ -1,0 +1,62 @@
+/* appointment-confirmation.page.scss */
+ion-card {
+  margin: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+ion-card-header {
+  background-color: transparent; /* Change this line to remove the gray background */
+  border-bottom: 1px solid #e9ecef;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+ion-card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #343a40;
+}
+
+ion-card-content {
+  padding: 16px;
+}
+
+ion-item {
+  --background: #ffffff;
+  --border-color: #e9ecef;
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 0;
+}
+
+ion-avatar img {
+  border-radius: 50%;
+  border: 2px solid #dee2e6;
+}
+
+ion-label h2 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+ion-label p {
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+ion-button {
+  margin-top: 16px;
+  --background: #007bff;
+  --background-activated: #0056b3;
+  --background-focused: #0056b3;
+  --background-hover: #0056b3;
+  --border-radius: 8px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+}
+
+#map {
+  border-radius: 12px;
+  margin-top: 16px;
+}

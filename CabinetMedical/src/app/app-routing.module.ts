@@ -71,7 +71,11 @@ const routes: Routes = [
   {
     path: 'patient-history/:id',
     loadChildren: () => import('./pages/patient-history/patient-history.module').then(m => m.PatientHistoryPageModule)
+  },  {
+    path: 'appointment-confirmation',
+    loadChildren: () => import('./pages/appointment-confirmation/appointment-confirmation.module').then( m => m.AppointmentConfirmationPageModule)
   }
+
 ];
 
 @NgModule({
