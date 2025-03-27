@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { AlertController, IonicModule } from "@ionic/angular";
+import { Component, Input, OnInit } from '@angular/core';
+import { IonicModule } from "@ionic/angular";
 import { DocumentService } from "../../../../services/document.service";
-import { NgForOf } from "@angular/common";
-import { Router } from "@angular/router";
+import {NgForOf} from "@angular/common";
+
 
 @Component({
   selector: 'app-document-list',
@@ -10,42 +10,20 @@ import { Router } from "@angular/router";
   styleUrls: ['./document-list.page.scss'],
   imports: [
     IonicModule,
-    NgForOf
+    NgForOf,
+
   ],
   standalone: true
 })
 export class DocumentListPage implements OnInit {
-  documents: any[] = [];
+  @Input() documents: any[] = [];
 
   constructor(
     private documentService: DocumentService,
-    private alertController: AlertController,
-    private router: Router
+
   ) {}
 
-  ngOnInit() {
-    this.loadDocuments();
-  }
-
-  loadDocuments() {
-    this.documentService.getDocuments().subscribe((docs: unknown) => {
-      this.documents = (docs as any[]).map((doc: any) => {
-        const id = doc.id?.$oid || doc._id?.$oid || doc._id;
-        if (!id) {
-          console.error('Document ID is missing', doc);
-        }
-        return {
-          ...doc,
-          id: id
-        };
-      });
-    });
-  }
-
-  async viewDocument(document: any) {
-    await this.router.navigate(['/document-view', {document: JSON.stringify(document)}]);
-   
-  }
+  ngOnInit() {}
 
   deleteDocument(documentId: string) {
     if (!documentId) {
@@ -53,7 +31,7 @@ export class DocumentListPage implements OnInit {
       return;
     }
     this.documentService.deleteDocument(documentId).subscribe(() => {
-      this.loadDocuments();
+      this.documents = this.documents.filter(doc => doc.id !== documentId);
     }, error => {
       console.error('Error deleting document', error);
     });

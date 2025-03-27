@@ -1,4 +1,5 @@
 <ion-content *ngIf="doctor">
+  <!-- Existing content -->
   <ion-card>
     <ion-card-header>
       <ion-avatar>
@@ -17,10 +18,35 @@
         <ion-icon name="call-outline" slot="start"></ion-icon>
         <ion-label>{{ doctor.phone }}</ion-label>
       </ion-item>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12">
+            <ion-list-header>
+              <ion-label>Book Appointment</ion-label>
+            </ion-list-header>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="12" size-md="6" size-lg="4" *ngFor="let day of daysOfWeek">
+            <ion-card [ngStyle]="{'background-color': isAvailable(day) ? '#28a745' : '#dc3545', 'color': 'white'}" (click)="openBookingModal(day)">
+              <ion-card-header>
+                <ion-card-title>
+                  <ion-icon [name]="isAvailable(day) ? 'checkmark-circle-outline' : 'close-circle-outline'" slot="start"></ion-icon>
+                  {{ day }}
+                </ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <p *ngIf="isAvailable(day)">{{ getHours(day).join(', ') }}</p>
+                <p *ngIf="!isAvailable(day)">No availability</p>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-card-content>
   </ion-card>
 
-  <ion-card>
+  <ion-card *ngIf="isDateCardVisible">
     <ion-card-header>
       <ion-card-title>Localisation</ion-card-title>
     </ion-card-header>
@@ -28,5 +54,4 @@
       <div id="map" style="height: 300px;"></div>
     </ion-card-content>
   </ion-card>
-  <app-calender></app-calender>
 </ion-content>

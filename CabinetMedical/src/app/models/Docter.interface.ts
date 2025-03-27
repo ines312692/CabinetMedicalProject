@@ -7,5 +7,6 @@ export interface Doctor {
   phone: string;
   latitude: number;
   longitude: number;
-  image: string; 
+  image: string;
+  availability: { day: string, hours: string[] }[];
 }

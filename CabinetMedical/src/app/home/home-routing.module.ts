@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomePage } from './home.page';
 import { DocumentUploadPage } from '../pages/patient/documents/document-upload/document-upload.page';
 import { DocumentListPage } from '../pages/patient/documents/document-list/document-list.page';
-import { DocumentViewPage } from '../pages/patient/documents/document-view/document-view.page';
+
 
 const routes: Routes = [
   {
@@ -17,10 +17,6 @@ const routes: Routes = [
       {
         path: 'document-list',
         component: DocumentListPage
-      },
-      {
-        path: 'document-view',
-        component: DocumentViewPage
       }
     ]
   }

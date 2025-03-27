@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { DoctorDetailsPage } from "./pages/doctor-details/doctor-details.page";
+import {DocumentManagementPage} from "./pages/patient/documents/document-management/document-management.page";
 
 const routes: Routes = [
   {
@@ -28,9 +29,8 @@ const routes: Routes = [
     path: 'document-list',
     loadChildren: () => import('./pages/patient/documents/document-list/document-list.module').then(m => m.DocumentListPageModule)
   },
-  {
-    path: 'document-view',
-    loadChildren: () => import('./pages/patient/documents/document-view/document-view.module').then(m => m.DocumentViewPageModule)
+
+  {path: 'documents',loadChildren: () => import('./pages/patient/documents/document-management/document-management.module').then(m => m.DocumentManagementPageModule)
   },
   {
     path: 'tabs',
@@ -71,9 +71,14 @@ const routes: Routes = [
   {
     path: 'patient-history/:id',
     loadChildren: () => import('./pages/patient-history/patient-history.module').then(m => m.PatientHistoryPageModule)
-  },  {
+  },
+  {
     path: 'appointment-confirmation',
     loadChildren: () => import('./pages/appointment-confirmation/appointment-confirmation.module').then( m => m.AppointmentConfirmationPageModule)
+  },
+  {
+    path: 'document-management',
+    loadChildren: () => import('./pages/patient/documents/document-management/document-management.module').then(m => m.DocumentManagementPageModule)
   }
 
 ];

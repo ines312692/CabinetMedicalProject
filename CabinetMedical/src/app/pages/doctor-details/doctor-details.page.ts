@@ -1,17 +1,16 @@
-import { IonicModule } from '@ionic/angular';
-import { NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Doctor } from '../../models/Docter.interface';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DoctorService } from '../../services/doctor.service';
-
 import Map from 'ol/Map';
 import TileLayer from 'ol/layer/Tile';
 import OSM from 'ol/source/OSM';
 import View from 'ol/View';
 import Overlay from 'ol/Overlay';
 import { fromLonLat } from 'ol/proj';
-import {CalenderPage} from "../calender/calender.page";
+import { IonicModule, AlertController } from '@ionic/angular';
+import { NgIf, NgForOf, NgStyle } from '@angular/common';
+import { Doctor } from '../../models/Docter.interface';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-doctor-details',
@@ -21,21 +20,29 @@ import {CalenderPage} from "../calender/calender.page";
   imports: [
     IonicModule,
     NgIf,
-    CalenderPage,
+    NgForOf,
+    NgStyle,
+    FormsModule,
   ]
 })
 export class DoctorDetailsPage implements OnInit {
   doctor!: Doctor;
+  daysOfWeek: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  selectedTime: string | undefined;
+  availableTimes: string[] = [];
+  isModalOpen = false;
+  isDateCardVisible = true;
 
-  constructor(private route: ActivatedRoute, private doctorService: DoctorService) {}
+  constructor(private route: ActivatedRoute, private doctorService: DoctorService, private router: Router, private alertController: AlertController) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.doctorService.getDoctorById(id).subscribe(doctor => {
       this.doctor = doctor;
+      this.isDateCardVisible = true;
       setTimeout(() => {
         this.loadMap();
-      }, 100); // Delay to ensure the DOM is fully loaded
+      }, 100);
     });
   }
 
@@ -70,5 +77,72 @@ export class DoctorDetailsPage implements OnInit {
       stopEvent: false,
     });
     map.addOverlay(marker);
+  }
+
+  isAvailable(day: string): boolean {
+    return this.doctor.availability.some(slot => slot.day === day);
+  }
+
+  getHours(day: string): string[] {
+    const slot = this.doctor.availability.find(slot => slot.day === day);
+    return slot ? slot.hours : [];
+  }
+
+  async openBookingModal(day: string) {
+    if (this.isAvailable(day)) {
+      this.availableTimes = this.getHours(day);
+      const alert = await this.alertController.create({
+        header: 'Select Time',
+        inputs: this.availableTimes.map(time => ({
+          type: 'radio',
+          label: time,
+          value: time
+        })),
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {
+              console.log('Confirm Cancel');
+            }
+          },
+          {
+            text: 'OK',
+            handler: (selectedTime) => {
+              this.selectedTime = selectedTime;
+              this.bookAppointment();
+            }
+          }
+        ]
+      });
+
+      await alert.present();
+    } else {
+      const alert = await this.alertController.create({
+        header: 'No Availability',
+        message: 'Please select an available day.',
+        buttons: ['OK']
+      });
+
+      await alert.present();
+    }
+  }
+
+  bookAppointment() {
+    console.log('Selected Time:', this.selectedTime);
+    if (this.selectedTime) {
+      const appointmentDetails = {
+        doctor: this.doctor,
+        service: 'General Consultation',
+        date: new Date().toISOString().split('T')[0], // Current date
+        time: this.selectedTime,
+        location: { latitude: this.doctor.latitude, longitude: this.doctor.longitude }
+      };
+      this.doctorService.saveAppointmentDetails(appointmentDetails);
+      this.isDateCardVisible = false;
+      this.router.navigate(['/appointment-confirmation'], {queryParams: {appointmentId: this.doctor.id.toString()}}).then(r =>console.log('Navigated to appointment confirmation page'));
+    } else {
+      alert('Please select a valid time for the appointment.');
+    }
   }
 }

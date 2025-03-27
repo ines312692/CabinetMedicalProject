@@ -1,5 +1,4 @@
 <ion-app>
-  <!-- Menu Sidebar -->
   <ion-menu menuId="main-menu" contentId="main-content">
     <ion-header>
       <ion-toolbar>
@@ -33,14 +32,11 @@
           <span class="material-icons" slot="start">login</span>
           <ion-label>Se connecter</ion-label>
         </ion-item>
-        
+
       </ion-list>
     </ion-content>
   </ion-menu>
 
-  <!-- Contenu Principal -->
   <ion-router-outlet id="main-content"></ion-router-outlet>
-
-  <!-- Onglets en bas -->
   <app-tabs></app-tabs>
 </ion-app>

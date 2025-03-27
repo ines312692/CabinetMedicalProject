@@ -1,9 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { IonicModule } from "@ionic/angular";
 import { NgIf } from "@angular/common";
-
 
 @Component({
   selector: 'app-document-upload',
@@ -12,11 +11,11 @@ import { NgIf } from "@angular/common";
   imports: [
     IonicModule,
     NgIf,
-
   ],
   standalone: true
 })
 export class DocumentUploadPage {
+  @Output() documentUploaded = new EventEmitter<any>();
   selectedFile: File | null = null;
   selectedFileName: string | null = null;
   uploadProgress: number = -1;
@@ -44,7 +43,7 @@ export class DocumentUploadPage {
 
   onUpload() {
     if (!this.selectedFile) {
-      this.showAlert('No file selected!', 'error-alert');
+      this.showAlert('No file selected!', 'error-alert').then(r => console.log(r));
       return;
     }
 
@@ -61,15 +60,16 @@ export class DocumentUploadPage {
           this.uploadPercentage = Math.round((event.loaded / event.total) * 100);
         }
       } else if (event.type === HttpEventType.Response) {
-        this.uploadProgress = -1; // Reset progress bar
+        this.uploadProgress = -1;
         this.uploadPercentage = 0;
-        this.showAlert('Upload complete!', 'success-alert');
+        this.showAlert('Send complete!', 'success-alert').then(r => console.log(r));
+        this.documentUploaded.emit(event.body);
         console.log('Upload complete', event.body);
       }
     }, error => {
-      this.uploadProgress = -1; // Reset progress bar
+      this.uploadProgress = -1;
       this.uploadPercentage = 0;
-      this.showAlert('Upload failed!', 'error-alert');
+      this.showAlert('send failed!', 'error-alert').then(r => console.log(r));
       console.error('Upload failed', error);
     });
   }
