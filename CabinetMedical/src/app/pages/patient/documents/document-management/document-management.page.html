@@ -1,0 +1,12 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Home</ion-title>
+    <ion-buttons slot="start" style="color: #132d5e;">
+      <ion-menu-button menu="main-menu"></ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <app-document-upload (documentUploaded)="onDocumentUploaded($event)"></app-document-upload>
+  <app-document-list [documents]="documents"></app-document-list>
+</ion-content>

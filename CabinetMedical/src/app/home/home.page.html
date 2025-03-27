@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  
+
   <ion-card>
     <ion-card-header>
       <ion-card-title>Welcome to the Medical Cabinet</ion-card-title>
@@ -24,11 +24,6 @@
     </div>
   </swiper-slide>
   </swiper-container>
-  <!-- <div *ngIf="filteredDoctors.length > 0">
-    <div class="swiper-zoom-container">
-      <img height="100%" [src]="'assets/img/' + filteredDoctors[currentDoctorIndex].image" alt="Doctor Avatar" />
-    </div>
-  </div> -->
   <ion-searchbar show-clear-button="always" clear-icon="trash-bin" placeholder="Rechercher" (ionInput)="searchDoctors($event)"></ion-searchbar>
   <app-doctor-grid [doctors]="filteredDoctors"></app-doctor-grid>
 </ion-content>
