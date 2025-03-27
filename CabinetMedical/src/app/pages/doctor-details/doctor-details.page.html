@@ -1,4 +1,5 @@
 <ion-content *ngIf="doctor">
+  <!-- Existing content -->
   <ion-card>
     <ion-card-header>
       <ion-avatar>
@@ -21,7 +22,7 @@
         <ion-row>
           <ion-col size="12">
             <ion-list-header>
-              <ion-label>Availability</ion-label>
+              <ion-label>Book Appointment</ion-label>
             </ion-list-header>
           </ion-col>
         </ion-row>
@@ -53,26 +54,4 @@
       <div id="map" style="height: 300px;"></div>
     </ion-card-content>
   </ion-card>
-
-  <ion-modal [isOpen]="isModalOpen" (willDismiss)="handleModalChange($event)">
-    <ng-template>
-      <ion-header>
-        <ion-toolbar>
-          <ion-buttons slot="end">
-            <ion-button (click)="closeBookingModal()">Close</ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content class="modal-content">
-        <ion-card class="modal-card">
-          <ion-item>
-            <ion-select placeholder="Select Time" [(ngModel)]="selectedTime">
-              <ion-select-option *ngFor="let time of availableTimes" [value]="time">{{ time }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-button expand="full" color="primary" (click)="bookAppointment()">Book Appointment</ion-button>
-        </ion-card>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
 </ion-content>

@@ -7,7 +7,7 @@ import OSM from 'ol/source/OSM';
 import View from 'ol/View';
 import Overlay from 'ol/Overlay';
 import { fromLonLat } from 'ol/proj';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, AlertController } from '@ionic/angular';
 import { NgIf, NgForOf, NgStyle } from '@angular/common';
 import { Doctor } from '../../models/Docter.interface';
 import { FormsModule } from '@angular/forms';
@@ -33,7 +33,7 @@ export class DoctorDetailsPage implements OnInit {
   isModalOpen = false;
   isDateCardVisible = true;
 
-  constructor(private route: ActivatedRoute, private doctorService: DoctorService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private doctorService: DoctorService, private router: Router, private alertController: AlertController) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
@@ -88,6 +88,46 @@ export class DoctorDetailsPage implements OnInit {
     return slot ? slot.hours : [];
   }
 
+  async openBookingModal(day: string) {
+    if (this.isAvailable(day)) {
+      this.availableTimes = this.getHours(day);
+      const alert = await this.alertController.create({
+        header: 'Select Time',
+        inputs: this.availableTimes.map(time => ({
+          type: 'radio',
+          label: time,
+          value: time
+        })),
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {
+              console.log('Confirm Cancel');
+            }
+          },
+          {
+            text: 'OK',
+            handler: (selectedTime) => {
+              this.selectedTime = selectedTime;
+              this.bookAppointment();
+            }
+          }
+        ]
+      });
+
+      await alert.present();
+    } else {
+      const alert = await this.alertController.create({
+        header: 'No Availability',
+        message: 'Please select an available day.',
+        buttons: ['OK']
+      });
+
+      await alert.present();
+    }
+  }
+
   bookAppointment() {
     console.log('Selected Time:', this.selectedTime);
     if (this.selectedTime) {
@@ -100,26 +140,9 @@ export class DoctorDetailsPage implements OnInit {
       };
       this.doctorService.saveAppointmentDetails(appointmentDetails);
       this.isDateCardVisible = false;
-      this.isModalOpen = false;
       this.router.navigate(['/appointment-confirmation'], {queryParams: {appointmentId: this.doctor.id.toString()}}).then(r =>console.log('Navigated to appointment confirmation page'));
-      this.closeBookingModal();
     } else {
       alert('Please select a valid time for the appointment.');
     }
-  }
-
-  openBookingModal(day: string) {
-    if (this.isAvailable(day)) {
-      this.availableTimes = this.getHours(day);
-      this.isModalOpen = true;
-    }
-  }
-
-  closeBookingModal() {
-    this.isModalOpen = false;
-  }
-
-  handleModalChange(event: any) {
-    this.isModalOpen = event.detail.isOpen;
   }
 }
