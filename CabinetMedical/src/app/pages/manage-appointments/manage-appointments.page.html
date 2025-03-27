@@ -1,8 +1,3 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Manage Appointments</ion-title>
-  </ion-toolbar>
-</ion-header>
 
 <ion-content>
   <div>
@@ -10,10 +5,15 @@
     <ul>
       <li *ngFor="let appointment of appointments">
         <div>
-          <p>ID: {{ appointment._id | mongoId }}</p>
           <p>{{ appointment.reason }}</p>
           <p>{{ appointment.date }} à {{ appointment.time }}</p>
-          <p>Statut: {{ appointment.status }}</p>
+          <p [ngClass]="{
+  'pending': appointment.status === 'pending',
+  'rejected': appointment.status === 'rejected',
+  'accepted': appointment.status === 'accepted'
+}">
+            Statut: {{ appointment.status }}
+          </p>
         </div>
         <div>
           <button (click)="acceptAppointment(appointment)" [disabled]="appointment.status === 'accepted'">

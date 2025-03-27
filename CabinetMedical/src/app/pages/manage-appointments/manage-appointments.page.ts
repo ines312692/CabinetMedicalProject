@@ -2,15 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { Appointment } from '../../models/Appointment.interface';
 import { ActivatedRoute } from '@angular/router';
 import { AppointmentService } from '../../services/appointmentservice.service';
-import { NgForOf, NgIf } from '@angular/common';
+import {NgClass, NgForOf} from '@angular/common';
 import { AlertController, IonicModule } from '@ionic/angular';
-import {MongoIdPipe} from "../pipe.pipe";
+
 
 @Component({
   selector: 'app-manage-appointments',
   templateUrl: './manage-appointments.page.html',
   styleUrls: ['./manage-appointments.page.scss'],
-  imports: [NgForOf, NgIf, IonicModule, MongoIdPipe],
+  imports: [NgForOf,  IonicModule,  NgClass],
   standalone: true
 })
 export class ManageAppointmentsPage implements OnInit {
@@ -25,7 +25,6 @@ export class ManageAppointmentsPage implements OnInit {
 
   ngOnInit() {
     this.doctorId = this.route.snapshot.paramMap.get('doctor_id');
-
     console.log('Doctor ID:', this.doctorId);
     this.loadAppointments();
   }
@@ -40,14 +39,13 @@ export class ManageAppointmentsPage implements OnInit {
       next: (data) => {
         console.log('Appointments data:', data);
         this.appointments = data;
-
         this.appointments.forEach(appointment => {
           console.log('Appointment ID:', appointment._id);
         });
       },
       error: (error) => {
         console.error('Error fetching appointments', error);
-        this.showAlert('Error', 'Failed to load appointments');
+        this.showAlert('Error', 'Failed to load appointments').then(r => console.log(r));
       }
     });
   }
@@ -69,8 +67,14 @@ export class ManageAppointmentsPage implements OnInit {
           text: 'OK',
           handler: () => {
             this.appointmentService.acceptAppointment(appointmentId).subscribe({
-              next: () => this.loadAppointments(),
-              error: (err) => console.error(err)
+              next: () => {
+                this.loadAppointments();
+                this.showAlert('Success', 'Appointment accepted successfully');
+              },
+              error: (err) => {
+                console.error(err);
+                this.showAlert('Error', 'Failed to accept appointment');
+              }
             });
           }
         }
@@ -96,8 +100,14 @@ export class ManageAppointmentsPage implements OnInit {
           text: 'OK',
           handler: () => {
             this.appointmentService.rejectAppointment(appointmentId).subscribe({
-              next: () => this.loadAppointments(),
-              error: (err) => console.error(err)
+              next: () => {
+                this.loadAppointments();
+                this.showAlert('Success', 'Appointment rejected successfully');
+              },
+              error: (err) => {
+                console.error(err);
+                this.showAlert('Error', 'Failed to reject appointment');
+              }
             });
           }
         }
@@ -105,6 +115,7 @@ export class ManageAppointmentsPage implements OnInit {
     });
     await alert.present();
   }
+
   async showAlert(header: string, message: string): Promise<void> {
     const alert = await this.alertController.create({
       header,

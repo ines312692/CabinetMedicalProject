@@ -59,3 +59,14 @@ button.reject {
 button.reject:hover {
   background-color: #c82333;
 }
+.pending {
+  color: rgba(216, 190, 49, 0.86);
+}
+
+.rejected {
+  color: red;
+}
+
+.accepted {
+  color: green;
+}
