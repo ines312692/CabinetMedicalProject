@@ -30,7 +30,6 @@ export class DoctorDetailsPage implements OnInit {
   daysOfWeek: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   selectedTime: string | undefined;
   availableTimes: string[] = [];
-  isModalOpen = false;
   isDateCardVisible = true;
 
   constructor(private route: ActivatedRoute, private doctorService: DoctorService, private router: Router, private alertController: AlertController) {}
@@ -80,7 +79,7 @@ export class DoctorDetailsPage implements OnInit {
   }
 
   isAvailable(day: string): boolean {
-    return this.doctor.availability.some(slot => slot.day === day);
+    return this.doctor.availability?.some(slot => slot.day === day) ?? false;
   }
 
   getHours(day: string): string[] {

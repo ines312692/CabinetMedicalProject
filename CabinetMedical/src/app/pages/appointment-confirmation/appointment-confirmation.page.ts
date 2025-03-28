@@ -4,6 +4,7 @@ import { DoctorService } from '../../services/doctor.service';
 import { DatePipe } from '@angular/common';
 import { IonicModule } from "@ionic/angular";
 import { NgIf } from "@angular/common";
+import {AppointmentService} from "../../services/appointmentservice.service";
 
 @Component({
   selector: 'app-appointment-confirmation',
@@ -19,7 +20,7 @@ import { NgIf } from "@angular/common";
 export class AppointmentConfirmationPage implements OnInit {
   appointment: any;
 
-  constructor(private route: ActivatedRoute, private doctorService: DoctorService, private datePipe: DatePipe) {}
+  constructor(private route: ActivatedRoute, private doctorService: DoctorService, private datePipe: DatePipe,private appointmentService: AppointmentService) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -41,5 +42,26 @@ export class AppointmentConfirmationPage implements OnInit {
 
   confirmAppointment() {
     console.log('Appointment confirmed:', this.appointment);
+
+    const appointmentData = {
+      date: this.appointment.date,
+      reason: this.appointment.reason || 'General Consultation',
+      time: this.appointment.time,
+      location: this.appointment.location,
+      doctor_id: String(this.appointment.doctor.$oid),
+      patient_id: "patient_id_placeholder", // Replace with actual patient ID
+      status: 'pending'
+    };
+
+    this.appointmentService.postAppointment(appointmentData).subscribe(
+      response => {
+        console.log('Appointment posted successfully:', response);
+        // Handle successful response, e.g., navigate to a confirmation page
+      },
+      error => {
+        console.error('Error posting appointment:', error);
+        // Handle error response
+      }
+    );
   }
 }

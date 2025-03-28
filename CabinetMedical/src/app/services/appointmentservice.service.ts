@@ -32,4 +32,7 @@ export class AppointmentService {
     if (!id) throw new Error('Appointment ID is required');
     return this.http.put(`${this.apiUrl}/appointments/${id}/reject`, {});
   }
+  postAppointment(appointment: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/appointments`, appointment);
+  }
 }
