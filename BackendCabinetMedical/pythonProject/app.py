@@ -18,6 +18,3 @@ def create_app():
 
     with app.app_context():
         return app
-
-
-

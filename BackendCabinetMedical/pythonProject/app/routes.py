@@ -306,3 +306,108 @@ def list_patients():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+
+from .models import Appointment
+
+@app.route('/appointments', methods=['GET'])
+def list_appointments():
+    appointments = mongo.db.appointments.find()
+    response = make_response(jsonify([appointment for appointment in appointments]), 200)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/appointments/<id>', methods=['GET'])
+def get_appointment(id):
+    appointment = mongo.db.appointments.find_one({"_id": ObjectId(id)})
+    if appointment:
+        response = make_response(jsonify(Appointment.from_mongo(appointment).__dict__), 200)
+    else:
+        response = make_response(jsonify({'error': 'Appointment not found'}), 404)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/appointments', methods=['POST'])
+def add_appointment():
+    data = request.json
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    required_fields = ["date", "reason", "time", "location", "doctor_id", "patient_id"]
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"Missing field: {field}"}), 400
+
+    appointment = {
+        "_id": ObjectId(),
+        "date": data['date'],
+        "reason": data['reason'],
+        "time": data['time'],
+        "location": data['location'],
+        "doctor_id": ObjectId(data['doctor_id']),
+        "patient_id": ObjectId(data['patient_id']),
+        "status": data.get('status', 'pending')
+    }
+
+    mongo.db.appointments.insert_one(appointment)
+    return jsonify({"message": "Appointment added successfully"}), 201
+
+@app.route('/appointments/<id>', methods=['PUT'])
+def update_appointment(id):
+    data = request.json
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    update_fields = {key: value for key, value in data.items() if key in ["date", "reason", "time", "location", "status"]}
+    result = mongo.db.appointments.update_one({"_id": ObjectId(id)}, {"$set": update_fields})
+
+    if result.matched_count == 1:
+        response = jsonify({"message": "Appointment updated successfully"})
+        response.status_code = 200
+    else:
+        response = jsonify({"error": "Appointment not found"})
+        response.status_code = 404
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/appointments/<id>', methods=['DELETE'])
+def delete_appointment(id):
+    result = mongo.db.appointments.delete_one({"_id": ObjectId(id)})
+    if result.deleted_count == 1:
+        response = jsonify({"message": "Appointment deleted successfully"})
+        response.status_code = 200
+    else:
+        response = jsonify({"error": "Appointment not found"})
+        response.status_code = 404
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/doctors/<doctor_id>/appointments', methods=['GET'])
+def get_doctor_appointments(doctor_id):
+    appointments = mongo.db.appointments.find({"doctor_id": ObjectId(doctor_id)})
+    response = make_response(jsonify([Appointment.from_mongo(app).__dict__ for app in appointments]), 200)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/appointments/<id>/accept', methods=['PUT'])
+def accept_appointment(id):
+    result = mongo.db.appointments.update_one({"_id": ObjectId(id)}, {"$set": {"status": "accepted"}})
+    if result.matched_count == 1:
+        response = jsonify({"message": "Appointment accepted successfully"})
+        response.status_code = 200
+    else:
+        response = jsonify({"error": "Appointment not found"})
+        response.status_code = 404
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/appointments/<id>/reject', methods=['PUT'])
+def reject_appointment(id):
+    result = mongo.db.appointments.update_one({"_id": ObjectId(id)}, {"$set": {"status": "rejected"}})
+    if result.matched_count == 1:
+        response = jsonify({"message": "Appointment rejected successfully"})
+        response.status_code = 200
+    else:
+        response = jsonify({"error": "Appointment not found"})
+        response.status_code = 404
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response

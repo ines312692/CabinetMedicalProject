@@ -89,13 +89,44 @@ class File:
         )
 
 
+from bson import ObjectId
 from typing import List, Dict
 
 class Appointment:
-    def __init__(self, date: str, reason: str):
+    def __init__(self, _id: ObjectId, date: str, reason: str, time: str, location: Dict[str, float], doctor_id: ObjectId, patient_id: ObjectId, status: str = "pending"):
+        self._id = _id
         self.date = date
         self.reason = reason
+        self.time = time
+        self.location = location
+        self.doctor_id = doctor_id
+        self.patient_id = patient_id
+        self.status = status
 
+    @staticmethod
+    def from_mongo(doc):
+        return Appointment(
+            _id=doc['_id'],
+            date=doc['date'],
+            reason=doc['reason'],
+            time=doc['time'],
+            location=doc['location'],
+            doctor_id=doc['doctor_id'],
+            patient_id=doc['patient_id'],
+            status=doc.get('status', 'pending')
+        )
+
+    def to_mongo(self):
+        return {
+            "_id": self._id,
+            "date": self.date,
+            "reason": self.reason,
+            "time": self.time,
+            "location": self.location,
+            "doctor_id": self.doctor_id,
+            "patient_id": self.patient_id,
+            "status": self.status
+        }
 class Consultation:
     def __init__(self, date: str, notes: str):
         self.date = date
