@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DoctorService } from '../../services/doctor.service';
 import { DatePipe } from '@angular/common';
-import { IonicModule } from "@ionic/angular";
+import { IonicModule, AlertController } from "@ionic/angular";
 import { NgIf } from "@angular/common";
-import {AppointmentService} from "../../services/appointmentservice.service";
+import { AppointmentService } from "../../services/appointmentservice.service";
 
 @Component({
   selector: 'app-appointment-confirmation',
@@ -20,7 +20,13 @@ import {AppointmentService} from "../../services/appointmentservice.service";
 export class AppointmentConfirmationPage implements OnInit {
   appointment: any;
 
-  constructor(private route: ActivatedRoute, private doctorService: DoctorService, private datePipe: DatePipe,private appointmentService: AppointmentService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private doctorService: DoctorService,
+    private datePipe: DatePipe,
+    private appointmentService: AppointmentService,
+    private alertController: AlertController
+  ) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -40,7 +46,7 @@ export class AppointmentConfirmationPage implements OnInit {
     return this.datePipe.transform(date, 'fullDate') || '';
   }
 
-  confirmAppointment() {
+  async confirmAppointment() {
     console.log('Appointment confirmed:', this.appointment);
 
     const appointmentData = {
@@ -48,20 +54,30 @@ export class AppointmentConfirmationPage implements OnInit {
       reason: this.appointment.reason || 'General Consultation',
       time: this.appointment.time,
       location: this.appointment.location,
-      doctor_id: String(this.appointment.doctor.$oid),
-      patient_id: "patient_id_placeholder", // Replace with actual patient ID
+      doctor_id: String(this.appointment.doctor.id.$oid),
+      patient_id:String(this.appointment.doctor.id.$oid),/*****a changer lorsque le client fait authentification */
       status: 'pending'
     };
+    console.log('Posting appointment:', appointmentData);
 
     this.appointmentService.postAppointment(appointmentData).subscribe(
-      response => {
+      async response => {
         console.log('Appointment posted successfully:', response);
-        // Handle successful response, e.g., navigate to a confirmation page
+        await this.showAlert('Success', 'Appointment confirmed successfully.');
       },
-      error => {
+      async error => {
         console.error('Error posting appointment:', error);
-        // Handle error response
+        await this.showAlert('Error', 'Failed to confirm appointment.');
       }
     );
+  }
+
+  async showAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 }
