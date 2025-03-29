@@ -2,7 +2,7 @@ from bson import ObjectId
 
 
 class Doctor:
-    def __init__(self, id, name, specialty, description, address, phone, latitude, longitude, image):
+    def __init__(self, id, name, specialty, description, address, phone, latitude, longitude, image, availability):
         self.id = id
         self.name = name
         self.specialty = specialty
@@ -12,6 +12,7 @@ class Doctor:
         self.latitude = latitude
         self.longitude = longitude
         self.image = image
+        self.availability = availability
 
     @staticmethod
     def from_mongo(doc):
@@ -24,7 +25,8 @@ class Doctor:
             phone=doc['phone'],
             latitude=doc['latitude'],
             longitude=doc['longitude'],
-            image=doc['image']
+            image=doc['image'],
+            availability=doc['availability']
         )
 
 class Patient:

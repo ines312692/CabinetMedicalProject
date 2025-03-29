@@ -83,7 +83,7 @@ def add_doctor():
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
-    required_fields = ["id", "name", "specialty", "description", "address", "phone", "latitude", "longitude", "image"]
+    required_fields = ["id", "name", "specialty", "description", "address", "phone", "latitude", "longitude", "image", "availability"]
     for field in required_fields:
         if field not in data:
             return jsonify({"error": f"Missing field: {field}"}), 400
@@ -97,7 +97,8 @@ def add_doctor():
         "phone": data['phone'],
         "latitude": data['latitude'],
         "longitude": data['longitude'],
-        "image": data['image']
+        "image": data['image'],
+        "availability": data['availability'],
     }
 
     mongo.db.doctors.insert_one(doctor)
