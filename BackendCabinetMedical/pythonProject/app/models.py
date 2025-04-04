@@ -149,7 +149,8 @@ class Prescription:
         self.date = date
         self.medication = medication
 
+# models.py
 class DiagnosticsData:
-    def __init__(self, diagnostics: List[Diagnostic], prescriptions: List[Prescription]):
+    def __init__(self, diagnostics, prescriptions):
         self.diagnostics = diagnostics
-        self.prescriptions = prescriptionscd
+        self.prescriptions = prescriptions

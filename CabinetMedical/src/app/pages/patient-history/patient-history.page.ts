@@ -3,6 +3,8 @@ import { MedicalHistoryService } from 'src/app/services/medical-history.service'
 import { ActivatedRoute } from '@angular/router';
 import {IonicModule} from "@ionic/angular";
 import {NgForOf, NgIf} from "@angular/common";
+import {HttpClient} from "@angular/common/http";
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-patient-history',
@@ -22,7 +24,8 @@ export class PatientHistoryPage implements OnInit {
 
   constructor(
     private medicalHistoryService: MedicalHistoryService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private http: HttpClient
   ) {
     this.patientId = this.route.snapshot.paramMap.get('id')!;
   }
@@ -41,6 +44,12 @@ export class PatientHistoryPage implements OnInit {
   loadDiagnostics() {
     this.medicalHistoryService.getPatientDiagnostics(this.patientId).subscribe(data => {
       this.diagnostics = data;
+    });
+  }
+  downloadDiagnosticsPdf() {
+    const url = `http://127.0.0.1:5000/patient/${this.patientId}/diagnostics/pdf`;
+    this.http.get(url, { responseType: 'blob' }).subscribe(blob => {
+      saveAs(blob, 'diagnostics.pdf');
     });
   }
 }

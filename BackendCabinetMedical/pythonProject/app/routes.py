@@ -412,3 +412,40 @@ def reject_appointment(id):
         response.status_code = 404
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
+
+
+
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from flask import send_file
+import io
+
+@app.route('/patient/<patient_id>/diagnostics/pdf', methods=['GET'])
+def export_diagnostics_pdf(patient_id):
+    try:
+        patient_id_obj = ObjectId(patient_id)
+    except Exception as e:
+        return jsonify({"error": "Invalid patient ID format"}), 400
+
+    patient = mongo.db.patients.find_one({"_id": patient_id_obj})
+    if not patient:
+        return jsonify({"error": "Patient not found"}), 404
+
+    diagnostics = list(mongo.db.diagnostics.find({"patient_id": patient_id_obj}))
+    if not diagnostics:
+        return jsonify({"error": "No diagnostics found"}), 404
+
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    p.drawString(100, 750, f"Diagnostics for {patient['first_name']} {patient['last_name']}")
+
+    y = 700
+    for diag in diagnostics:
+        p.drawString(100, y, f"Date: {diag['date']} - Result: {diag['result']}")
+        y -= 20
+
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return send_file(buffer, as_attachment=True, download_name='diagnostics.pdf', mimetype='application/pdf')
