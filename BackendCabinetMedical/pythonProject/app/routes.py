@@ -449,3 +449,56 @@ def export_diagnostics_pdf(patient_id):
 
     buffer.seek(0)
     return send_file(buffer, as_attachment=True, download_name='diagnostics.pdf', mimetype='application/pdf')
+
+
+from flask import request, jsonify
+from datetime import datetime
+from bson import ObjectId
+from .models import Message
+from . import mongo
+
+@app.route('/api/messages', methods=['POST'])
+def send_message():
+    """Route pour envoyer un message."""
+    data = request.json
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    message = {
+        "_id": ObjectId(),
+        "unique_id": data.get("unique_id"),
+        "sender_id": ObjectId(data.get("sender_id")),
+        "receiver_id": ObjectId(data.get("receiver_id")),
+        "message": data.get("message"),
+        "timestamp": datetime.utcnow(),
+        "first_message": data.get("first_message", False)
+    }
+
+    mongo.db.messages.insert_one(message)
+    return jsonify({"status": "success", "message_id": str(message["_id"])}), 201
+
+
+@app.route('/api/messages', methods=['GET'])
+def get_messages():
+    """Route pour récupérer les messages entre un docteur et un patient."""
+    sender_id = request.args.get("sender_id")
+    receiver_id = request.args.get("receiver_id")
+    page = int(request.args.get("page", 1))
+    per_page = 10
+
+    if not sender_id or not receiver_id:
+        return jsonify({"error": "Sender ID and Receiver ID are required"}), 400
+
+    messages = list(mongo.db.messages.find({
+        "$or": [
+            {"sender_id": ObjectId(sender_id), "receiver_id": ObjectId(receiver_id)},
+            {"sender_id": ObjectId(receiver_id), "receiver_id": ObjectId(sender_id)}
+        ]
+    }).sort("timestamp", -1).skip((page - 1) * per_page).limit(per_page))
+
+    for message in messages:
+        message["_id"] = str(message["_id"])
+        message["sender_id"] = str(message["sender_id"])
+        message["receiver_id"] = str(message["receiver_id"])
+
+    return jsonify({"data": messages, "page": page}), 200

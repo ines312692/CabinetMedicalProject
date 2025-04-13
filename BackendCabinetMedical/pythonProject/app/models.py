@@ -154,3 +154,40 @@ class DiagnosticsData:
     def __init__(self, diagnostics, prescriptions):
         self.diagnostics = diagnostics
         self.prescriptions = prescriptions
+
+
+from bson import ObjectId
+from datetime import datetime
+
+class Message:
+    def __init__(self, _id: ObjectId, unique_id: str, sender_id: ObjectId, receiver_id: ObjectId, message: str, timestamp: datetime, first_message: bool = False):
+        self._id = _id
+        self.unique_id = unique_id
+        self.sender_id = sender_id
+        self.receiver_id = receiver_id
+        self.message = message
+        self.timestamp = timestamp
+        self.first_message = first_message
+
+    @staticmethod
+    def from_mongo(doc):
+        return Message(
+            _id=doc['_id'],
+            unique_id=doc['unique_id'],
+            sender_id=doc['sender_id'],
+            receiver_id=doc['receiver_id'],
+            message=doc['message'],
+            timestamp=doc['timestamp'],
+            first_message=doc.get('first_message', False)
+        )
+
+    def to_mongo(self):
+        return {
+            "_id": self._id,
+            "unique_id": self.unique_id,
+            "sender_id": self.sender_id,
+            "receiver_id": self.receiver_id,
+            "message": self.message,
+            "timestamp": self.timestamp,
+            "first_message": self.first_message
+        }

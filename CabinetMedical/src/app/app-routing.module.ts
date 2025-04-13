@@ -80,7 +80,11 @@ const routes: Routes = [
     path: 'document-management',
     loadChildren: () => import('./pages/patient/documents/document-management/document-management.module').then(m => m.DocumentManagementPageModule)
   },
-  { path: 'manage-appointments/:doctor_id',  loadChildren: () => import('./pages/manage-appointments/manage-appointments.module').then( m => m.ManageAppointmentsPageModule)}
+  { path: 'manage-appointments/:doctor_id',  loadChildren: () => import('./pages/manage-appointments/manage-appointments.module').then( m => m.ManageAppointmentsPageModule)},  {
+    path: 'chat',
+    loadChildren: () => import('./pages/chat/chat.module').then( m => m.ChatPageModule)
+  }
+
 
 
 ];
