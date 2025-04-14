@@ -8,9 +8,9 @@ import { Appointment } from '../models/Appointment.interface';
   providedIn: 'root'
 })
 export class AppointmentService {
-  private apiUrl = 'http://localhost:5000';
+  private readonly apiUrl = 'http://localhost:5000';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   getDoctorAppointments(doctorId: string): Observable<Appointment[]> {
     return this.http.get<any[]>(`${this.apiUrl}/doctors/${doctorId}/appointments`).pipe(
@@ -34,5 +34,9 @@ export class AppointmentService {
   }
   postAppointment(appointment: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/appointments`, appointment);
+  }
+
+  getAppointmentsByPatient(patientId: string): Observable<any> {
+    return this.http.get(`http://localhost:5000/patient/${patientId}/appointments`);
   }
 }

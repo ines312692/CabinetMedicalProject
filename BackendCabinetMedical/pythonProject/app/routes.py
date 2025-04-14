@@ -502,3 +502,21 @@ def get_messages():
         message["receiver_id"] = str(message["receiver_id"])
 
     return jsonify({"data": messages, "page": page}), 200
+
+@app.route('/patient/<patient_id>/appointments', methods=['GET'])
+def get_patient_appointments(patient_id):
+    try:
+        patient_id_obj = ObjectId(patient_id)
+    except Exception:
+        return jsonify({"error": "Invalid patient ID format"}), 400
+
+    appointments = list(mongo.db.appointments.find({"patient_id": patient_id_obj}))
+    if not appointments:
+        return jsonify({"error": "No appointments found"}), 404
+
+    for appointment in appointments:
+        appointment["_id"] = str(appointment["_id"])
+        appointment["doctor_id"] = str(appointment["doctor_id"])
+        appointment["patient_id"] = str(appointment["patient_id"])
+
+    return jsonify({"appointments": appointments}), 200
