@@ -7,6 +7,9 @@ from . import mongo
 from .services import get_doctor_by_id
 from flask_cors import CORS
 import bcrypt
+from bcrypt import hashpw, gensalt
+from flask import send_from_directory
+
 
 CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS"]}})
 
@@ -57,52 +60,79 @@ def delete_document(id):
     return response
 
 
+# @app.route('/doctors', methods=['GET'])
+# def list_doctors():
+#     doctors = mongo.db.doctors.find()
+#     response = make_response(jsonify([doctor for doctor in doctors]), 200)
+#     response.headers.add('Access-Control-Allow-Origin', '*')
+#     return response
 @app.route('/doctors', methods=['GET'])
 def list_doctors():
     doctors = mongo.db.doctors.find()
-    response = make_response(jsonify([doctor for doctor in doctors]), 200)
+    doctors_list = []
+    for doctor in doctors:
+        doctor_dict = doctor
+        # Ajouter l'URL complète de l'image
+        if 'image' in doctor:
+            doctor_dict['image_url'] = f"/uploads/{doctor['image']}"
+        doctors_list.append(doctor_dict)
+    response = make_response(jsonify(doctors_list), 200)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
-
 
 @app.route('/doctors/<id>', methods=['GET'])
 def get_doctor(id):
-    doctor = get_doctor_by_id(mongo.db.doctors, id)
+    try:
+        # Convertir l'ID string en ObjectId
+        doctor_id = ObjectId(id)
+    except:
+        return jsonify({'error': 'Invalid ID format'}), 400
+    
+    # Rechercher le docteur dans la base de données
+    doctor = mongo.db.doctors.find_one({"_id": doctor_id})
+    
     if doctor:
-        response = make_response(jsonify(doctor.__dict__))
+        # Convertir ObjectId en string pour la sérialisation JSON
+        doctor['_id'] = str(doctor['_id'])
+        
+        # Ajouter l'URL complète de l'image si nécessaire
+        if 'image' in doctor:
+            doctor['image_url'] = f"/uploads/{doctor['image']}"
+        
+        response = jsonify(doctor)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
     else:
-        response = make_response(jsonify({'error': 'Doctor not found'}), 404)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+        return jsonify({'error': 'Doctor not found'}), 404
 
 
 # app/routes.py
-@app.route('/doctors', methods=['POST'])
-def add_doctor():
-    data = request.json
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
+#@app.route('/doctors', methods=['POST'])
+#def add_doctor():
+    #data = request.json
+    # if not data:
+    #     return jsonify({"error": "No data provided"}), 400
 
-    required_fields = ["id", "name", "specialty", "description", "address", "phone", "latitude", "longitude", "image"]
-    for field in required_fields:
-        if field not in data:
-            return jsonify({"error": f"Missing field: {field}"}), 400
+    # required_fields = ["id", "name", "specialty", "description", "address", "phone", "latitude", "longitude", "image"]
+    # for field in required_fields:
+    #     if field not in data:
+    #         return jsonify({"error": f"Missing field: {field}"}), 400
 
-    doctor = {
-        "id": data['id'],
-        "name": data['name'],
-        "specialty": data['specialty'],
-        "description": data['description'],
-        "address": data['address'],
-        "phone": data['phone'],
-        "latitude": data['latitude'],
-        "longitude": data['longitude'],
-        "image": data['image']
-    }
+    # doctor = {
+    #     "id": data['id'],
+    #     "name": data['name'],
+    #     "specialty": data['specialty'],
+    #     "description": data['description'],
+    #     "address": data['address'],
+    #     "phone": data['phone'],
+    #     "latitude": data['latitude'],
+    #     "longitude": data['longitude'],
+    #     "image": data['image']
+    # }
 
-    mongo.db.doctors.insert_one(doctor)
-    return jsonify({"message": "Doctor added successfully"}), 201
-
+    # mongo.db.doctors.insert_one(doctor)
+    # return jsonify({"message": "Doctor added successfully"}), 201
+#
 
 @app.route('/doctors', methods=['DELETE'])
 def delete_all_doctors():
@@ -305,4 +335,136 @@ def list_patients():
     response = make_response(jsonify([patient for patient in patients]), 200)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
+
+@app.route('/doctors', methods=['POST'])
+def add_doctor():
+    if 'image' not in request.files:
+        return jsonify({"error": "Image is required"}), 400
+    
+    image = request.files['image']
+    if image.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    filename = secure_filename(image.filename)
+    upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    
+    # Créer le dossier s'il n'existe pas
+    os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+    image.save(upload_path)
+
+    data = request.form  
+    required_fields = ['name', 'specialty', 'description', 'address', 'phone', 'email', 'password']
+    
+    if not all(field in data for field in required_fields):
+        return jsonify({"error": "All fields are required"}), 400
+
+    # Vérifier si l'email existe déjà
+    if mongo.db.doctors.find_one({"email": data['email']}):
+        return jsonify({"error": "Email already exists"}), 409
+
+    # Cryptage du mot de passe
+    hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
+
+    doctor = {
+        "name": data['name'],
+        "specialty": data['specialty'],
+        "description": data['description'],
+        "address": data['address'],
+        "phone": data['phone'],
+        "email": data['email'],
+        "password": hashed_password.decode('utf-8'),
+        "image": filename,
+        "role": "doctor"
+    }
+
+    result = mongo.db.doctors.insert_one(doctor)
+    
+    return jsonify({
+        "message": "Doctor added successfully",
+        "doctor_id": str(result.inserted_id),
+        "image_url": f"/uploads/{filename}"
+    }), 201
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    print(f"Looking for file: {file_path}")
+    if not os.path.exists(file_path):
+        print(f"File not found: {file_path}")
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+@app.route('/advertisements', methods=['POST'])
+def add_advertisement():
+    if 'image' not in request.files:
+        return jsonify({"error": "Image is required"}), 400
+
+    image = request.files['image']
+    if image.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    filename = secure_filename(image.filename)
+    upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    
+    # Créer le dossier s'il n'existe pas
+    os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+    image.save(upload_path)
+
+    data = request.form
+    required_fields = ['titre', 'description', 'dateFin']
+    
+    if not all(field in data for field in required_fields):
+        return jsonify({"error": "All fields are required"}), 400
+
+    advertisement = {
+        "titre": data['titre'],
+        "description": data['description'],
+        "dateFin": data['dateFin'],
+        "image": filename
+    }
+
+    result = mongo.db.advertisements.insert_one(advertisement)
+    
+    return jsonify({
+        "message": "Advertisement added successfully",
+        "advertisement_id": str(result.inserted_id),
+        "image": f"/uploads/{filename}"
+    }), 201
+
+@app.route('/advertisements', methods=['GET'])
+def list_advertisements():
+    advertisements = mongo.db.advertisements.find()
+    advertisements_list = []
+    for ad in advertisements:
+        ad_dict = ad
+        # Ajouter l'URL complète de l'image
+        if 'image' in ad:
+            ad_dict['image'] = f"/uploads/{ad['image']}"
+        advertisements_list.append(ad_dict)
+    response = make_response(jsonify(advertisements_list), 200)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/administrators/<id>', methods=['GET'])
+def get_administrator(id):
+    try:
+        # Convertir l'ID string en ObjectId
+        admin_id = ObjectId(id)
+    except:
+        return jsonify({'error': 'Invalid ID format'}), 400
+
+    # Rechercher l'administrateur dans la base de données
+    administrator = mongo.db.administrators.find_one({"_id": admin_id})
+
+    if administrator:
+        # Convertir ObjectId en string pour la sérialisation JSON
+        administrator['_id'] = str(administrator['_id'])
+
+        # Retourner les données de l'administrateur
+        response = jsonify(administrator)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 200
+    else:
+        return jsonify({'error': 'Administrator not found'}), 404
+
+
 
