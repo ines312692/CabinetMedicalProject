@@ -11,10 +11,9 @@ mongo = PyMongo()
 def create_app():
     app = Flask(__name__)
     app.config.from_object('config.Config')
-
-    # Enable CORS for all routes
     CORS(app)
     mongo.init_app(app)
+    print("UPLOAD_FOLDER path:", app.config['UPLOAD_FOLDER'])
 
     with app.app_context():
         return app

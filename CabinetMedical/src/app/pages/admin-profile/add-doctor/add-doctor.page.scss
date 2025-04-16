@@ -1,0 +1,188 @@
+/* Style général du formulaire */
+form {
+    padding: 20px;
+    max-width: 600px; /* Limite la largeur du formulaire */
+    margin: 0 auto; /* Centre le formulaire */
+  }
+  
+  /* Style des éléments ion-item */
+  ion-item {
+    margin-bottom: 20px;
+    border-radius: 12px;
+    --background: #ffffff; /* Fond blanc */
+    --border-radius: 12px; /* Bords plus arrondis */
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre légère */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Transition fluide */
+  }
+  
+  /* Effet au survol des ion-item */
+  ion-item:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Ombre plus prononcée */
+    transform: translateY(-2px); /* Légère élévation */
+  }
+  
+  /* Style des labels */
+  ion-label {
+    color: #3880ff; /* Couleur du label (bleu Ionic par défaut) */
+    font-weight: bold;
+    font-size: 14px; /* Taille de police légèrement réduite */
+    margin-bottom: 4px; /* Espacement entre le label et l'input */
+  }
+  
+  /* Style des inputs */
+  ion-input {
+    --padding-start: 0;
+    --padding-end: 0;
+    color: #333; /* Couleur du texte */
+    font-size: 16px; /* Taille de police agrandie */
+  }
+  
+  /* Style du bouton de soumission */
+  ion-button {
+    margin-top: 25px;
+    --background: #3880ff; /* Couleur de fond du bouton */
+    --background-activated: #3171e0; /* Couleur de fond activée */
+    --color: #fff; /* Couleur du texte */
+    --border-radius: 12px; /* Bords plus arrondis */
+    font-weight: bold;
+    font-size: 16px; /* Taille de police agrandie */
+    height: 50px; /* Hauteur du bouton */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre légère */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Transition fluide */
+  }
+  
+  /* Effet au survol du bouton */
+  ion-button:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Ombre plus prononcée */
+    transform: translateY(-2px); /* Légère élévation */
+  }
+  
+  /* Style du champ de fichier */
+  input[type="file"] {
+    margin-top: 10px;
+    width: 100%;
+    color: #333; /* Couleur du texte */
+    font-size: 14px; /* Taille de police réduite */
+  }
+  
+  /* Style pour le conteneur du champ de fichier */
+  ion-item input[type="file"] {
+    padding: 12px;
+    background: #ffffff; /* Fond blanc */
+    border-radius: 12px; /* Bords plus arrondis */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Ombre légère */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Transition fluide */
+  }
+  
+  /* Effet au survol du champ de fichier */
+  ion-item input[type="file"]:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Ombre plus prononcée */
+    transform: translateY(-2px); /* Légère élévation */
+  }
+  
+  /* Style pour le bouton de sélection de fichier */
+  ion-item input[type="file"]::file-selector-button {
+    background: #3880ff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px; /* Taille de police réduite */
+    transition: background 0.3s ease; /* Transition fluide */
+  }
+  
+  /* Effet au survol du bouton de sélection de fichier */
+  ion-item input[type="file"]::file-selector-button:hover {
+    background: #3171e0;
+  }
+  
+ 
+  ion-item input[type="file"]::file-selector-button:active {
+    background: #1a4f9e;
+  }
+  
+  
+  ion-item input[type="file"]::file-selector-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(56, 128, 255, 0.3); 
+  }
+  
+  
+  ion-item input[type="file"]::file-selector-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  
+  
+  .error-message {
+    color: #ff3b30; 
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+  }
+  .image-preview {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    
+    img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+  }
+  ion-item {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  input[type="file"] {
+    margin-top: 10px;
+    padding: 10px;
+  }
+  
+  .image-preview {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    
+    img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+  }
+  ion-item {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  ion-text {
+    font-size: 12px;
+    color: var(--ion-color-danger);
+    margin-top: 5px;
+  }
+  
+  .image-preview {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  
+    img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+  }
+  

@@ -80,6 +80,7 @@ const routes: Routes = [
     path: 'document-management',
     loadChildren: () => import('./pages/patient/documents/document-management/document-management.module').then(m => m.DocumentManagementPageModule)
   },
+
   { path: 'manage-appointments/:doctor_id',  loadChildren: () => import('./pages/manage-appointments/manage-appointments.module').then( m => m.ManageAppointmentsPageModule)},
   {
     path: 'chat',
@@ -88,9 +89,29 @@ const routes: Routes = [
   {
     path: 'list-appointment/:patient_id',
     loadChildren: () => import('./pages/list-appointment/list-appointment.module').then( m => m.ListAppointmentPageModule)
+  },
+
+  {
+    path: 'add-doctor',
+    loadChildren: () => import('./pages/admin-profile/add-doctor/add-doctor.module').then( m => m.AddDoctorPageModule)
+  },
+  {
+    path: 'add-pub',
+    loadChildren: () => import('./pages/admin-profile/add-pub/add-pub.module').then( m => m.AddPubPageModule)
+  },
+
+  {
+    path: 'modif-profil-admin',
+    loadChildren: () => import('./pages/modif-profil-admin/modif-profil-admin.module').then( m => m.ModifProfilAdminPageModule)
+  },
+  {
+    path: 'modif-profil-doctor',
+    loadChildren: () => import('./pages/modif-profil-doctor/modif-profil-doctor.module').then( m => m.ModifProfilDoctorPageModule)
+  },
+  {
+    path: 'modif-profil-patient',
+    loadChildren: () => import('./pages/modif-profil-patient/modif-profil-patient.module').then( m => m.ModifProfilPatientPageModule)
   }
-
-
 
 ];
 

@@ -29,4 +29,9 @@ export class DoctorService {
     return this.http.get<Doctor[]>(this.apiUrl);
   }
 
+  addDoctor(formData: FormData): Observable<any> {
+    return this.http.post(this.apiUrl, formData);
+  }
+
+
 }

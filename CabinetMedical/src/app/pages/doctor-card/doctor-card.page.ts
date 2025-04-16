@@ -19,5 +19,18 @@ export class DoctorCardPage implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    
   }
+  viewDoctorDetails() {
+    // Implémentez la navigation vers les détails du docteur
+  }
+  bookAppointment() {
+    // Logique pour prendre rendez-vous
+  }
+  
+  callDoctor() {
+    // Logique pour appeler le docteur
+  }
+  
+ 
 }

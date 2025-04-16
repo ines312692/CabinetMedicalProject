@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Ajouter un médecin</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="doctorForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
+    <!-- Champ Nom -->
+    <ion-item>
+      <ion-label position="floating">Nom</ion-label>
+      <ion-input formControlName="name" type="text"></ion-input>
+    </ion-item>
+
+    <!-- Champ Spécialité -->
+    <ion-item>
+      <ion-label position="floating">Spécialité</ion-label>
+      <ion-input formControlName="specialty" type="text"></ion-input>
+    </ion-item>
+
+    <!-- Champ Description -->
+    <ion-item>
+      <ion-label position="floating">Description</ion-label>
+      <ion-input formControlName="description" type="text"></ion-input>
+    </ion-item>
+
+    <!-- Champ Adresse -->
+    <ion-item>
+      <ion-label position="floating">Adresse</ion-label>
+      <ion-input formControlName="address" type="text"></ion-input>
+    </ion-item>
+
+    <!-- Champ Téléphone -->
+    <ion-item>
+      <ion-label position="floating">Téléphone</ion-label>
+      <ion-input formControlName="phone" type="tel"></ion-input>
+    </ion-item>
+
+    <!-- Champ Email -->
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input formControlName="email" type="email"></ion-input>
+    </ion-item>
+
+    <!-- Champ Mot de passe -->
+    <ion-item>
+      <ion-label position="floating">Mot de passe</ion-label>
+      <ion-input formControlName="password" type="password"></ion-input>
+    </ion-item>
+
+    <!-- Champ Image -->
+    <ion-item>
+      <ion-label position="floating">Photo</ion-label>
+      <input type="file" (change)="onFileChange($event)" accept="image/*" required />
+    </ion-item>
+
+    <!-- Aperçu de l'image sélectionnée -->
+    <div *ngIf="imagePreview" class="image-preview">
+      <img [src]="imagePreview" alt="Aperçu de l'image" />
+    </div>
+
+    <ion-button expand="full" type="submit" [disabled]="!doctorForm.valid">
+      Ajouter
+    </ion-button>
+  </form>
+</ion-content>

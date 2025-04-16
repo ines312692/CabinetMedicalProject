@@ -1,11 +1,26 @@
-<ion-card>
-  <img alt="Doctor's image" [src]="'assets/img/' + doctor.image"  />
-  <ion-card-header>
-    <ion-card-title>{{ doctor.name }}</ion-card-title>
-    <ion-card-subtitle>{{ doctor.specialty }}</ion-card-subtitle>
-  </ion-card-header>
+<ion-card class="doctor-card" (click)="viewDoctorDetails()">
+  <div class="card-top">
+    <img [src]="'http://localhost:5000/uploads/' + doctor.image" alt="Photo du docteur"/>
+  </div>
 
-  <ion-card-content>
-    <p>{{ doctor.address }}</p>
+  <ion-card-content class="card-content">
+    <div class="doctor-meta">
+      <h3 class="doctor-name">{{ doctor.name }}</h3>
+      <p class="doctor-specialty">{{ doctor.specialty }}</p>
+      
+      <div class="location">
+        <ion-icon name="location-outline"></ion-icon>
+        <span>{{ doctor.address}}</span>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <ion-button fill="clear" color="primary" (click)="$event.stopPropagation(); bookAppointment()">
+        <ion-icon slot="icon-only" name="calendar-outline"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" color="secondary" (click)="$event.stopPropagation(); callDoctor()">
+        <ion-icon slot="icon-only" name="call-outline"></ion-icon>
+      </ion-button>
+    </div>
   </ion-card-content>
 </ion-card>
