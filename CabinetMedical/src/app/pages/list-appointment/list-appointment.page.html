@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title> Mes Rendez-vous</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let appointment of appointments" class="appointment-item">
+      <ion-icon name="calendar-outline" slot="start" class="icon-calendar"></ion-icon>
+      <ion-label>
+        <h2 class="appointment-date"> Date : {{ appointment.date }}</h2>
+        <p class="appointment-time"> Heure : {{ appointment.time }}</p>
+        <p class="appointment-status" [ngClass]="{
+          'status-approved': appointment.status === 'approved',
+          'status-pending': appointment.status === 'pending',
+          'status-refused': appointment.status === 'refused'
+        }">
+          <ion-icon
+            [name]="appointment.status === 'approved' ? 'checkmark-circle-outline' : appointment.status === 'pending' ? 'time-outline' : 'close-circle-outline'"
+            class="status-icon"
+          ></ion-icon>
+          Statut : {{ appointment.status }}
+        </p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
