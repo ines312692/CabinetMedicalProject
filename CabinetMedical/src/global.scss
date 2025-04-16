@@ -35,3 +35,18 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+
+.button-spinner {
+    width: 20px;
+    height: 20px;
+  }
+  
+  ion-spinner {
+    display: block;
+    margin: 20px auto;
+  }
+  
+  ion-avatar img {
+    object-fit: cover;
+  }

@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { PatientProfilePageRoutingModule } from './patient-profile-routing.module';
 
 import { PatientProfilePage } from './patient-profile.page';
+import { DatePipe } from '@angular/common';
 
 @NgModule({
   imports: [
@@ -17,6 +18,7 @@ import { PatientProfilePage } from './patient-profile.page';
     PatientProfilePage
 
   ],
-  declarations: []
+  declarations: [],
+  providers: [DatePipe]
 })
 export class PatientProfilePageModule {}

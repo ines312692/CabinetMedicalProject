@@ -24,8 +24,11 @@ export class DoctorGridPage implements OnInit {
   constructor(private doctorService: DoctorService) { }
 
   ngOnInit() {
-    this.doctorService.getDoctors().subscribe(doctors => {
-      this.doctors = doctors;
+    this.doctorService.getDoctors().subscribe({
+      next: (doctors: Doctor[]) => {
+        this.doctors = doctors;
+      },
+      error: (error: any) => console.error(error)
     });
   }
 }

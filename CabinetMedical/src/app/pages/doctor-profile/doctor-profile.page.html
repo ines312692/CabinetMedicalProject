@@ -1,13 +1,65 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>doctorProfile</ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Profil Médecin</ion-title>
+    <!-- Improved loading state -->
+<ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleEdit()" [disabled]="isLoading">
+        {{ isEditing ? 'Annuler' : 'Modifier' }}
+      </ion-button>
+      <ion-button *ngIf="isEditing" (click)="saveChanges()" [disabled]="isLoading">
+        <ion-spinner *ngIf="isLoading" name="crescent" class="button-spinner"></ion-spinner>
+        Enregistrer
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">doctorProfile</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <ion-card *ngIf="doctorDetails">
+    <ion-card-header>
+      <ion-card-title>{{ doctorDetails.name }}</ion-card-title>
+      <ion-card-subtitle>{{ doctorDetails.specialty }}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-list>
+        <ion-item>
+          <ion-label position="stacked">Description</ion-label>
+          <ion-textarea [readonly]="!isEditing" [(ngModel)]="editedDetails.description"></ion-textarea>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Adresse</ion-label>
+          <ion-input [readonly]="!isEditing" [(ngModel)]="editedDetails.address"></ion-input>
+        </ion-item>
+
+        <ion-item *ngIf="isEditing">
+          <ion-label position="stacked">Téléphone</ion-label>
+          <ion-input [(ngModel)]="editedDetails.phone" type="tel" required></ion-input>
+          <ion-note slot="error" *ngIf="editedDetails.phone?.length < 8">
+            Numéro de téléphone invalide
+          </ion-note>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Coordonnées GPS</ion-label>
+          <ion-input [readonly]="!isEditing" [(ngModel)]="editedDetails.latitude" type="number"></ion-input>
+          <ion-input [readonly]="!isEditing" [(ngModel)]="editedDetails.longitude" type="number"></ion-input>
+        </ion-item>
+        <!-- Add this after the coordinates -->
+<ion-item *ngIf="doctorDetails?.availability">
+  <ion-label>Disponibilités</ion-label>
+  <ion-list>
+    <ion-item *ngFor="let avail of doctorDetails.availability">
+      {{avail.day}}: {{avail.hours.join(', ')}}
+    </ion-item>
+  </ion-list>
+</ion-item>
+      </ion-list>
+    </ion-card-content>
+
+  </ion-card>
+  
 </ion-content>
+

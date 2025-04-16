@@ -6,6 +6,9 @@ import { HomePage } from './home.page';
 import { HomePageRoutingModule } from './home-routing.module';
 import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import {DoctorGridPage} from "../pages/doctor-grid/doctor-grid.page";
+import { register } from 'swiper/element/bundle';
+
+register();
 
 @NgModule({
   imports: [

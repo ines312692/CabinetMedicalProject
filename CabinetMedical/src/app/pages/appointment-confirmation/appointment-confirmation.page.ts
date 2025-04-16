@@ -11,6 +11,7 @@ import Overlay from 'ol/Overlay';
 import { fromLonLat } from 'ol/proj';
 import {IonicModule} from "@ionic/angular";
 import {NgIf} from "@angular/common";
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-appointment-confirmation',
@@ -18,7 +19,8 @@ import {NgIf} from "@angular/common";
   standalone: true,
   imports: [
     IonicModule,
-    NgIf
+    NgIf,
+    DatePipe
   ],
   styleUrls: ['./appointment-confirmation.page.scss']
 })

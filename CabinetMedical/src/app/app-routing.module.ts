@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { DoctorDetailsPage } from "./pages/doctor-details/doctor-details.page";
+import { authGuard } from './guards/auth.guard';
 
-const routes: Routes = [
+export const routes: Routes = [
   {
     path: 'home',
     loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)
@@ -54,11 +55,12 @@ const routes: Routes = [
   },
   {
     path: 'patient-profile',
-    loadChildren: () => import('./pages/patient-profile/patient-profile.module').then(m => m.PatientProfilePageModule)
+    loadChildren: () => import('./pages/patient-profile/patient-profile.module').then(m => m.PatientProfilePageModule),
+    canActivate: [authGuard]
   },
   {
     path: 'doctor-profile',
-    loadChildren: () => import('./pages/doctor-profile/doctor-profile.module').then(m => m.DoctorProfilePageModule)
+    loadComponent: () => import('./pages/doctor-profile/doctor-profile.page').then(m => m.DoctorProfilePage)
   },
   {
     path: 'admin-profile',
@@ -71,10 +73,15 @@ const routes: Routes = [
   {
     path: 'patient-history/:id',
     loadChildren: () => import('./pages/patient-history/patient-history.module').then(m => m.PatientHistoryPageModule)
-  },  {
+  },
+  {
     path: 'appointment-confirmation',
     loadChildren: () => import('./pages/appointment-confirmation/appointment-confirmation.module').then( m => m.AppointmentConfirmationPageModule)
+  },  {
+    path: 'list-appointment',
+    loadChildren: () => import('./pages/list-appointment/list-appointment.module').then( m => m.ListAppointmentPageModule)
   }
+
 
 ];
 

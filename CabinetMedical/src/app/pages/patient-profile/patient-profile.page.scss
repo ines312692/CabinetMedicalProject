@@ -1,0 +1,74 @@
+/* Profile card styling */
+.profile-card {
+    margin: 16px;
+  }
+  
+  .profile-card ion-card-content {
+    padding: 16px;
+  }
+  
+  .profile-content {
+    display: flex;
+    gap: 24px;
+    align-items: center; /* Changed from flex-start to center for vertical alignment */
+  }
+  
+  /* Profile image styling */
+  .profile-image-container {
+    flex: 0 0 200px;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .profile-image {
+    width:100%;
+    height: 100%;
+    border-radius: 5%;
+    object-fit: cover;
+    border: 3px solid var(--ion-color-primary);
+  }
+  
+  /* Profile details styling */
+  .profile-details {
+    flex: 1;
+  }
+  
+  .patient-name {
+    font-size: 1.5rem;
+    margin: 0 0 16px 0;
+    color: var(--ion-color-primary);
+    text-transform: uppercase; /* Added for all caps */
+    padding-left: 55px; /* Aligns with other fields */
+  }
+  
+  ion-list {
+    background: transparent;
+  }
+  
+  ion-item {
+    --background: transparent;
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --min-height: 32px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 576px) {
+    .profile-content {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .profile-image-container {
+      margin-bottom: 16px;
+    }
+    
+    .patient-name {
+      padding-left: 0;
+    }
+    
+    ion-item {
+      --padding-start: 0;
+      justify-content: center;
+    }
+  }

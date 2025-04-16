@@ -11,7 +11,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TabsPage } from './pages/tabs/tabs.page';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
@@ -23,6 +23,6 @@ import { TabsPage } from './pages/tabs/tabs.page';
     ReactiveFormsModule
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy,  }],
-  bootstrap: [AppComponent]
+  bootstrap: []
 })
 export class AppModule {}

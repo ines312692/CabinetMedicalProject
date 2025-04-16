@@ -18,7 +18,21 @@
     </ion-list-header>
     <div class="scrollable-form">
       <ion-item-group class="ion-margin-horizontal">
-        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
+          <!-- Profile Image -->
+          <div class="ion-margin-vertical ion-text-center">
+            <div class="image-preview-container">
+              <img *ngIf="imagePreview" [src]="imagePreview" class="profile-image-preview" alt="Profile Preview">
+              <ion-icon *ngIf="!imagePreview" name="person-circle" class="default-profile-image"></ion-icon>
+            </div>
+            <ion-button fill="clear" size="small" (click)="triggerFileInput()">
+              <ion-icon name="camera" slot="start"></ion-icon>
+              Ajouter une photo
+            </ion-button>
+            <input #fileInput type="file" id="fileInput" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
+          </div>
+
+          <!-- First Name -->
           <div class="ion-margin-vertical">
             <ion-item>
               <ion-label position="stacked">Prénom</ion-label>
@@ -34,6 +48,7 @@
             </ion-text>
           </div>
 
+          <!-- Last Name -->
           <div class="ion-margin-vertical">
             <ion-item>
               <ion-label position="stacked">Nom</ion-label>
@@ -48,6 +63,8 @@
               </ion-text>
             </ion-text>
           </div>
+
+          <!-- Birth Date -->
           <div class="ion-margin-vertical">
             <ion-item>
               <ion-label position="stacked">Date de naissance</ion-label>
@@ -66,6 +83,7 @@
             </ion-text>
           </div>
 
+          <!-- Email -->
           <div class="ion-margin-vertical">
             <ion-item>
               <ion-label position="stacked">Email</ion-label>
@@ -81,9 +99,37 @@
               <ion-text *ngIf="form.get('email')?.hasError('email') && !form.get('email')?.hasError('required')">
                 * Veuillez introduire une Adresse Email valide!
               </ion-text>
+              <ion-text *ngIf="form.get('email')?.hasError('emailExists')">
+                * Cet email est déjà utilisé. Veuillez en choisir un autre.
+              </ion-text>
             </ion-text>
           </div>
 
+          <!-- Phone -->
+          <div class="ion-margin-vertical">
+            <ion-item>
+              <ion-label position="stacked">Téléphone</ion-label>
+              <ion-input formControlName="phone" type="tel" placeholder="Numéro de téléphone">
+                <ion-icon name="call" slot="start" color="medium"></ion-icon>
+              </ion-input>
+            </ion-item>
+            <ion-text class="error" color="danger"
+                      *ngIf="form.get('phone')?.touched && !form.get('phone')?.valid">
+              <ion-text *ngIf="form.get('phone')?.hasError('pattern')">
+                * Veuillez introduire un numéro de téléphone valide (10 chiffres)!
+              </ion-text>
+            </ion-text>
+          </div>
+
+          <!-- Allergies -->
+          <div class="ion-margin-vertical">
+            <ion-item>
+              <ion-label position="stacked">Allergies (optionnel)</ion-label>
+              <ion-textarea formControlName="allergies" placeholder="Liste d'allergies séparées par des virgules"></ion-textarea>
+            </ion-item>
+          </div>
+
+          <!-- Password -->
           <div class="ion-margin-vertical">
             <ion-item>
               <ion-label position="stacked">Mot de passe</ion-label>
@@ -102,6 +148,7 @@
             </ion-text>
           </div>
 
+          <!-- Confirm Password -->
           <div class="ion-margin-vertical">
             <ion-item>
               <ion-label position="stacked">Confirmer Mot de passe</ion-label>
@@ -121,13 +168,15 @@
           </div>
 
           <ion-button
-            size="large"
-            expand="block"
-            shape="round"
-            color="primary"
-            type="submit">
-            <ion-text style="color: white;">S'inscrire</ion-text>
-          </ion-button>
+  size="large"
+  expand="block"
+  shape="round"
+  color="primary"
+  type="submit"
+  [disabled]="isSubmitting">
+  <ion-spinner *ngIf="isSubmitting"></ion-spinner>
+  <ion-text *ngIf="!isSubmitting" style="color: white;">S'inscrire</ion-text>
+</ion-button>
         </form>
       </ion-item-group>
     </div>

@@ -1,13 +1,138 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>patient-profile</ion-title>
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Profile patient</ion-title>
+    <ion-buttons slot="start" style="color: #132d5e;">
+      <ion-menu-button menu="main-menu"></ion-menu-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">patient-profile</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <!-- Loading state -->
+  <ion-spinner *ngIf="isLoadingPatient" name="crescent"></ion-spinner>
+
+  <!-- Profile Card -->
+  <ion-card *ngIf="patientDetails && !isLoadingPatient" class="profile-card">
+    <ion-card-content>
+      <div class="profile-content">
+        <!-- Large profile image -->
+        <div class="profile-image-container">
+          <img [src]="'/assets/img/' + (patientDetails?.image || 'default-avatar.png')" 
+               class="profile-image"
+               alt="Patient profile image">
+        </div>
+
+        <!-- Profile details -->
+        <div class="profile-details">
+          <h1 class="patient-name">{{ patientDetails.first_name | uppercase }} {{ patientDetails.last_name | uppercase }}</h1>
+          
+          <ion-list lines="none">
+            <ion-item>
+              <ion-icon name="mail-outline" slot="start"></ion-icon>
+              <ion-label>Email: {{ patientDetails.email }}</ion-label>
+            </ion-item>
+            
+            <ion-item>
+              <ion-icon name="calendar-outline" slot="start"></ion-icon>
+              <ion-label>Date de naissance: {{ patientDetails.birth_date | date:'longDate' }}</ion-label>
+            </ion-item>
+            
+            <ion-item *ngIf="patientDetails.phone">
+              <ion-icon name="call-outline" slot="start"></ion-icon>
+              <ion-label>Téléphone: {{ patientDetails.phone }}</ion-label>
+            </ion-item>
+            
+            <ion-item *ngIf="patientDetails.address">
+              <ion-icon name="location-outline" slot="start"></ion-icon>
+              <ion-label>Adresse: {{ patientDetails.address }}</ion-label>
+            </ion-item>
+            
+            <!-- Allergies Field -->
+            <ion-item *ngIf="patientDetails.allergies && patientDetails.allergies.length > 0">
+              <ion-icon name="warning-outline" slot="start" color="danger"></ion-icon>
+              <ion-label>
+                Allergies: 
+                <span *ngFor="let allergy of patientDetails.allergies; let last = last">
+                  {{ allergy }}{{ !last ? ', ' : '' }}
+                </span>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Medical history card -->
+  <!--ion-card *ngIf="medicalHistory && !isLoadingHistory">
+    <ion-card-header>
+      <ion-card-title>Historique Médical</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-list-header>Rendez-vous</ion-list-header>
+        <ion-item *ngFor="let app of medicalHistory.appointments">
+          <ion-label>
+            <h3>{{ app.date | date }}</h3>
+            <p>{{ app.reason }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-list-header>Consultations</ion-list-header>
+        <ion-item *ngFor="let con of medicalHistory.consultations">
+          <ion-label>
+            <h3>{{ con.date | date }}</h3>
+            <p>{{ con.notes }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card-->
+  <!-- patient-profile.page.html -->
+<ion-card *ngIf="medicalHistory && !isLoadingHistory" class="history-card">
+  <ion-card-header>
+    <ion-card-title>Historique Médical</ion-card-title>
+  </ion-card-header>
+
+  <ion-card-content>
+    <!-- Appointments Section -->
+    <ion-list-header *ngIf="medicalHistory.appointments.length > 0">
+      <ion-label>Rendez-vous</ion-label>
+    </ion-list-header>
+    
+    <ion-item *ngFor="let app of medicalHistory.appointments">
+      <ion-icon name="calendar" slot="start" [color]="getAppointmentColor(app.status)"></ion-icon>
+      <ion-label>
+        <h3>{{ app.date | date:'mediumDate' }} à {{ app.time }}</h3>
+        <p><strong>Motif:</strong> {{ app.reason }}</p>
+        <p><strong>Statut:</strong> {{ app.status | titlecase }}</p>
+        <p *ngIf="app.doctor"><strong>Docteur:</strong> Dr. {{ app.doctor.name }} ({{ app.doctor.specialty }})</p>
+        <p *ngIf="app.location">
+          <ion-icon name="location-outline"></ion-icon>
+          {{ app.location.latitude | number:'1.4-4' }}, {{ app.location.longitude | number:'1.4-4' }}
+        </p>
+      </ion-label>
+    </ion-item>
+
+    <!-- Consultations Section -->
+    <ion-list-header *ngIf="medicalHistory.consultations.length > 0">
+      <ion-label>Consultations</ion-label>
+    </ion-list-header>
+    
+    <ion-item *ngFor="let con of medicalHistory.consultations">
+      <ion-icon name="document-text" slot="start" color="secondary"></ion-icon>
+      <ion-label>
+        <h3>{{ con.date | date:'mediumDate' }}</h3>
+        <p><strong>Notes:</strong> {{ con.notes }}</p>
+        <p *ngIf="con.doctor"><strong>Docteur:</strong> Dr. {{ con.doctor.name }}</p>
+      </ion-label>
+    </ion-item>
+
+    <!-- Empty State -->
+    <div *ngIf="medicalHistory.appointments.length === 0 && medicalHistory.consultations.length === 0" class="empty-state">
+      <ion-icon name="information-circle" color="medium"></ion-icon>
+      <p>Aucun historique médical trouvé</p>
+    </div>
+  </ion-card-content>
+</ion-card>
 </ion-content>

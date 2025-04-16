@@ -1,5 +1,5 @@
 export interface Doctor {
-  id: string;
+  _id: string;
   name: string;
   specialty: string;
   description: string;
@@ -7,5 +7,8 @@ export interface Doctor {
   phone: string;
   latitude: number;
   longitude: number;
-  image: string; 
+  image: string;
+  email?: string;
+  role?: string;
+  availability?: { day: string, hours: string[] }[];
 }

@@ -28,7 +28,8 @@ class Doctor:
         )
 
 class Patient:
-    def __init__(self, id, first_name, last_name, birth_date, email, password, role="patient"):
+    def __init__(self, id, first_name, last_name, birth_date, email, password, role="patient", 
+                 address=None, phone=None, image=None, allergies=None):
         self.id = id
         self.first_name = first_name
         self.last_name = last_name
@@ -36,18 +37,41 @@ class Patient:
         self.email = email
         self.password = password
         self.role = role
+        self.address = address
+        self.phone = phone
+        self.image = image
+        self.allergies = allergies or []
 
     @staticmethod
     def from_mongo(doc):
         return Patient(
-            id=doc['_id'],
+            id=str(doc['_id']),  # Convert ObjectId to string
             first_name=doc['first_name'],
             last_name=doc['last_name'],
             birth_date=doc['birth_date'],
             email=doc['email'],
             password=doc['password'],
-            role=doc.get('role', 'patient')
+            role=doc.get('role', 'patient'),
+            address=doc.get('address'),
+            phone=doc.get('phone'),
+            image=doc.get('image'),
+            allergies=doc.get('allergies', [])
         )
+
+    def to_dict(self):
+        return {
+            '_id': self.id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'birth_date': self.birth_date,
+            'email': self.email,
+            'password': self.password,
+            'role': self.role,
+            'address': self.address,
+            'phone': self.phone,
+            'image': self.image,
+            'allergies': self.allergies
+        }
 
 class Administrator:
     def __init__(self, id, first_name, last_name, birth_date, email, password, role="admin"):
@@ -102,9 +126,15 @@ class Consultation:
         self.notes = notes
 
 class History:
-    def __init__(self, appointments: List[Appointment], consultations: List[Consultation]):
+    def __init__(self, appointments: List[Dict], consultations: List[Dict]):
         self.appointments = appointments
         self.consultations = consultations
+
+    def to_dict(self):
+        return {
+            "appointments": self.appointments,
+            "consultations": self.consultations
+        }
 
 class Diagnostic:
     def __init__(self, date: str, result: str):
@@ -119,4 +149,4 @@ class Prescription:
 class DiagnosticsData:
     def __init__(self, diagnostics: List[Diagnostic], prescriptions: List[Prescription]):
         self.diagnostics = diagnostics
-        self.prescriptions = prescriptionscd
+        self.prescriptions = prescriptions

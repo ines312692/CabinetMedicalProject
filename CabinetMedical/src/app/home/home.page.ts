@@ -1,17 +1,21 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {DoctorService} from "../services/doctor.service";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { DoctorService } from '../services/doctor.service';
+import { Doctor } from '../models/Docter.interface';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  standalone: false,
+  standalone: false  // Remove or set to false
 })
 export class HomePage implements OnInit, OnDestroy {
-  doctors: any[] = [];
-  filteredDoctors: any[] = [];
+  doctors: Doctor[] = [];
+  filteredDoctors: Doctor[] = [];
   currentDoctorIndex: number = 0;
   intervalId: any;
+  private doctorsSubscription!: Subscription;
+
   constructor(private doctorService: DoctorService) {}
 
   ngOnInit() {
@@ -23,37 +27,41 @@ export class HomePage implements OnInit, OnDestroy {
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
+    if (this.doctorsSubscription) {
+      this.doctorsSubscription.unsubscribe();
+    }
   }
 
   loadDoctors() {
-    this.doctorService.getDoctors().subscribe(
-      (data) => {
+    this.doctorsSubscription = this.doctorService.getDoctors().subscribe({
+      next: (data: Doctor[]) => {
         this.doctors = data;
-        this.filteredDoctors = data;
+        this.filteredDoctors = [...data];
         console.log('Médecins récupérés :', this.doctors);
       },
-      (error) => {
+      error: (error: any) => {
         console.error('Erreur lors de la récupération des médecins', error);
       }
-    );
+    });
   }
 
   startImageRotation() {
     this.intervalId = setInterval(() => {
-      this.currentDoctorIndex = (this.currentDoctorIndex + 1) % this.filteredDoctors.length;
-    }, 3000); // Change image every 3 seconds
+      if (this.filteredDoctors.length > 0) {
+        this.currentDoctorIndex = (this.currentDoctorIndex + 1) % this.filteredDoctors.length;
+      }
+    }, 3000);
   }
-  swiperSlideChanged(e:any) {
+
+  swiperSlideChanged(e: any) {
     console.log('slide changed', e);
   }
+
   searchDoctors(event: any) {
     const query = event.target.value.toLowerCase();
     this.filteredDoctors = this.doctors.filter(doctor =>
       doctor.name.toLowerCase().includes(query) ||
-      doctor.specialty.toLowerCase().includes(query)
+      (doctor.specialty && doctor.specialty.toLowerCase().includes(query))
     );
   }
- 
-
- 
 }

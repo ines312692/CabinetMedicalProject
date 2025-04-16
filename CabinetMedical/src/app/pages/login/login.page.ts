@@ -60,18 +60,10 @@ export class LoginPage implements OnInit {
     };
 
     this.authService.login(loginData).subscribe({
-      next: (response: { role: string }) => {
-        console.log('Login successful', response);
+      next: (response) => {
         this.presentToast('Connexion réussie!', 'success');
-
-        // Redirection selon le rôle
-        if (response.role === 'doctor') {
-          this.router.navigate(['/doctor-profile']);
-        } else if (response.role === 'patient') {
-          this.router.navigate(['/patient-profile']);
-        } else if (response.role === 'admin') {
-          this.router.navigate(['/admin-profile']);
-        }
+        // Navigation handled automatically through app component state
+        this.router.navigate([`/${response.role}-profile`]);
       },
       error: (error: { error: { error: string } }) => {
         console.error('Login failed', error);
