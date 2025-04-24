@@ -60,12 +60,6 @@ def delete_document(id):
     return response
 
 
-# @app.route('/doctors', methods=['GET'])
-# def list_doctors():
-#     doctors = mongo.db.doctors.find()
-#     response = make_response(jsonify([doctor for doctor in doctors]), 200)
-#     response.headers.add('Access-Control-Allow-Origin', '*')
-#     return response
 @app.route('/doctors', methods=['GET'])
 def list_doctors():
     doctors = mongo.db.doctors.find()
@@ -84,19 +78,27 @@ def list_doctors():
 @app.route('/doctors/<id>', methods=['GET'])
 def get_doctor(id):
     try:
-        # Convertir l'ID string en ObjectId
+        # Convert string ID to ObjectId
         doctor_id = ObjectId(id)
     except:
         return jsonify({'error': 'Invalid ID format'}), 400
 
-    # Rechercher le docteur dans la base de données
+    # Find the doctor in the database
     doctor = mongo.db.doctors.find_one({"_id": doctor_id})
 
     if doctor:
-        # Convertir ObjectId en string pour la sérialisation JSON
+        # Convert ObjectId to string for JSON serialization
         doctor['_id'] = str(doctor['_id'])
 
-        # Ajouter l'URL complète de l'image si nécessaire
+        # Make sure all required fields are present (with defaults if missing)
+        if 'latitude' not in doctor:
+            doctor['latitude'] = None
+        if 'longitude' not in doctor:
+            doctor['longitude'] = None
+        if 'availability' not in doctor:
+            doctor['availability'] = []
+
+        # Add the complete image URL
         if 'image' in doctor:
             doctor['image_url'] = f"/uploads/{doctor['image']}"
 
@@ -105,51 +107,6 @@ def get_doctor(id):
         return response
     else:
         return jsonify({'error': 'Doctor not found'}), 404
-
-
-# app/routes.py
-#@app.route('/doctors', methods=['POST'])
-#def add_doctor():
-    #data = request.json
-    # if not data:
-    #     return jsonify({"error": "No data provided"}), 400
-
-    # required_fields = ["id", "name", "specialty", "description", "address", "phone", "latitude", "longitude", "image"]
-    # for field in required_fields:
-    #     if field not in data:
-    #         return jsonify({"error": f"Missing field: {field}"}), 400
-    required_fields = ["id", "name", "specialty", "description", "address", "phone", "latitude", "longitude", "image", "availability"]
-    for field in required_fields:
-        if field not in data:
-            return jsonify({"error": f"Missing field: {field}"}), 400
-
-    # doctor = {
-    #     "id": data['id'],
-    #     "name": data['name'],
-    #     "specialty": data['specialty'],
-    #     "description": data['description'],
-    #     "address": data['address'],
-    #     "phone": data['phone'],
-    #     "latitude": data['latitude'],
-    #     "longitude": data['longitude'],
-    #     "image": data['image']
-    # }
-    doctor = {
-        "id": data['id'],
-        "name": data['name'],
-        "specialty": data['specialty'],
-        "description": data['description'],
-        "address": data['address'],
-        "phone": data['phone'],
-        "latitude": data['latitude'],
-        "longitude": data['longitude'],
-        "image": data['image'],
-        "availability": data['availability'],
-    }
-
-    # mongo.db.doctors.insert_one(doctor)
-    # return jsonify({"message": "Doctor added successfully"}), 201
-#
 
 @app.route('/doctors', methods=['DELETE'])
 def delete_all_doctors():
@@ -383,16 +340,20 @@ def add_doctor():
     hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
 
     doctor = {
-        "name": data['name'],
-        "specialty": data['specialty'],
-        "description": data['description'],
-        "address": data['address'],
-        "phone": data['phone'],
-        "email": data['email'],
-        "password": hashed_password.decode('utf-8'),
-        "image": filename,
-        "role": "doctor"
-    }
+            "name": data['name'],
+            "specialty": data['specialty'],
+            "description": data['description'],
+            "address": data['address'],
+            "phone": data['phone'],
+            "email": data['email'],
+            "password": hashed_password.decode('utf-8'),
+            "image": filename,
+            "role": "doctor",
+            # Add these fields
+            "latitude": float(data.get('latitude', 0)),  # Default to 0 if not provided
+            "longitude": float(data.get('longitude', 0)),  # Default to 0 if not provided
+            "availability": data.get('availability', [])  # Default to empty list if not provided
+        }
 
     result = mongo.db.doctors.insert_one(doctor)
 

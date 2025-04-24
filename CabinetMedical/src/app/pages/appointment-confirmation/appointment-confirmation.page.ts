@@ -1,31 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DoctorService } from '../../services/doctor.service';
-import { DatePipe } from '@angular/common';
-import { IonicModule, AlertController } from "@ionic/angular";
-import { NgIf } from "@angular/common";
-import { AppointmentService } from "../../services/appointmentservice.service";
+import { DatePipe, NgIf} from '@angular/common';
+import {IonicModule, AlertController} from '@ionic/angular';
+import { AppointmentService } from '../../services/appointmentservice.service';
 
 @Component({
   selector: 'app-appointment-confirmation',
   templateUrl: './appointment-confirmation.page.html',
   standalone: true,
-  imports: [
-    IonicModule,
-    NgIf
-  ],
+  imports: [IonicModule, NgIf],
   providers: [DatePipe],
   styleUrls: ['./appointment-confirmation.page.scss']
 })
 export class AppointmentConfirmationPage implements OnInit {
-  appointment: any;
+  appointment: any; // Consider typing as Appointment & { doctor: Doctor }
 
   constructor(
-    private route: ActivatedRoute,
-    private doctorService: DoctorService,
-    private datePipe: DatePipe,
-    private appointmentService: AppointmentService,
-    private alertController: AlertController
+    private readonly route: ActivatedRoute,
+    private readonly doctorService: DoctorService,
+    private readonly datePipe: DatePipe,
+    private readonly appointmentService: AppointmentService,
+    private readonly alertController: AlertController
   ) {}
 
   ngOnInit() {
@@ -33,11 +29,12 @@ export class AppointmentConfirmationPage implements OnInit {
       console.log('Params:', params);
       if (params['appointmentId']) {
         this.appointment = this.doctorService.getAppointmentDetails();
-        if (this.appointment) {
-          console.log('Appointment details:', this.appointment);
-        } else {
-          console.log('Appointment details not found');
+        console.log('Appointment details:', JSON.stringify(this.appointment, null, 2));
+        if (!this.appointment || !this.appointment.doctor) {
+          console.error('Appointment or doctor details missing');
         }
+      } else {
+        console.error('appointmentId not provided in queryParams');
       }
     });
   }
@@ -47,15 +44,23 @@ export class AppointmentConfirmationPage implements OnInit {
   }
 
   async confirmAppointment() {
-    console.log('Appointment confirmed:', this.appointment);
+    console.log('Appointment:', this.appointment);
 
+    // Validate appointment and doctor
+    if (!this.appointment || !this.appointment.doctor || !this.appointment.doctor._id) {
+      console.error('Invalid appointment or doctor data:', this.appointment);
+      await this.showAlert('Error', 'Appointment or doctor data is incomplete.');
+      return;
+    }
+
+    // Prepare appointment data
     const appointmentData = {
       date: this.appointment.date,
       reason: this.appointment.reason || 'General Consultation',
       time: this.appointment.time,
       location: this.appointment.location,
-      doctor_id: String(this.appointment.doctor.id.$oid),
-      patient_id:String(this.appointment.doctor.id.$oid),/*****a changer lorsque le client fait authentification */
+      doctor_id: this.appointment.doctor._id, // Use _id (string) from Doctor interface
+      patient_id: this.appointment.doctor._id, // TODO: Replace with actual patient ID after authentication
       status: 'pending'
     };
     console.log('Posting appointment:', appointmentData);

@@ -2,7 +2,7 @@ from bson import ObjectId
 
 
 class Doctor:
-    def __init__(self, id, name, specialty, description, address, phone, latitude, longitude, image):
+    def __init__(self, id, name, specialty, description, address, phone, latitude, longitude, image, password, email, role, availability):
         self.id = id
         self.name = name
         self.specialty = specialty
@@ -29,8 +29,7 @@ class Doctor:
             latitude=doc['latitude'],
             longitude=doc['longitude'],
             image=doc['image'],
-            availability=doc['availability']
-            image=doc['image'],
+            availability=doc['availability'],  # Gardez une seule définition
             password=doc['password'],
             email=doc['email'],
             role=doc.get('role', 'doctor')

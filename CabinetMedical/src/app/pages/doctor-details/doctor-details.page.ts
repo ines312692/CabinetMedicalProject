@@ -37,6 +37,16 @@ export class DoctorDetailsPage implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.doctorService.getDoctorById(id).subscribe(doctor => {
+      // Parse availability if it's a string
+      if (typeof doctor.availability === 'string') {
+        try {
+          doctor.availability = JSON.parse(doctor.availability);
+        } catch (e) {
+          console.error('Error parsing availability:', e);
+          doctor.availability = []; // Fallback to empty array
+        }
+      }
+
       this.doctor = doctor;
       this.isDateCardVisible = true;
       setTimeout(() => {
@@ -139,7 +149,13 @@ export class DoctorDetailsPage implements OnInit {
       };
       this.doctorService.saveAppointmentDetails(appointmentDetails);
       this.isDateCardVisible = false;
-      this.router.navigate(['/appointment-confirmation'], {queryParams: {appointmentId: this.doctor.id.toString()}}).then(r =>console.log('Navigated to appointment confirmation page'));
+
+      // Use _id instead of id
+      const doctorId = this.doctor._id ;
+      // @ts-ignore
+      this.router.navigate(['/appointment-confirmation'], {
+        queryParams: {appointmentId: doctorId.toString()}
+      }).then(r => console.log('Navigated to appointment confirmation page'));
     } else {
       alert('Please select a valid time for the appointment.');
     }
