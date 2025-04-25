@@ -76,11 +76,13 @@ export class HomePage implements OnInit, OnDestroy {
 
   toggleSpecialtyFilter(specialty: string) {
     this.selectedSpecialty = this.selectedSpecialty === specialty ? null : specialty;
+    this.searchDoctors({ target: { value: '' } });
   }
 
+ 
   clearSpecialtyFilter() {
     this.selectedSpecialty = null;
-    
+    this.searchDoctors({ target: { value: '' } });
   }
 
     toggleGovernoratFilter(governorat: string) {
