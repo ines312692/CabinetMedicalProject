@@ -2,7 +2,7 @@ from bson import ObjectId
 
 
 class Doctor:
-    def __init__(self, id, name, specialty, description, address, phone, latitude, longitude, image):
+    def __init__(self, id, name, specialty, description, address, phone, latitude, longitude, image, password, email, role="doctor", availability=):
         self.id = id
         self.name = name
         self.specialty = specialty
