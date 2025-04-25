@@ -23,7 +23,6 @@ export class DoctorCardPage implements OnInit {
 
   }
   viewDoctorDetails() {
-    // Implémentez la navigation vers les détails du docteur
   }
   bookAppointment() {
     if (!this.doctor?._id) {
@@ -36,7 +35,13 @@ export class DoctorCardPage implements OnInit {
 
 
   callDoctor() {
-    // Logique pour appeler le docteur
+    const phoneNumber = this.doctor.phone;
+    if (phoneNumber) {
+      window.open(`tel:${phoneNumber}`, '_system');
+    } else {
+      console.error('Phone number is not available');
+    }
+
   }
 
 
