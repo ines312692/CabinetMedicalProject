@@ -32,12 +32,12 @@ export class DoctorDetailsPage implements OnInit {
   availableTimes: string[] = [];
   isDateCardVisible = true;
 
-  constructor(private route: ActivatedRoute, private doctorService: DoctorService, private router: Router, private alertController: AlertController) {}
+  constructor(private readonly route: ActivatedRoute, private readonly doctorService: DoctorService, private readonly router: Router, private readonly alertController: AlertController) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.doctorService.getDoctorById(id).subscribe(doctor => {
-      // Parse availability if it's a string
+
       if (typeof doctor.availability === 'string') {
         try {
           doctor.availability = JSON.parse(doctor.availability);

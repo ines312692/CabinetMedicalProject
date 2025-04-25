@@ -2,6 +2,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import {Doctor} from "../../models/Docter.interface";
 import {IonicModule} from "@ionic/angular";
+import {Router} from "@angular/router";
 
 
 @Component({
@@ -16,21 +17,27 @@ import {IonicModule} from "@ionic/angular";
 export class DoctorCardPage implements OnInit {
   @Input() doctor!: Doctor;
 
-  constructor() { }
+  constructor(private readonly router: Router) { }
 
   ngOnInit() {
-    
+
   }
   viewDoctorDetails() {
     // Implémentez la navigation vers les détails du docteur
   }
   bookAppointment() {
-    // Logique pour prendre rendez-vous
+    if (!this.doctor?._id) {
+      console.error('Doctor ID is undefined');
+      return;
+    }
+    const doctorId = this.doctor._id.$oid; // Extract the $oid string
+    this.router.navigate(['/doctor-details', doctorId]);
   }
-  
+
+
   callDoctor() {
     // Logique pour appeler le docteur
   }
-  
- 
+
+
 }

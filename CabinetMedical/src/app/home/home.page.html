@@ -8,15 +8,7 @@
 </ion-header>
 <ion-content>
 
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Welcome to the Medical Cabinet</ion-card-title>
-      <ion-card-subtitle>Find and book appointments with doctors</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <p>Use the search bar below to find doctors by name or specialty.</p>
-    </ion-card-content>
-  </ion-card>
+
   <swiper-container (slideChange)="swiperSlideChanged($event)" [loop]="true" [pagination]="true">
     <swiper-slide *ngFor="let pub of pubs">
       <div class="swiper-zoom-container">
@@ -28,13 +20,13 @@
 
   <!-- Filtre par spécialité sous forme de chips -->
   <div class="chips-container">
-    <ion-chip 
+    <ion-chip
     [color]="!selectedSpecialty ? 'primary' : 'medium'"
     (click)="clearSpecialtyFilter()">
     Tous
   </ion-chip>
-    <ion-chip 
-      *ngFor="let spec of allSpecialties" 
+    <ion-chip
+      *ngFor="let spec of allSpecialties"
       [color]="selectedSpecialty === spec ? 'primary' : 'medium'"
       (click)="toggleSpecialtyFilter(spec)">
       {{ spec }}
@@ -43,13 +35,13 @@
 
   <!-- Filtre par gouvernorat -->
 <div class="chips-container governorats-row">
-  <ion-chip 
+  <ion-chip
     [color]="!selectedGovernorat ? 'success' : 'medium'"
     (click)="clearGovernoratFilter()">
     Tous
   </ion-chip>
-  <ion-chip 
-    *ngFor="let gov of allGovernorats" 
+  <ion-chip
+    *ngFor="let gov of allGovernorats"
     [color]="selectedGovernorat === gov ? 'success' : 'medium'"
     (click)="toggleGovernoratFilter(gov)">
     {{ gov }}

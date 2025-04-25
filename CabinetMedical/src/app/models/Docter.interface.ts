@@ -1,5 +1,5 @@
 export interface Doctor {
-  _id: string;  // Changed from id to _id to match MongoDB
+  _id: { $oid: string }; // Changed from id to _id to match MongoDB
   id?: string;
   name: string;
   specialty: string;
