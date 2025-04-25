@@ -2,6 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {DoctorService} from "../services/doctor.service";
 import { PubserviceService } from '../services/pubservice.service';
 import { AlertController } from '@ionic/angular';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-home',
@@ -24,8 +25,8 @@ export class HomePage implements OnInit, OnDestroy {
     'Monastir', 'Mahdia', 'Sfax', 'Kairouan', 'Kasserine', 'Sidi Bouzid',
     'Gabès', 'Medenine', 'Tataouine', 'Gafsa', 'Tozeur', 'Kebili'
   ];
-  filteredPubs: any[] = []; 
-  constructor(private doctorService: DoctorService, private pubService:PubserviceService) {}
+  filteredPubs: any[] = [];
+  constructor(private doctorService: DoctorService, private pubService:PubserviceService,private router:Router ) {}
 
   ngOnInit() {
     this.loadDoctors();
@@ -72,7 +73,7 @@ export class HomePage implements OnInit, OnDestroy {
   swiperSlideChanged(e:any) {
     console.log('slide changed', e);
   }
- 
+
 
   toggleSpecialtyFilter(specialty: string) {
     this.selectedSpecialty = this.selectedSpecialty === specialty ? null : specialty;
@@ -80,51 +81,53 @@ export class HomePage implements OnInit, OnDestroy {
 
   clearSpecialtyFilter() {
     this.selectedSpecialty = null;
-    
+
   }
 
     toggleGovernoratFilter(governorat: string) {
       this.selectedGovernorat = this.selectedGovernorat === governorat ? null : governorat;
       this.searchDoctors({ target: { value: '' } });
     }
-    
+
     clearGovernoratFilter() {
       this.selectedGovernorat = null;
       this.searchDoctors({ target: { value: '' } });
     }
-    
+  goToProfile() {
+    this.router.navigate(['/patient-profile']);
+  }
 
     searchDoctors(event: any) {
       const query = event.target.value.toLowerCase();
       this.filteredDoctors = this.doctors.filter(doctor => {
         // Filtre par recherche
-        const matchesSearch = !query || 
-                           doctor.name.toLowerCase().includes(query) || 
+        const matchesSearch = !query ||
+                           doctor.name.toLowerCase().includes(query) ||
                            doctor.specialty.toLowerCase().includes(query);
-        
+
         // Filtre par spécialité
-        const matchesSpecialty = !this.selectedSpecialty || 
+        const matchesSpecialty = !this.selectedSpecialty ||
                               doctor.specialty.toLowerCase().includes(this.selectedSpecialty.toLowerCase());
-        
+
         // Filtre par gouvernorat (nouveau)
-        const matchesGovernorat = !this.selectedGovernorat || 
+        const matchesGovernorat = !this.selectedGovernorat ||
                                doctor.address.toLowerCase().includes(this.selectedGovernorat.toLowerCase());
-        
+
         return matchesSearch && matchesSpecialty && matchesGovernorat;
       });
     }
- 
+
 
     filterPubsByDate() {
       const today = new Date();
       today.setHours(0, 0, 0, 0); // Pour ignorer l'heure dans la comparaison
-      
+
       this.filteredPubs = this.pubs.filter(pub => {
         if (!pub.dateFin) return true; // Si pas de date de fin, on affiche
-        
+
         const dateFin = new Date(pub.dateFin);
         dateFin.setHours(0, 0, 0, 0);
-        
+
         return dateFin >= today;
       });
     }
@@ -132,5 +135,5 @@ export class HomePage implements OnInit, OnDestroy {
 }
 
 
- 
+
 

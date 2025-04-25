@@ -65,15 +65,15 @@ ion-button:hover {
 
 swiper-container {
   width: 100%;
-  height: auto; 
+  height: auto;
   margin: 10px 0;  /* Réduit de 20px à 10px */
   padding-bottom: 20px;
-  
-  --swiper-pagination-bullet-inactive-color: #6c757d; 
-  --swiper-pagination-bullet-inactive-opacity: 0.4; 
-  --swiper-pagination-color: #132d5e; 
-  --swiper-pagination-bullet-size: 10px; 
-  --swiper-pagination-bullet-horizontal-gap: 6px; 
+
+  --swiper-pagination-bullet-inactive-color: #6c757d;
+  --swiper-pagination-bullet-inactive-opacity: 0.4;
+  --swiper-pagination-color: #132d5e;
+  --swiper-pagination-bullet-size: 10px;
+  --swiper-pagination-bullet-horizontal-gap: 6px;
 }
 
 swiper-slide {
@@ -81,20 +81,20 @@ swiper-slide {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: transform 0.3s ease; 
+  transition: transform 0.3s ease;
 }
 
 .swiper-zoom-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 90%; 
-  max-width: 400px; 
-  height: 250px; 
+  width: 90%;
+  max-width: 400px;
+  height: 250px;
   margin: 0 auto;
-  overflow: hidden; 
-  border-radius: 12px; 
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); 
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -102,23 +102,54 @@ swiper-slide {
 .swiper-zoom-container img {
   width: 100%;
   height: 100%;
-  object-fit: cover; 
-  border-radius: 12px; 
+  object-fit: cover;
+  border-radius: 12px;
 }
 
 .swiper-zoom-container:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); 
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+// home.page.scss
+ion-header {
+  ion-toolbar {
+    --background: #ffffff; // White background for the toolbar
+    --min-height: 44px; // Reduce toolbar height (default is ~56px)
+    --padding-top: 4px; // Reduce top padding
+    --padding-bottom: 4px; // Reduce bottom padding
+
+  }
+
+  .profile-button {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --border-radius: 50%; // Circular button
+    --background: transparent; // No default background
+    --background-activated: rgba(0, 123, 255, 0.1); // Subtle blue on tap
+    margin-right: 8px; // Space from edge
+  }
+
+  .profile-icon {
+    font-size: 28px; // Slightly larger for prominence
+    color: #0e4787; // Vibrant blue
+    transition: transform 0.2s ease; // Smooth scaling
+  }
+
+  // Scale icon on hover or tap (for web and mobile)
+  .profile-button:hover .profile-icon,
+  .profile-button:active .profile-icon {
+    transform: scale(1.2); // Slight zoom effect
+  }
 }
 
 
 :host ::ng-deep .swiper-pagination-bullet {
-  transition: background-color 0.3s ease; 
+  transition: background-color 0.3s ease;
 }
 
 
 :host ::ng-deep .swiper-pagination-bullet-active {
-  transform: scale(1.2); 
+  transform: scale(1.2);
 }
 
 
@@ -174,7 +205,7 @@ ion-searchbar {
   scrollbar-width: none; /* Cache la scrollbar sur Firefox */
   background: #f8f9fa;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  
+
   &::-webkit-scrollbar {
     display: none; /* Cache la scrollbar sur Chrome/Safari */
   }
@@ -189,7 +220,7 @@ ion-searchbar {
     --padding-start: 16px;
     --padding-end: 16px;
     --height: 36px;
-    
+
     margin: 0;
     border: 1px solid rgba(0, 0, 0, 0.1);
     font-size: 0.875rem;
@@ -211,7 +242,7 @@ ion-searchbar {
       opacity: 0.9;
     }
 
-    
+
     @media (max-width: 360px) {
       --padding-start: 12px;
       --padding-end: 12px;
@@ -219,17 +250,17 @@ ion-searchbar {
     }
   }
 
- 
+
   ion-chip:first-child {
-    margin-left: auto; 
+    margin-left: auto;
   }
 
   ion-chip:last-child {
-    margin-right: auto; 
+    margin-right: auto;
   }
 }
 .governorats-row {
-  background: #f8f9fa; 
+  background: #f8f9fa;
   border-bottom: 1px solid #e0f0e0;
 
   ion-chip {
@@ -237,7 +268,7 @@ ion-searchbar {
     --color: #1b5e20;
     --background-activated: var(--ion-color-success);
     --color-activated: white;
-    
+
     &[color="success"] {
       --background: var(--ion-color-success);
       --color: white;
@@ -251,4 +282,26 @@ ion-searchbar {
     }
   }
 }
+ion-content {
+   // Optional: Light background for content
+  scrollbar-width: thin; // For Firefox
+  scrollbar-color: #007BFF #ffffff; // Thumb and track for Firefox
 
+  &::-webkit-scrollbar {
+    width: 8px; // Scrollbar width
+  }
+
+  &::-webkit-scrollbar-track {
+
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #007BFF; // Vibrant blue thumb
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #0056b3; // Darker blue on hover
+  }
+}

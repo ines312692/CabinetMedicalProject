@@ -68,7 +68,7 @@ export class LoginPage implements OnInit {
         if (response.role === 'doctor') {
           this.router.navigate(['/doctor-profile']);
         } else if (response.role === 'patient') {
-          this.router.navigate(['/patient-profile']);
+          this.router.navigate(['/home']);
         } else if (response.role === 'admin') {
           this.router.navigate(['/admin-profile']);
         }

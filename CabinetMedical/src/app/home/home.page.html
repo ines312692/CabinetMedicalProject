@@ -1,30 +1,32 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Home</ion-title>
     <ion-buttons slot="start" style="color: #132d5e;">
       <ion-menu-button menu="main-menu"></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button class="profile-button" (click)="goToProfile()">
+        <ion-icon name="person-circle" class="profile-icon"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-
-
   <swiper-container (slideChange)="swiperSlideChanged($event)" [loop]="true" [pagination]="true">
     <swiper-slide *ngFor="let pub of pubs">
       <div class="swiper-zoom-container">
-        <img [src]="'http://localhost:5000/' + pub.image" alt="Image pub" alt="" width="100%"/>
-    </div>
-  </swiper-slide>
+        <img [src]="'http://localhost:5000/' + pub.image" alt="Image pub" width="100%"/>
+      </div>
+    </swiper-slide>
   </swiper-container>
   <ion-searchbar show-clear-button="always" clear-icon="trash-bin" placeholder="Rechercher" (ionInput)="searchDoctors($event)"></ion-searchbar>
 
   <!-- Filtre par spécialité sous forme de chips -->
   <div class="chips-container">
     <ion-chip
-    [color]="!selectedSpecialty ? 'primary' : 'medium'"
-    (click)="clearSpecialtyFilter()">
-    Tous
-  </ion-chip>
+      [color]="!selectedSpecialty ? 'primary' : 'medium'"
+      (click)="clearSpecialtyFilter()">
+      Tous
+    </ion-chip>
     <ion-chip
       *ngFor="let spec of allSpecialties"
       [color]="selectedSpecialty === spec ? 'primary' : 'medium'"
@@ -34,21 +36,19 @@
   </div>
 
   <!-- Filtre par gouvernorat -->
-<div class="chips-container governorats-row">
-  <ion-chip
-    [color]="!selectedGovernorat ? 'success' : 'medium'"
-    (click)="clearGovernoratFilter()">
-    Tous
-  </ion-chip>
-  <ion-chip
-    *ngFor="let gov of allGovernorats"
-    [color]="selectedGovernorat === gov ? 'success' : 'medium'"
-    (click)="toggleGovernoratFilter(gov)">
-    {{ gov }}
-  </ion-chip>
-</div>
-
-
+  <div class="chips-container governorats-row">
+    <ion-chip
+      [color]="!selectedGovernorat ? 'success' : 'medium'"
+      (click)="clearGovernoratFilter()">
+      Tous
+    </ion-chip>
+    <ion-chip
+      *ngFor="let gov of allGovernorats"
+      [color]="selectedGovernorat === gov ? 'success' : 'medium'"
+      (click)="toggleGovernoratFilter(gov)">
+      {{ gov }}
+    </ion-chip>
+  </div>
 
   <app-doctor-grid [doctors]="filteredDoctors"></app-doctor-grid>
 </ion-content>
