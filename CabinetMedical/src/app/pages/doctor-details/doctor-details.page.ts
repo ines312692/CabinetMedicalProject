@@ -9,7 +9,7 @@ import Overlay from 'ol/Overlay';
 import { fromLonLat } from 'ol/proj';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { NgIf, NgForOf, NgStyle } from '@angular/common';
-import { Doctor } from '../../models/Docter.interface';
+import { Doctor } from '../../models/Doctor';
 import { FormsModule } from '@angular/forms';
 
 @Component({

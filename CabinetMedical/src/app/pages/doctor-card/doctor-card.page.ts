@@ -1,6 +1,6 @@
 // doctor-card.page.ts
 import { Component, Input, OnInit } from '@angular/core';
-import {Doctor} from "../../models/Docter.interface";
+import {Doctor} from "../../models/Doctor";
 import {IonicModule} from "@ionic/angular";
 
 

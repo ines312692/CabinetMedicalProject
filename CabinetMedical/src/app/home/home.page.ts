@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DoctorService } from '../services/doctor.service';
-import { Doctor } from '../models/Docter.interface';
+import { Doctor } from '../models/Doctor';
 import { Subscription } from 'rxjs';
 
 import { PubserviceService } from '../services/pubservice.service';

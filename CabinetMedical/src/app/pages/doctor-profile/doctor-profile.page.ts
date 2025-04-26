@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DoctorService } from '../../services/doctor.service';
 import { AuthService } from '../../services/auth.service';
-import { Doctor } from '../../models/Docter.interface';
+import { Doctor } from '../../models/Doctor';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';

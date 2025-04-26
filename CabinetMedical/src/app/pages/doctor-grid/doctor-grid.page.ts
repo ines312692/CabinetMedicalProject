@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import { DoctorService } from '../../services/doctor.service';
-import {Doctor} from "../../models/Docter.interface";
+import {Doctor} from "../../models/Doctor";
 import {DoctorCardPage} from "../doctor-card/doctor-card.page";
 import {IonicModule} from "@ionic/angular";
 import {NgForOf} from "@angular/common";

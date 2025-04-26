@@ -1,4 +1,4 @@
-import { Doctor } from "./Docter.interface";
+import { Doctor } from "./Doctor";
 
 export interface Patient {
   _id: string;

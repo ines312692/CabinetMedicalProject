@@ -49,7 +49,7 @@ export class ManageAppointmentsPage implements OnInit {
       }
     });
   }
-
+//bch nthabet heddhi maa ines/molka=======================================================================================================
   async acceptAppointment(appointment: Appointment): Promise<void> {
     console.log('Appointment object:', appointment);
     const appointmentId = appointment._id;
@@ -66,7 +66,9 @@ export class ManageAppointmentsPage implements OnInit {
         {
           text: 'OK',
           handler: () => {
-            this.appointmentService.acceptAppointment(appointmentId).subscribe({
+            this.appointmentService.acceptAppointment(
+              typeof appointmentId === 'string' ? { $oid: appointmentId } : appointmentId
+            ).subscribe({
               next: () => {
                 this.loadAppointments();
                 this.showAlert('Success', 'Appointment accepted successfully');
@@ -99,7 +101,9 @@ export class ManageAppointmentsPage implements OnInit {
         {
           text: 'OK',
           handler: () => {
-            this.appointmentService.rejectAppointment(appointmentId).subscribe({
+            this.appointmentService.rejectAppointment(
+              typeof appointmentId === 'string' ? { $oid: appointmentId } : appointmentId
+            ).subscribe({
               next: () => {
                 this.loadAppointments();
                 this.showAlert('Success', 'Appointment rejected successfully');
@@ -115,6 +119,7 @@ export class ManageAppointmentsPage implements OnInit {
     });
     await alert.present();
   }
+ // =============================================================================================================================================
 
   async showAlert(header: string, message: string): Promise<void> {
     const alert = await this.alertController.create({
