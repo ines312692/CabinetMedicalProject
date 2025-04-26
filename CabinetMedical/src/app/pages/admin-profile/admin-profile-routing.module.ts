@@ -7,7 +7,14 @@ const routes: Routes = [
   {
     path: '',
     component: AdminProfilePage
-  }
+  },
+ 
+ 
+
+ 
+  
+
+
 ];
 
 @NgModule({

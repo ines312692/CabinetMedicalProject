@@ -1,3 +1,4 @@
+// doctor.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -7,9 +8,17 @@ import { Appointment } from '../models/Appointment.interface';
 
 @Injectable({ providedIn: 'root' })
 export class DoctorService {
-  private apiUrl = 'http://localhost:5000/doctors'; // Added '/doctors' to base path
+  private apiUrl = 'http://127.0.0.1:5000/doctors';
 
   constructor(private http: HttpClient) {}
+
+  saveAppointmentDetails(details: any) {
+    this.appointmentDetails = details;
+  }
+
+  getAppointmentDetails() {
+    return this.appointmentDetails;
+  }
 
   getDoctorDetails(doctorId: string): Observable<Doctor> {
     return this.http.get<any>(`${this.apiUrl}/${doctorId}`).pipe(
@@ -42,9 +51,5 @@ export class DoctorService {
         _id: doctor._id?.$oid || doctor._id
       })))
     );
-  }
-  
-  getDoctorById(id: string): Observable<Doctor> {
-    return this.getDoctorDetails(id); // Reuse existing method
   }
 }

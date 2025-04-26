@@ -6,3 +6,6 @@ class Config:
     UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
     if not os.path.exists(UPLOAD_FOLDER):
         os.makedirs(UPLOAD_FOLDER)
+
+
+    UPLOAD_EXTENSIONS = ['.jpg', '.png', '.jpeg']

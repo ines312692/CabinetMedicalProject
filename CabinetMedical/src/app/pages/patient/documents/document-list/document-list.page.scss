@@ -1,0 +1,14 @@
+.not-viewed {
+  background-color: #ffcccc; /* Rouge pâle */
+  border-left: 5px solid #ff4d4d; /* Bord rouge */
+}
+
+.viewed {
+  background-color: #ccffcc; /* Vert pâle */
+  border-left: 5px solid #33cc33; /* Bord vert */
+}
+
+ion-badge {
+  margin-left: 10px;
+  font-weight: bold;
+}

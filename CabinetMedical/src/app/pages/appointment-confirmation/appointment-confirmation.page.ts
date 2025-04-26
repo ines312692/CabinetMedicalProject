@@ -1,4 +1,3 @@
-// appointment-confirmation.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AppointmentService } from '../../services/appointmentservice.service';
@@ -9,9 +8,12 @@ import OSM from 'ol/source/OSM';
 import View from 'ol/View';
 import Overlay from 'ol/Overlay';
 import { fromLonLat } from 'ol/proj';
-import {IonicModule} from "@ionic/angular";
 import {NgIf} from "@angular/common";
 import { DatePipe } from '@angular/common';
+import { DoctorService } from '../../services/doctor.service';
+import { IonicModule, AlertController } from "@ionic/angular";
+
+
 
 @Component({
   selector: 'app-appointment-confirmation',
@@ -22,55 +24,70 @@ import { DatePipe } from '@angular/common';
     NgIf,
     DatePipe
   ],
+  providers: [DatePipe],
   styleUrls: ['./appointment-confirmation.page.scss']
 })
 export class AppointmentConfirmationPage implements OnInit {
-  appointment!: Appointment;
+  appointment: any;
 
-  constructor(private route: ActivatedRoute, private appointmentService: AppointmentService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private doctorService: DoctorService,
+    private datePipe: DatePipe,
+    private appointmentService: AppointmentService,
+    private alertController: AlertController
+  ) {}
 
   ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id')!;
-    this.appointmentService.getAppointmentById(id).subscribe(appointment => {
-      this.appointment = appointment;
-      setTimeout(() => {
-        this.loadMap();
-      }, 100); // Delay to ensure the DOM is fully loaded
+    this.route.queryParams.subscribe(params => {
+      console.log('Params:', params);
+      if (params['appointmentId']) {
+        this.appointment = this.doctorService.getAppointmentDetails();
+        if (this.appointment) {
+          console.log('Appointment details:', this.appointment);
+        } else {
+          console.log('Appointment details not found');
+        }
+      }
     });
   }
 
-  loadMap() {
-    const mapElement = document.getElementById('map');
-    if (!mapElement) {
-      console.error('Map element not found');
-      return;
-    }
-
-    const map = new Map({
-      target: 'map',
-      layers: [
-        new TileLayer({
-          source: new OSM(),
-        }),
-      ],
-      view: new View({
-        center: fromLonLat([this.appointment.location.longitude, this.appointment.location.latitude]),
-        zoom: 15,
-      }),
-    });
-
-    const markerElement = document.createElement('div');
-    markerElement.className = 'marker';
-    const marker = new Overlay({
-      position: fromLonLat([this.appointment.location.longitude, this.appointment.location.latitude]),
-      positioning: 'center-center',
-      element: markerElement,
-      stopEvent: false,
-    });
-    map.addOverlay(marker);
+  getFormattedDate(date: string): string {
+    return this.datePipe.transform(date, 'fullDate') || '';
   }
 
-  confirmAppointment() {
-      console.log('Appointment confirmed');
+  async confirmAppointment() {
+    console.log('Appointment confirmed:', this.appointment);
+
+    const appointmentData = {
+      date: this.appointment.date,
+      reason: this.appointment.reason || 'General Consultation',
+      time: this.appointment.time,
+      location: this.appointment.location,
+      doctor_id: String(this.appointment.doctor.id.$oid),
+      patient_id:String(this.appointment.doctor.id.$oid),/*****a changer lorsque le client fait authentification */
+      status: 'pending'
+    };
+    console.log('Posting appointment:', appointmentData);
+
+    this.appointmentService.postAppointment(appointmentData).subscribe(
+      async response => {
+        console.log('Appointment posted successfully:', response);
+        await this.showAlert('Success', 'Appointment confirmed successfully.');
+      },
+      async error => {
+        console.error('Error posting appointment:', error);
+        await this.showAlert('Error', 'Failed to confirm appointment.');
+      }
+    );
+  }
+
+  async showAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 }

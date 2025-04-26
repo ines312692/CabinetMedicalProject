@@ -7,8 +7,12 @@ export interface Doctor {
   phone: string;
   latitude: number;
   longitude: number;
+
   image: string;
   email?: string;
   role?: string;
   availability?: { day: string, hours: string[] }[];
+
+
 }
+

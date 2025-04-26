@@ -6,6 +6,36 @@
   border: 2px solid white;
 }
 mwl-calendar-week-view {
-  width: 100%;
-  height: auto;
+  width: 200px;
+  height: 100px;
 }
+.modal-content {
+  --min-height: 20%;
+  --max-height: 20%;
+  --min-width: 20%;
+  --max-width: 20%;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-card {
+  width: 100%;
+  padding: 16px;
+}
+
+ion-item {
+  margin-bottom: 16px;
+}
+
+.custom-alert {
+  --width: 100px;
+  --height: 100px;
+  --border-radius: 10px;
+  --background: #f9f9f9;
+  --color: #333;
+  --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --padding: 20px;
+}
+

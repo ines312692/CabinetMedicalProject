@@ -17,6 +17,9 @@ from flask import Blueprint
 bp = Blueprint('api', __name__)
 
 # Then decorate all your routes with @bp.route instead of @app.route
+from bcrypt import hashpw, gensalt
+from flask import send_from_directory
+
 
 CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS"]}})
 
@@ -68,22 +71,51 @@ def delete_document(id):
 
 
 @bp.route('/doctors', methods=['GET'])
+# @app.route('/doctors', methods=['GET'])
+# def list_doctors():
+#     doctors = mongo.db.doctors.find()
+#     response = make_response(jsonify([doctor for doctor in doctors]), 200)
+#     response.headers.add('Access-Control-Allow-Origin', '*')
+#     return response
+@app.route('/doctors', methods=['GET'])
 def list_doctors():
     doctors = mongo.db.doctors.find()
-    response = make_response(jsonify([doctor for doctor in doctors]), 200)
+    doctors_list = []
+    for doctor in doctors:
+        doctor_dict = doctor
+        # Ajouter l'URL complète de l'image
+        if 'image' in doctor:
+            doctor_dict['image_url'] = f"/uploads/{doctor['image']}"
+        doctors_list.append(doctor_dict)
+    response = make_response(jsonify(doctors_list), 200)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 
 @bp.route('/doctors/<id>', methods=['GET'])
 def get_doctor(id):
-    doctor = get_doctor_by_id(mongo.db.doctors, id)
+    try:
+        # Convertir l'ID string en ObjectId
+        doctor_id = ObjectId(id)
+    except:
+        return jsonify({'error': 'Invalid ID format'}), 400
+
+    # Rechercher le docteur dans la base de données
+    doctor = mongo.db.doctors.find_one({"_id": doctor_id})
+
     if doctor:
-        response = make_response(jsonify(doctor.__dict__))
+        # Convertir ObjectId en string pour la sérialisation JSON
+        doctor['_id'] = str(doctor['_id'])
+
+        # Ajouter l'URL complète de l'image si nécessaire
+        if 'image' in doctor:
+            doctor['image_url'] = f"/uploads/{doctor['image']}"
+
+        response = jsonify(doctor)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
     else:
-        response = make_response(jsonify({'error': 'Doctor not found'}), 404)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+        return jsonify({'error': 'Doctor not found'}), 404
 
 
 # app/routes.py
@@ -92,12 +124,32 @@ def add_doctor():
     data = request.json
     if not data:
         return jsonify({"error": "No data provided"}), 400
+#@app.route('/doctors', methods=['POST'])
+#def add_doctor():
+    #data = request.json
+    # if not data:
+    #     return jsonify({"error": "No data provided"}), 400
 
-    required_fields = ["id", "name", "specialty", "description", "address", "phone", "latitude", "longitude", "image"]
+    # required_fields = ["id", "name", "specialty", "description", "address", "phone", "latitude", "longitude", "image"]
+    # for field in required_fields:
+    #     if field not in data:
+    #         return jsonify({"error": f"Missing field: {field}"}), 400
+    required_fields = ["id", "name", "specialty", "description", "address", "phone", "latitude", "longitude", "image", "availability"]
     for field in required_fields:
         if field not in data:
             return jsonify({"error": f"Missing field: {field}"}), 400
 
+    # doctor = {
+    #     "id": data['id'],
+    #     "name": data['name'],
+    #     "specialty": data['specialty'],
+    #     "description": data['description'],
+    #     "address": data['address'],
+    #     "phone": data['phone'],
+    #     "latitude": data['latitude'],
+    #     "longitude": data['longitude'],
+    #     "image": data['image']
+    # }
     doctor = {
         "id": data['id'],
         "name": data['name'],
@@ -107,7 +159,8 @@ def add_doctor():
         "phone": data['phone'],
         "latitude": data['latitude'],
         "longitude": data['longitude'],
-        "image": data['image']
+        "image": data['image'],
+        "availability": data['availability'],
     }
 
     mongo.db.doctors.insert_one(doctor)
@@ -139,6 +192,11 @@ def update_doctor(id):
     return jsonify({"error": "Update failed"}), 400
 
 @bp.route('/doctors', methods=['DELETE'])
+    # mongo.db.doctors.insert_one(doctor)
+    # return jsonify({"message": "Doctor added successfully"}), 201
+#
+
+@app.route('/doctors', methods=['DELETE'])
 def delete_all_doctors():
     result = mongo.db.doctors.delete_many({})
     return jsonify({"message": f"Deleted {result.deleted_count} doctors"}), 200
@@ -408,3 +466,348 @@ def list_patients():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+@app.route('/doctors', methods=['POST'])
+def add_doctor():
+    if 'image' not in request.files:
+        return jsonify({"error": "Image is required"}), 400
+
+    image = request.files['image']
+    if image.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    filename = secure_filename(image.filename)
+    upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+    # Créer le dossier s'il n'existe pas
+    os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+    image.save(upload_path)
+
+    data = request.form
+    required_fields = ['name', 'specialty', 'description', 'address', 'phone', 'email', 'password']
+
+    if not all(field in data for field in required_fields):
+        return jsonify({"error": "All fields are required"}), 400
+
+    # Vérifier si l'email existe déjà
+    if mongo.db.doctors.find_one({"email": data['email']}):
+        return jsonify({"error": "Email already exists"}), 409
+
+    # Cryptage du mot de passe
+    hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
+
+    doctor = {
+        "name": data['name'],
+        "specialty": data['specialty'],
+        "description": data['description'],
+        "address": data['address'],
+        "phone": data['phone'],
+        "email": data['email'],
+        "password": hashed_password.decode('utf-8'),
+        "image": filename,
+        "role": "doctor"
+    }
+
+    result = mongo.db.doctors.insert_one(doctor)
+
+    return jsonify({
+        "message": "Doctor added successfully",
+        "doctor_id": str(result.inserted_id),
+        "image_url": f"/uploads/{filename}"
+    }), 201
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    print(f"Looking for file: {file_path}")
+    if not os.path.exists(file_path):
+        print(f"File not found: {file_path}")
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+@app.route('/advertisements', methods=['POST'])
+def add_advertisement():
+    if 'image' not in request.files:
+        return jsonify({"error": "Image is required"}), 400
+
+    image = request.files['image']
+    if image.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    filename = secure_filename(image.filename)
+    upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+    # Créer le dossier s'il n'existe pas
+    os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+    image.save(upload_path)
+
+    data = request.form
+    required_fields = ['titre', 'description', 'dateFin']
+
+    if not all(field in data for field in required_fields):
+        return jsonify({"error": "All fields are required"}), 400
+
+    advertisement = {
+        "titre": data['titre'],
+        "description": data['description'],
+        "dateFin": data['dateFin'],
+        "image": filename
+    }
+
+    result = mongo.db.advertisements.insert_one(advertisement)
+
+    return jsonify({
+        "message": "Advertisement added successfully",
+        "advertisement_id": str(result.inserted_id),
+        "image": f"/uploads/{filename}"
+    }), 201
+
+@app.route('/advertisements', methods=['GET'])
+def list_advertisements():
+    advertisements = mongo.db.advertisements.find()
+    advertisements_list = []
+    for ad in advertisements:
+        ad_dict = ad
+        # Ajouter l'URL complète de l'image
+        if 'image' in ad:
+            ad_dict['image'] = f"/uploads/{ad['image']}"
+        advertisements_list.append(ad_dict)
+    response = make_response(jsonify(advertisements_list), 200)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/administrators/<id>', methods=['GET'])
+def get_administrator(id):
+    try:
+        # Convertir l'ID string en ObjectId
+        admin_id = ObjectId(id)
+    except:
+        return jsonify({'error': 'Invalid ID format'}), 400
+
+    # Rechercher l'administrateur dans la base de données
+    administrator = mongo.db.administrators.find_one({"_id": admin_id})
+
+    if administrator:
+        # Convertir ObjectId en string pour la sérialisation JSON
+        administrator['_id'] = str(administrator['_id'])
+
+        # Retourner les données de l'administrateur
+        response = jsonify(administrator)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response, 200
+    else:
+        return jsonify({'error': 'Administrator not found'}), 404
+
+
+
+
+from .models import Appointment
+
+@app.route('/appointments', methods=['GET'])
+def list_appointments():
+    appointments = mongo.db.appointments.find()
+    response = make_response(jsonify([appointment for appointment in appointments]), 200)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/appointments/<id>', methods=['GET'])
+def get_appointment(id):
+    appointment = mongo.db.appointments.find_one({"_id": ObjectId(id)})
+    if appointment:
+        response = make_response(jsonify(Appointment.from_mongo(appointment).__dict__), 200)
+    else:
+        response = make_response(jsonify({'error': 'Appointment not found'}), 404)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/appointments', methods=['POST'])
+def add_appointment():
+    data = request.json
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    required_fields = ["date", "reason", "time", "location", "doctor_id", "patient_id"]
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"Missing field: {field}"}), 400
+
+    appointment = {
+        "_id": ObjectId(),
+        "date": data['date'],
+        "reason": data['reason'],
+        "time": data['time'],
+        "location": data['location'],
+        "doctor_id": ObjectId(data['doctor_id']),
+        "patient_id": ObjectId(data['patient_id']),
+        "status": data.get('status', 'pending')
+    }
+
+    mongo.db.appointments.insert_one(appointment)
+    return jsonify({"message": "Appointment added successfully"}), 201
+
+@app.route('/appointments/<id>', methods=['PUT'])
+def update_appointment(id):
+    data = request.json
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    update_fields = {key: value for key, value in data.items() if key in ["date", "reason", "time", "location", "status"]}
+    result = mongo.db.appointments.update_one({"_id": ObjectId(id)}, {"$set": update_fields})
+
+    if result.matched_count == 1:
+        response = jsonify({"message": "Appointment updated successfully"})
+        response.status_code = 200
+    else:
+        response = jsonify({"error": "Appointment not found"})
+        response.status_code = 404
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/appointments/<id>', methods=['DELETE'])
+def delete_appointment(id):
+    result = mongo.db.appointments.delete_one({"_id": ObjectId(id)})
+    if result.deleted_count == 1:
+        response = jsonify({"message": "Appointment deleted successfully"})
+        response.status_code = 200
+    else:
+        response = jsonify({"error": "Appointment not found"})
+        response.status_code = 404
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/doctors/<doctor_id>/appointments', methods=['GET'])
+def get_doctor_appointments(doctor_id):
+    appointments = mongo.db.appointments.find({"doctor_id": ObjectId(doctor_id)})
+    response = make_response(jsonify([Appointment.from_mongo(app).__dict__ for app in appointments]), 200)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/appointments/<id>/accept', methods=['PUT'])
+def accept_appointment(id):
+    result = mongo.db.appointments.update_one({"_id": ObjectId(id)}, {"$set": {"status": "accepted"}})
+    if result.matched_count == 1:
+        response = jsonify({"message": "Appointment accepted successfully"})
+        response.status_code = 200
+    else:
+        response = jsonify({"error": "Appointment not found"})
+        response.status_code = 404
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/appointments/<id>/reject', methods=['PUT'])
+def reject_appointment(id):
+    result = mongo.db.appointments.update_one({"_id": ObjectId(id)}, {"$set": {"status": "rejected"}})
+    if result.matched_count == 1:
+        response = jsonify({"message": "Appointment rejected successfully"})
+        response.status_code = 200
+    else:
+        response = jsonify({"error": "Appointment not found"})
+        response.status_code = 404
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
+
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from flask import send_file
+import io
+
+@app.route('/patient/<patient_id>/diagnostics/pdf', methods=['GET'])
+def export_diagnostics_pdf(patient_id):
+    try:
+        patient_id_obj = ObjectId(patient_id)
+    except Exception as e:
+        return jsonify({"error": "Invalid patient ID format"}), 400
+
+    patient = mongo.db.patients.find_one({"_id": patient_id_obj})
+    if not patient:
+        return jsonify({"error": "Patient not found"}), 404
+
+    diagnostics = list(mongo.db.diagnostics.find({"patient_id": patient_id_obj}))
+    if not diagnostics:
+        return jsonify({"error": "No diagnostics found"}), 404
+
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    p.drawString(100, 750, f"Diagnostics for {patient['first_name']} {patient['last_name']}")
+
+    y = 700
+    for diag in diagnostics:
+        p.drawString(100, y, f"Date: {diag['date']} - Result: {diag['result']}")
+        y -= 20
+
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return send_file(buffer, as_attachment=True, download_name='diagnostics.pdf', mimetype='application/pdf')
+
+
+from flask import request, jsonify
+from datetime import datetime
+from bson import ObjectId
+from .models import Message
+from . import mongo
+
+@app.route('/api/messages', methods=['POST'])
+def send_message():
+    """Route pour envoyer un message."""
+    data = request.json
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    message = {
+        "_id": ObjectId(),
+        "unique_id": data.get("unique_id"),
+        "sender_id": ObjectId(data.get("sender_id")),
+        "receiver_id": ObjectId(data.get("receiver_id")),
+        "message": data.get("message"),
+        "timestamp": datetime.utcnow(),
+        "first_message": data.get("first_message", False)
+    }
+
+    mongo.db.messages.insert_one(message)
+    return jsonify({"status": "success", "message_id": str(message["_id"])}), 201
+
+
+@app.route('/api/messages', methods=['GET'])
+def get_messages():
+    """Route pour récupérer les messages entre un docteur et un patient."""
+    sender_id = request.args.get("sender_id")
+    receiver_id = request.args.get("receiver_id")
+    page = int(request.args.get("page", 1))
+    per_page = 10
+
+    if not sender_id or not receiver_id:
+        return jsonify({"error": "Sender ID and Receiver ID are required"}), 400
+
+    messages = list(mongo.db.messages.find({
+        "$or": [
+            {"sender_id": ObjectId(sender_id), "receiver_id": ObjectId(receiver_id)},
+            {"sender_id": ObjectId(receiver_id), "receiver_id": ObjectId(sender_id)}
+        ]
+    }).sort("timestamp", -1).skip((page - 1) * per_page).limit(per_page))
+
+    for message in messages:
+        message["_id"] = str(message["_id"])
+        message["sender_id"] = str(message["sender_id"])
+        message["receiver_id"] = str(message["receiver_id"])
+
+    return jsonify({"data": messages, "page": page}), 200
+
+@app.route('/patient/<patient_id>/appointments', methods=['GET'])
+def get_patient_appointments(patient_id):
+    try:
+        patient_id_obj = ObjectId(patient_id)
+    except Exception:
+        return jsonify({"error": "Invalid patient ID format"}), 400
+
+    appointments = list(mongo.db.appointments.find({"patient_id": patient_id_obj}))
+    if not appointments:
+        return jsonify({"error": "No appointments found"}), 404
+
+    for appointment in appointments:
+        appointment["_id"] = str(appointment["_id"])
+        appointment["doctor_id"] = str(appointment["doctor_id"])
+        appointment["patient_id"] = str(appointment["patient_id"])
+
+    return jsonify({"appointments": appointments}), 200

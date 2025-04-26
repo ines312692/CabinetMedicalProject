@@ -1,23 +1,20 @@
-from flask import Flask, jsonify
+from flask import Flask
 from flask_pymongo import PyMongo
 from flask_cors import CORS
 
-from app.services import get_doctor_by_id
-from run import app
-
 mongo = PyMongo()
-
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object('config.Config')
-
-    # Enable CORS for all routes
+    
+    # Initialize extensions
     CORS(app)
     mongo.init_app(app)
-
-    with app.app_context():
-        return app
-
-
-
+    
+    # Register blueprints
+    from app.routes import bp
+    app.register_blueprint(bp)
+    
+    print("UPLOAD_FOLDER path:", app.config['UPLOAD_FOLDER'])
+    return app
