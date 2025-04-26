@@ -13,9 +13,9 @@ export class DoctorService {
 
   constructor(private http: HttpClient) {}
 //bch nthabet hedhom maa ines=======================================================================================================
-  addDoctor(formData: FormData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/doctors`, formData);
-  }
+addDoctor(formData: FormData): Observable<any> {
+  return this.http.post(this.apiUrl, formData);
+  }
   getDoctorById(id: string): Observable<Doctor> {
     return this.http.get<Doctor>(`${this.apiUrl}/doctors/${id}`);
   }
