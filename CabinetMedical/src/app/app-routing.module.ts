@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { DoctorDetailsPage } from "./pages/doctor-details/doctor-details.page";
-import {DocumentManagementPage} from "./pages/patient/documents/document-management/document-management.page";
 
 const routes: Routes = [
   {
@@ -49,10 +48,7 @@ const routes: Routes = [
     path: 'doctor-grid',
     loadChildren: () => import('./pages/doctor-grid/doctor-grid.module').then(m => m.DoctorGridPageModule)
   },
-  {
-    path: 'patient-profile',
-    loadChildren: () => import('./pages/patient-profile/patient-profile.module').then(m => m.PatientProfilePageModule)
-  },
+
   {
     path: 'doctor-profile',
     loadChildren: () => import('./pages/doctor-profile/doctor-profile.module').then(m => m.DoctorProfilePageModule)

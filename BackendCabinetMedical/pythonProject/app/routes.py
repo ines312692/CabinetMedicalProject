@@ -9,9 +9,26 @@ from flask_cors import CORS
 import bcrypt
 from bcrypt import hashpw, gensalt
 from flask import send_from_directory
+from flask_mail import Mail, Message
+from firebase_admin import credentials, initialize_app, messaging
+
 
 
 CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS"]}})
+
+mail= Mail(app)
+
+firebase_initialized = False
+try:
+    if 'FIREBASE_CREDENTIALS' in app.config and os.path.exists(app.config['FIREBASE_CREDENTIALS']):
+        firebase_cred = credentials.Certificate(app.config['FIREBASE_CREDENTIALS'])
+        initialize_app(firebase_cred)
+        firebase_initialized = True
+        print("Firebase initialized successfully")
+    else:
+        print("Firebase credentials not found or invalid. FCM notifications will be disabled.")
+except Exception as e:
+    print(f"Error initializing Firebase: {str(e)}. FCM notifications will be disabled.")
 
 @app.route('/')
 def index():
@@ -159,11 +176,18 @@ def signup():
         "email": data["email"],
         "password": hashed_password.decode('utf-8'),
         "role": "patient",
+        "fcm_token": data.get("fcm_token", None)  # Store FCM token if provided
     }
 
     result = mongo.db.patients.insert_one(patient)
     if result.inserted_id:
-        response = jsonify({"message": "Account created successfully", "id": patient["_id"]})
+        # Send welcome email
+        send_email(
+            recipient=patient["email"],
+            subject="Welcome to Medical Platform",
+            body=f"Dear {patient['first_name']},\n\nYour account has been created successfully.\n\nBest regards,\nMedical Team"
+        )
+        response = jsonify({"message": "Account created successfully", "id": str(patient["_id"])})
         response.status_code = 201
     else:
         response = jsonify({"error": "Failed to create account"})
@@ -175,65 +199,46 @@ def signup():
 def login():
     data = request.json
     if not data or 'email' not in data or 'password' not in data:
-        response = jsonify({"error": "Email et mot de passe requis"})
+        response = jsonify({"error": "Email and password required"})
         response.status_code = 400
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
     email = data['email']
     password = data['password'].encode('utf-8')
-    print("Email reçu:", email)
+    fcm_token = data.get('fcm_token', None)
 
-    patient = mongo.db.patients.find_one({"email": email})
-    print("Patient trouvé:", patient)
-    if patient:
-        if bcrypt.checkpw(password, patient['password'].encode('utf-8')):
-            response = jsonify({
-                "message": "Connexion réussie",
-                "role": patient.get('role', 'patient'),
-                "id": str(patient['_id'])
-            })
-            response.status_code = 200
-        else:
-            response = jsonify({"error": "Mot de passe incorrect"})
-            response.status_code = 401
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
+    user = None
+    role = None
+    collection = None
 
-    doctor = mongo.db.doctors.find_one({"email": email})
-    print("Doctor trouvé:", doctor)
-    if doctor:
-        if bcrypt.checkpw(password, doctor['password'].encode('utf-8')):
-            response = jsonify({
-                "message": "Connexion réussie",
-                "role": doctor.get('role', 'doctor'),
-                "id": str(doctor['_id'])
-            })
-            response.status_code = 200
-        else:
-            response = jsonify({"error": "Mot de passe incorrect"})
-            response.status_code = 401
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
+    for col, r in [
+        (mongo.db.patients, 'patient'),
+        (mongo.db.doctors, 'doctor'),
+        (mongo.db.administrators, 'admin')
+    ]:
+        user = col.find_one({"email": email})
+        if user:
+            role = r
+            collection = col
+            break
 
-    administrator = mongo.db.administrators.find_one({"email": email})
-    print("Administrator trouvé:", administrator)
-    if administrator:
-        if bcrypt.checkpw(password, administrator['password'].encode('utf-8')):
-            response = jsonify({
-                "message": "Connexion réussie",
-                "role": administrator.get('role', 'admin'),
-                "id": str(administrator['_id'])
-            })
-            response.status_code = 200
-        else:
-            response = jsonify({"error": "Mot de passe incorrect"})
-            response.status_code = 401
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
-
-    response = jsonify({"error": "Adresse email introuvable"})
-    response.status_code = 404
+    if user and bcrypt.checkpw(password, user['password'].encode('utf-8')):
+        # Update FCM token if provided
+        if fcm_token:
+            collection.update_one(
+                {"_id": user['_id']},
+                {"$set": {"fcm_token": fcm_token}}
+            )
+        response = jsonify({
+            "message": "Login successful",
+            "role": role,
+            "id": str(user['_id'])
+        })
+        response.status_code = 200
+    else:
+        response = jsonify({"error": "Invalid email or password"})
+        response.status_code = 401
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
@@ -261,30 +266,22 @@ def get_patient_history(patient_id):
 @app.route('/patient/<patient_id>/diagnostics', methods=['GET'])
 def get_patient_diagnostics(patient_id):
     try:
-        # Validate the patient_id format
         patient_id_obj = ObjectId(patient_id)
-        print("Valid ObjectId format")
-    except Exception as e:
+    except:
         response = jsonify({"error": "Invalid patient ID format"})
         response.status_code = 400
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
-    # Check if the patient exists
     patient = mongo.db.patients.find_one({"_id": patient_id_obj})
-    print("Patient query result:", patient)
     if not patient:
         response = jsonify({"error": "Patient not found"})
         response.status_code = 404
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
-    # Retrieve diagnostics and prescriptions
     diagnostics = list(mongo.db.diagnostics.find({"patient_id": patient_id_obj}))
     prescriptions = list(mongo.db.prescriptions.find({"patient_id": patient_id_obj}))
-
-    print("Diagnostics query result:", diagnostics)
-    print("Prescriptions query result:", prescriptions)
 
     if not diagnostics and not prescriptions:
         response = jsonify({"error": "No diagnostics or prescriptions found"})
@@ -297,11 +294,24 @@ def get_patient_diagnostics(patient_id):
 
     data = DiagnosticsData(diagnostics_data, prescriptions_data).__dict__
 
+    # Notify patient of diagnostic availability
+    if patient.get('fcm_token'):
+        send_fcm_notification(
+            fcm_token=patient['fcm_token'],
+            title="New Diagnostics Available",
+            body="Your diagnostic results are ready to view.",
+            data={"type": "diagnostics", "patient_id": str(patient_id)}
+        )
+    send_email(
+        recipient=patient['email'],
+        subject="Diagnostics Available",
+        body=f"Dear {patient['first_name']},\n\nYour diagnostic results are available. Please log in to view them.\n\nBest regards,\nMedical Team"
+    )
+
     response = jsonify(data)
     response.status_code = 200
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
-
 
 @app.route('/patients', methods=['GET'])
 def list_patients():
@@ -321,41 +331,43 @@ def add_doctor():
 
     filename = secure_filename(image.filename)
     upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-
-    # Créer le dossier s'il n'existe pas
     os.makedirs(os.path.dirname(upload_path), exist_ok=True)
     image.save(upload_path)
 
     data = request.form
     required_fields = ['name', 'specialty', 'description', 'address', 'phone', 'email', 'password']
-
     if not all(field in data for field in required_fields):
         return jsonify({"error": "All fields are required"}), 400
 
-    # Vérifier si l'email existe déjà
     if mongo.db.doctors.find_one({"email": data['email']}):
         return jsonify({"error": "Email already exists"}), 409
 
-    # Cryptage du mot de passe
     hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
 
     doctor = {
-            "name": data['name'],
-            "specialty": data['specialty'],
-            "description": data['description'],
-            "address": data['address'],
-            "phone": data['phone'],
-            "email": data['email'],
-            "password": hashed_password.decode('utf-8'),
-            "image": filename,
-            "role": "doctor",
-            # Add these fields
-            "latitude": float(data.get('latitude', 0)),  # Default to 0 if not provided
-            "longitude": float(data.get('longitude', 0)),  # Default to 0 if not provided
-            "availability": data.get('availability', [])  # Default to empty list if not provided
-        }
+        "name": data['name'],
+        "specialty": data['specialty'],
+        "description": data['description'],
+        "address": data['address'],
+        "phone": data['phone'],
+        "email": data['email'],
+        "password": hashed_password.decode('utf-8'),
+        "image": filename,
+        "role": "doctor",
+        "latitude": float(data.get('latitude', 0)),
+        "longitude": float(data.get('longitude', 0)),
+        "availability": data.get('availability', []),
+        "fcm_token": data.get('fcm_token', None)
+    }
 
     result = mongo.db.doctors.insert_one(doctor)
+
+    # Send welcome email
+    send_email(
+        recipient=doctor["email"],
+        subject="Welcome to Medical Platform",
+        body=f"Dear Dr. {doctor['name']},\n\nYour doctor account has been created successfully.\n\nBest regards,\nMedical Team"
+    )
 
     return jsonify({
         "message": "Doctor added successfully",
@@ -488,7 +500,40 @@ def add_appointment():
         "status": data.get('status', 'pending')
     }
 
-    mongo.db.appointments.insert_one(appointment)
+    result = mongo.db.appointments.insert_one(appointment)
+
+    # Notify doctor and patient
+    doctor = mongo.db.doctors.find_one({"_id": ObjectId(data['doctor_id'])})
+    patient = mongo.db.patients.find_one({"_id": ObjectId(data['patient_id'])})
+
+    if doctor and doctor.get('fcm_token'):
+        send_fcm_notification(
+            fcm_token=doctor['fcm_token'],
+            title="New Appointment Request",
+            body=f"New appointment scheduled with {patient['first_name']} on {data['date']} at {data['time']}.",
+            data={"type": "appointment", "appointment_id": str(appointment['_id'])}
+        )
+    if doctor:
+        send_email(
+            recipient=doctor['email'],
+            subject="New Appointment Request",
+            body=f"Dear Dr. {doctor['name']},\n\nA new appointment has been scheduled with {patient['first_name']} on {data['date']} at {data['time']}.\n\nBest regards,\nMedical Team"
+        )
+
+    if patient and patient.get('fcm_token'):
+        send_fcm_notification(
+            fcm_token=patient['fcm_token'],
+            title="Appointment Scheduled",
+            body=f"Your appointment with Dr. {doctor['name']} on {data['date']} at {data['time']} is pending.",
+            data={"type": "appointment", "appointment_id": str(appointment['_id'])}
+        )
+    if patient:
+        send_email(
+            recipient=patient['email'],
+            subject="Appointment Scheduled",
+            body=f"Dear {patient['first_name']},\n\nYour appointment with Dr. {doctor['name']} on {data['date']} at {data['time']} has been scheduled and is pending approval.\n\nBest regards,\nMedical Team"
+        )
+
     return jsonify({"message": "Appointment added successfully"}), 201
 
 @app.route('/appointments/<id>', methods=['PUT'])
@@ -501,6 +546,26 @@ def update_appointment(id):
     result = mongo.db.appointments.update_one({"_id": ObjectId(id)}, {"$set": update_fields})
 
     if result.matched_count == 1:
+        appointment = mongo.db.appointments.find_one({"_id": ObjectId(id)})
+        doctor = mongo.db.doctors.find_one({"_id": appointment['doctor_id']})
+        patient = mongo.db.patients.find_one({"_id": appointment['patient_id']})
+
+        if 'status' in update_fields:
+            status = update_fields['status']
+            if patient and patient.get('fcm_token'):
+                send_fcm_notification(
+                    fcm_token=patient['fcm_token'],
+                    title=f"Appointment {status.capitalize()}",
+                    body=f"Your appointment with Dr. {doctor['name']} on {appointment['date']} is {status}.",
+                    data={"type": "appointment", "appointment_id": id}
+                )
+            if patient:
+                send_email(
+                    recipient=patient['email'],
+                    subject=f"Appointment {status.capitalize()}",
+                    body=f"Dear {patient['first_name']},\n\nYour appointment with Dr. {doctor['name']} on {appointment['date']} has been {status}.\n\nBest regards,\nMedical Team"
+                )
+
         response = jsonify({"message": "Appointment updated successfully"})
         response.status_code = 200
     else:
@@ -509,17 +574,54 @@ def update_appointment(id):
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+
 @app.route('/appointments/<id>', methods=['DELETE'])
 def delete_appointment(id):
-    result = mongo.db.appointments.delete_one({"_id": ObjectId(id)})
-    if result.deleted_count == 1:
-        response = jsonify({"message": "Appointment deleted successfully"})
-        response.status_code = 200
-    else:
+    appointment = mongo.db.appointments.find_one({"_id": ObjectId(id)})
+    if not appointment:
         response = jsonify({"error": "Appointment not found"})
         response.status_code = 404
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
+    result = mongo.db.appointments.delete_one({"_id": ObjectId(id)})
+    if result.deleted_count == 1:
+        doctor = mongo.db.doctors.find_one({"_id": appointment['doctor_id']})
+        patient = mongo.db.patients.find_one({"_id": appointment['patient_id']})
+
+        if patient and patient.get('fcm_token'):
+            send_fcm_notification(
+                fcm_token=patient['fcm_token'],
+                title="Appointment Cancelled",
+                body=f"Your appointment with Dr. {doctor['name']} on {appointment['date']} has been cancelled.",
+                data={"type": "appointment", "appointment_id": id}
+            )
+        if patient:
+            send_email(
+                recipient=patient['email'],
+                subject="Appointment Cancelled",
+                body=f"Dear {patient['first_name']},\n\nYour appointment with Dr. {doctor['name']} on {appointment['date']} has been cancelled.\n\nBest regards,\nMedical Team"
+            )
+
+        if doctor and doctor.get('fcm_token'):
+            send_fcm_notification(
+                fcm_token=doctor['fcm_token'],
+                title="Appointment Cancelled",
+                body=f"Appointment with {patient['first_name']} on {appointment['date']} has been cancelled.",
+                data={"type": "appointment", "appointment_id": id}
+            )
+        if doctor:
+            send_email(
+                recipient=doctor['email'],
+                subject="Appointment Cancelled",
+                body=f"Dear Dr. {doctor['name']},\n\nThe appointment with {patient['first_name']} on {appointment['date']} has been cancelled.\n\nBest regards,\nMedical Team"
+            )
+
+        response = jsonify({"message": "Appointment deleted successfully"})
+        response.status_code = 200
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
+
 
 @app.route('/doctors/<doctor_id>/appointments', methods=['GET'])
 def get_doctor_appointments(doctor_id):
@@ -532,6 +634,24 @@ def get_doctor_appointments(doctor_id):
 def accept_appointment(id):
     result = mongo.db.appointments.update_one({"_id": ObjectId(id)}, {"$set": {"status": "accepted"}})
     if result.matched_count == 1:
+        appointment = mongo.db.appointments.find_one({"_id": ObjectId(id)})
+        doctor = mongo.db.doctors.find_one({"_id": appointment['doctor_id']})
+        patient = mongo.db.patients.find_one({"_id": appointment['patient_id']})
+
+        if patient and patient.get('fcm_token'):
+            send_fcm_notification(
+                fcm_token=patient['fcm_token'],
+                title="Appointment Accepted",
+                body=f"Your appointment with Dr. {doctor['name']} on {appointment['date']} has been accepted.",
+                data={"type": "appointment", "appointment_id": id}
+            )
+        if patient:
+            send_email(
+                recipient=patient['email'],
+                subject="Appointment Accepted",
+                body=f"Dear {patient['first_name']},\n\nYour appointment with Dr. {doctor['name']} on {appointment['date']} has been accepted.\n\nBest regards,\nMedical Team"
+            )
+
         response = jsonify({"message": "Appointment accepted successfully"})
         response.status_code = 200
     else:
@@ -540,10 +660,29 @@ def accept_appointment(id):
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+
 @app.route('/appointments/<id>/reject', methods=['PUT'])
 def reject_appointment(id):
     result = mongo.db.appointments.update_one({"_id": ObjectId(id)}, {"$set": {"status": "rejected"}})
     if result.matched_count == 1:
+        appointment = mongo.db.appointments.find_one({"_id": ObjectId(id)})
+        doctor = mongo.db.doctors.find_one({"_id": appointment['doctor_id']})
+        patient = mongo.db.patients.find_one({"_id": appointment['patient_id']})
+
+        if patient and patient.get('fcm_token'):
+            send_fcm_notification(
+                fcm_token=patient['fcm_token'],
+                title="Appointment Rejected",
+                body=f"Your appointment with Dr. {doctor['name']} on {appointment['date']} has been rejected.",
+                data={"type": "appointment", "appointment_id": id}
+            )
+        if patient:
+            send_email(
+                recipient=patient['email'],
+                subject="Appointment Rejected",
+                body=f"Dear {patient['first_name']},\n\nYour appointment with Dr. {doctor['name']} on {appointment['date']} has been rejected.\n\nBest regards,\nMedical Team"
+            )
+
         response = jsonify({"message": "Appointment rejected successfully"})
         response.status_code = 200
     else:
@@ -551,6 +690,7 @@ def reject_appointment(id):
         response.status_code = 404
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
+
 
 
 
@@ -659,3 +799,105 @@ def get_patient_appointments(patient_id):
         appointment["patient_id"] = str(appointment["patient_id"])
 
     return jsonify({"appointments": appointments}), 200
+
+
+def send_fcm_notification(fcm_token, title, body, data=None):
+    try:
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title=title,
+                body=body
+            ),
+            token=fcm_token,
+            data=data or {}
+        )
+        response = messaging.send(message)
+        print(f"Successfully sent FCM notification: {response}")
+        return True
+    except Exception as e:
+        print(f"Error sending FCM notification: {str(e)}")
+        return False
+
+# Utility function to send email
+def send_email(recipient, subject, body):
+    try:
+        msg = Message(
+            subject=subject,
+            recipients=[recipient],
+            body=body,
+            sender=app.config['MAIL_DEFAULT_SENDER']
+        )
+        mail.send(msg)
+        print(f"Successfully sent email to {recipient}")
+        return True
+    except Exception as e:
+        print(f"Error sending email to {recipient}: {str(e)}")
+        return False
+
+# Route to register FCM token for a user
+@app.route('/register-fcm-token', methods=['POST'])
+def register_fcm_token():
+    try:
+        data = request.json
+        print(f"Received payload: {data}")
+
+        if not data or 'user_id' not in data or 'fcm_token' not in data or 'role' not in data:
+            print("Missing required fields")
+            return jsonify({"error": "user_id, fcm_token, and role are required"}), 400
+
+        user_id = data['user_id']
+        fcm_token = data['fcm_token']
+        role = data['role']
+        print(f"Processing: user_id={user_id}, role={role}, fcm_token={fcm_token}")
+
+        try:
+            user_id_obj = ObjectId(user_id)
+        except Exception as e:
+            print(f"Invalid user_id format: {str(e)}")
+            return jsonify({"error": "Invalid user_id format"}), 400
+
+        collection = {
+            'patient': mongo.db.patients,
+            'doctor': mongo.db.doctors,
+            'admin': mongo.db.administrators
+        }.get(role)
+
+        if collection is None:
+            print(f"Invalid role: {role}")
+            return jsonify({"error": "Invalid role. Must be 'patient', 'doctor', or 'admin'"}), 400
+
+        print(f"Updating collection: {role}")
+        result = collection.update_one(
+            {"_id": user_id_obj},
+            {"$set": {"fcm_token": fcm_token}}
+        )
+
+        print(f"Update result: matched={result.matched_count}, modified={result.modified_count}")
+        if result.matched_count == 1:
+            return jsonify({"message": "FCM token registered successfully"}), 200
+        else:
+            return jsonify({"error": "User not found"}), 404
+
+    except Exception as e:
+        print(f"Server error in register_fcm_token: {str(e)}")
+        return jsonify({"error": f"Internal server error: {str(e)}"}), 500
+
+@app.route('/tester-notification', methods=['POST'])
+def tester_notification():
+    data = request.json
+    fcm_token = data.get('fcm_token')
+
+    if not fcm_token:
+        return jsonify({"erreur": "Token FCM requis"}), 400
+
+    resultat = send_fcm_notification(
+        fcm_token=fcm_token,
+        title="Notification Test",
+        body="Ceci est une notification de test",
+        data={"type": "test"}
+    )
+
+    if resultat:
+        return jsonify({"message": "Notification envoyée avec succès"}), 200
+    else:
+        return jsonify({"erreur": "Échec de l'envoi de la notification"}), 500

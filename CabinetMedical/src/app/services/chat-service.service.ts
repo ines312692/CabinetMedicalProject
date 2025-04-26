@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ChatService {
+
   private readonly baseUrl = 'http://localhost:5000/api';
 
   constructor(private readonly http: HttpClient) {}
@@ -17,4 +18,7 @@ export class ChatService {
   getMessages(data: any, page: number): Observable<any> {
     return this.http.post(`${this.baseUrl}/getAllmessage?page=${page}`, data);
   }
+
+
+
 }
