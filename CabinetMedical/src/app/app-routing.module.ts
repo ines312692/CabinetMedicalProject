@@ -104,7 +104,12 @@ const routes: Routes = [
   {
     path: 'modif-profil-patient',
     loadChildren: () => import('./pages/modif-profil-patient/modif-profil-patient.module').then( m => m.ModifProfilPatientPageModule)
+  },
+  {
+    path: 'profile-patient/:patient_id',
+    loadChildren: () => import('./pages/profile-patient/profile-patient.module').then( m => m.ProfilePatientPageModule)
   }
+
 
 ];
 

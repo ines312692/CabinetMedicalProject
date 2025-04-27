@@ -1,59 +1,157 @@
-ion-toolbar {
-  --background: #4caf50; /* Couleur verte pour l'en-tête */
-  --color: white; /* Texte blanc */
+// Variables de couleur - Thème bleu
+:host {
+  --primary-blue: #1a73e8;
+  --primary-blue-dark: #0d47a1;
+  --primary-blue-light: #e8f0fe;
+  --accent-blue: #4285f4;
+  --success-color: #34a853;
+  --warning-color: #fbbc05;
+  --danger-color: #ea4335;
+  --text-dark: #202124;
+  --text-medium: #5f6368;
+  --text-light: #9aa0a6;
+  --background-light: #f8f9fa;
+  --white: #ffffff;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+  display: block;
+  width: 100%;
 }
 
-ion-title {
-  font-size: 1.5rem;
-  font-weight: bold;
+.appointments-container {
+  padding: 0;
+}
+
+.no-appointments {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
   text-align: center;
+  background-color: var(--primary-blue-light);
+  border-radius: 12px;
+
+  .empty-icon {
+    font-size: 56px;
+    margin-bottom: 20px;
+    color: var(--primary-blue);
+    opacity: 0.7;
+  }
+
+  p {
+    font-size: 17px;
+    color: var(--text-medium);
+    margin: 0;
+  }
+}
+
+ion-list {
+  background: transparent;
+  padding: 0;
 }
 
 .appointment-item {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  margin: 10px;
-  padding: 10px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  --background: var(--white);
+  margin-bottom: 14px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --border-color: transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(26, 115, 232, 0.15);
+  }
+
+  .icon-calendar {
+    font-size: 24px;
+    color: var(--primary-blue);
+    margin-right: 16px;
+  }
+
+  .appointment-date {
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+
+  .appointment-time {
+    font-size: 15px;
+    color: var(--text-medium);
+    margin-bottom: 8px;
+  }
+
+  .appointment-status {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    padding: 6px 12px;
+    border-radius: 16px;
+    width: fit-content;
+    font-weight: 500;
+
+    .status-icon {
+      margin-right: 6px;
+    }
+  }
+
+  .status-approved {
+    color: var(--success-color);
+    background-color: rgba(52, 168, 83, 0.1);
+  }
+
+  .status-pending {
+    color: var(--warning-color);
+    background-color: rgba(251, 188, 5, 0.1);
+  }
+
+  .status-refused {
+    color: var(--danger-color);
+    background-color: rgba(234, 67, 53, 0.1);
+  }
 }
 
-.icon-calendar {
-  font-size: 1.8rem;
-  color: #2196f3;
+// Pour des écrans plus grands
+@media (min-width: 768px) {
+  .appointment-item {
+    &:hover {
+      border-left: 4px solid var(--primary-blue);
+    }
+  }
 }
 
-.appointment-date {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #333;
-}
-
-.appointment-time {
-  font-size: 1rem;
-  color: #555;
-}
-
-.appointment-status {
-  font-size: 1rem;
-  font-weight: bold;
-  color: #2196f3;
-  display: flex;
+// Style pour le badge de statut
+.status-badge {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  display: inline-flex;
   align-items: center;
-}
+  justify-content: center;
+  font-weight: 500;
 
-.status-icon {
-  margin-right: 5px;
-  font-size: 1.2rem;
-}
-.status-approved {
-  color: #2196f3; /* Vert pour approuvé */
-}
+  &.approved {
+    background-color: rgba(52, 168, 83, 0.2);
+    color: var(--success-color);
+  }
 
-.status-pending {
-  color: #ffeb3b; /* Jaune pour en attente */
-}
+  &.pending {
+    background-color: rgba(251, 188, 5, 0.2);
+    color: var(--warning-color);
+  }
 
-.status-refused {
-  color: #f44336; /* Rouge pour refusé */
+  &.refused {
+    background-color: rgba(234, 67, 53, 0.2);
+    color: var(--danger-color);
+  }
 }

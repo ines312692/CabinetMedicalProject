@@ -1,15 +1,4 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Historique du Patient</ion-title>
-  </ion-toolbar>
-</ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Historique du Patient</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
   <div *ngIf="history" class="card">
     <h2><ion-icon name="calendar-outline"></ion-icon> Rendez-vous</h2>
@@ -47,4 +36,4 @@
     </ul>
   </div>
   <ion-button (click)="downloadDiagnosticsPdf()">Télécharger PDF</ion-button>
-</ion-content>
+

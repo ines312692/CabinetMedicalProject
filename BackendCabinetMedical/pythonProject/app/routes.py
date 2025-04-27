@@ -320,6 +320,41 @@ def list_patients():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+
+@app.route('/patients/<patient_id>', methods=['GET'])
+def get_patient(patient_id):
+    try:
+        patient_id_obj = ObjectId(patient_id)
+    except:
+        return jsonify({'error': 'Invalid ID format'}), 400
+
+    try:
+        patient_data = mongo.db.patients.find_one({"_id": patient_id_obj})
+        if not patient_data:
+            return jsonify({"error": "Patient not found"}), 404
+
+        required_fields = ['first_name', 'last_name', 'birth_date', 'email', 'password']
+        missing_fields = [field for field in required_fields if field not in patient_data]
+        if missing_fields:
+            print(f"Missing fields in patient data: {missing_fields}")
+            return jsonify({"error": f"Patient data incomplete: missing {', '.join(missing_fields)}"}), 500
+        patient_dict = {
+            '_id': str(patient_data['_id']),
+            'first_name': patient_data['first_name'],
+            'last_name': patient_data['last_name'],
+            'birth_date': patient_data['birth_date'],
+            'email': patient_data['email'],
+            'role': patient_data.get('role', 'patient')
+        }
+
+        response = make_response(jsonify(patient_dict), 200)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+    except Exception as e:
+        print(f"Error retrieving patient: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+
+
 @app.route('/doctors', methods=['POST'])
 def add_doctor():
     if 'image' not in request.files:

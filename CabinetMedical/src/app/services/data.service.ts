@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 
-
-
 interface MongoId {
   $oid: string;
 }
@@ -14,14 +12,15 @@ export class DataService {
     }
 
     if (data && typeof data === 'object' && !(data instanceof Date)) {
-      return Object.fromEntries(
-        Object.entries(data).map(([key, value]) => {
-          if ((key === '_id' || key.endsWith('_id')) && value && typeof value === 'object' && '$oid' in value) {
-            return [key, (value as MongoId).$oid];
-          }
-          return [key, this.transformMongoId(value)];
-        })
-      );
+      const transformed: any = {};
+      for (const [key, value] of Object.entries(data)) {
+        if ((key === '_id' || key.endsWith('_id')) && value && typeof value === 'object' && '$oid' in value) {
+          transformed[key] = (value as MongoId).$oid;
+        } else {
+          transformed[key] = this.transformMongoId(value);
+        }
+      }
+      return transformed;
     }
 
     return data;
