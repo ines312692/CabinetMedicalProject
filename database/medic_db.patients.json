@@ -1,4 +1,13 @@
 [{
+  "_id": "67c5b69781300c55145ef3e0",
+  "first_name": "Jean",
+  "last_name": "Dupont",
+  "birth_date": "2000-01-01",
+  "email": "jean.dupont@example.com",
+  "password": "$2b$12$0gQZBJiK3LZK8TxRqoFe2.DSaX1FT.egqkZoSS6tF1ZMGfc5lRlv6",
+  "role": "patient"
+},
+{
   "_id": "67c60b5093571287063294be",
   "first_name": "tmimi",
   "last_name": "ines",

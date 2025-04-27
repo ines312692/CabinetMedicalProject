@@ -1,28 +1,120 @@
 [{
   "_id": {
-    "$oid": "67b19f35dc2f304696d52d07"
+    "$oid": "67efbfda9e5c8ce7ee55ada5"
   },
-  "id": "1",
-  "name": "Dr. John Doe",
-  "specialty": "Cardiology",
-  "description": "Experienced cardiologist with over 20 years of practice.",
-  "address": "123 Heartbeat Lane, Health City",
-  "phone": "123-456-7890",
-  "latitude": 40.7128,
-  "longitude": -74.006,
-  "image": "doctor.jpg"
+  "name": "Dr. Ahmed Ben Ammar",
+  "specialty": "Cardiologie",
+  "description": "Cardiologue interventionnel, ancien chef de service à l'hôpital La Rabta.",
+  "address": "Immeuble Médicale, Avenue Taieb Mhiri, Tunis 1002",
+  "phone": "71234567",
+  "email": "ahmed.benammar@med.tn",
+  "password": "$2b$12$ktRFzn.UqjOimFUIV6.EeuUKYgLuapFVoERN3OtvvhmJgXb9.F7vq",
+  "image": "med1g.jpg",
+  "role": "doctor",
+  "availability": "[\n    { \"day\": \"Monday\", \"hours\": [\"9:00\", \"14:00\"] },\n    { \"day\": \"Wednesday\", \"hours\": [\"10:00\"] }]"
 },
 {
   "_id": {
-    "$oid": "67b1a68babb8719e4f63606b"
+    "$oid": "67efc0449e5c8ce7ee55ada6"
   },
-  "id": "2",
-  "name": "Dr. Mohamed Ben Ali",
-  "specialty": "Cardiologie",
-  "description": "Cardiologue expérimenté avec plus de 20 ans de pratique.",
-  "address": "12 Avenue Habib Bourguiba, Tunis",
-  "phone": "216-71-123-456",
-  "latitude": 36.8065,
-  "longitude": 10.1815,
-  "image": "doctortn.jpg"
+  "name": "Dr. Salma Toumi",
+  "specialty": "Pédiatrie",
+  "description": "Spécialiste en néonatologie, diplômée de la faculté de médecine de Sousse.",
+  "address": "Clinique Les Oliviers, Rue du 2 Mars 1934, Sousse 4000",
+  "phone": "73245678",
+  "email": "salma.toumi@med.tn",
+  "password": "$2b$12$/mBgM1cDMroNocUtWRvQ5OtXKS3j15mwZHBi9j66PXEGCTC7oHYum",
+  "image": "med1f.jpg",
+  "role": "doctor",
+  "availability": "[\n    { \"day\": \"Monday\", \"hours\": [\"9:00\", \"14:00\"] },\n    { \"day\": \"Wednesday\", \"hours\": [\"10:00\"] }]"
+},
+{
+  "_id": {
+    "$oid": "67efc0bf9e5c8ce7ee55ada7"
+  },
+  "name": "Dr. Karim Fersi",
+  "specialty": "Orthopédie",
+  "description": "Chirurgien orthopédiste spécialisé en prothèses articulaires.",
+  "address": "Polyclinique Ibn El Jazzar, Route de l'Aéroport km 0.5, Sfax 3029",
+  "phone": "74234567",
+  "email": "k.fersi@med.tn",
+  "password": "$2b$12$/Cj1q08psi9PDHSiZpOWCOL.86bSR2nuUe1PZNLqUE/DRi1qog.sy",
+  "image": "med2g.jpg",
+  "role": "doctor",
+  "availability": "[\n    { \"day\": \"Monday\", \"hours\": [\"9:00\", \"14:00\"] },\n    { \"day\": \"Wednesday\", \"hours\": [\"10:00\"] }]"
+},
+{
+  "_id": {
+    "$oid": "67efc11c9e5c8ce7ee55ada8"
+  },
+  "name": "Dr. Ines Boukadida",
+  "specialty": "Dentisterie",
+  "description": "Spécialiste en implantologie et esthétique dentaire.",
+  "address": "Centre Médical Ennasr, Rue des Orangers, Nabeul 8000",
+  "phone": "72234567",
+  "email": "ines.boukadida@med.tn",
+  "password": "$2b$12$6pU5eh4wX7oJg4ES6DjKdOk34iQXPbjEqEoTr9gZvMEsaPdmQ/itS",
+  "image": "med2f.jpg",
+  "role": "doctor",
+  "availability": "[\n    { \"day\": \"Monday\", \"hours\": [\"9:00\", \"14:00\"] },\n    { \"day\": \"Wednesday\", \"hours\": [\"10:00\"] }]"
+},
+{
+  "_id": {
+    "$oid": "67efc1a89e5c8ce7ee55ada9"
+  },
+  "name": "Dr. Amira Ksouri",
+  "specialty": "Gynécologie-Obstétrique",
+  "description": "Spécialiste en échographie fœtale et suivi de grossesse.",
+  "address": "Résidence Méditerranée, Avenue Habib Bourguiba, Monastir 5000",
+  "phone": "73256789",
+  "email": "amira.ksouri@med.tn",
+  "password": "$2b$12$t4uv4is/JAXx4TDRz0APbe27G6acuO9N2l4BxBY4fjs0XzEY7JUVC",
+  "image": "med3f.jpg",
+  "role": "doctor",
+  "availability": "[\n    { \"day\": \"Monday\", \"hours\": [\"9:00\", \"14:00\"] },\n    { \"day\": \"Wednesday\", \"hours\": [\"10:00\"] }]"
+},
+{
+  "_id": {
+    "$oid": "67efc2109e5c8ce7ee55adaa"
+  },
+  "name": "Dr. Mohamed Jlassi",
+  "specialty": "Médecine Générale",
+  "description": "Médecin généraliste avec 20 ans d'expérience, ancien interne des hôpitaux.",
+  "address": "Cabinet Médical, Rue Hédi Chaker, Bizerte 7000",
+  "phone": "72245678",
+  "email": "m.jlassi@medgen.tn",
+  "password": "$2b$12$/XQyzK3k8aHZVY7FG3HqZ.GDHjfbCb.YLsjTpMX3rltbXZAiQiJxS",
+  "image": "med3g.jpg",
+  "role": "doctor",
+  "availability": "[\n    { \"day\": \"Monday\", \"hours\": [\"9:00\", \"14:00\"] },\n    { \"day\": \"Wednesday\", \"hours\": [\"10:00\"] }]"
+},
+{
+  "_id": {
+    "$oid": "67efc2de9e5c8ce7ee55adab"
+  },
+  "name": "Dr. Sarah Ben Youssef",
+  "specialty": "ORL (Oto-Rhino-Laryngologie)",
+  "description": "Spécialiste ORL avec expertise en chirurgie endoscopique des sinus et troubles auditifs. Ancienne interne à l'hôpital Charles Nicole.",
+  "address": "Centre Médical El Ghazala, Avenue Habib Bourguiba, Ariana 2080",
+  "phone": "71345678",
+  "email": "sarah.benyoussef@med.tn",
+  "password": "$2b$12$Y7R8EoobGlOkSxnr83IrDuFj3P8/RdLlf2kiufM81Mi8z.4w8DEDu",
+  "image": "med4f.jpg",
+  "role": "doctor",
+  "availability": "[\n    { \"day\": \"Monday\", \"hours\": [\"9:00\", \"14:00\"] },\n    { \"day\": \"Wednesday\", \"hours\": [\"10:00\"] }]"
+},
+{
+  "_id": {
+    "$oid": "67ff8fae96f241b102b3a073"
+  },
+  "name": "Dr. Amal Ben Mbarek",
+  "specialty": "Ophtalmologie",
+  "description": "Spécialiste en chirurgie réfractive et traitement du glaucome. Diplômée de la faculté de médecine de Tunis avec un internat en France.",
+  "address": "Cabinet Ophtalmologique Amal Vision, Avenue de l’Environnement, La Manouba 2010",
+  "phone": "71543210",
+  "email": "amal.benmbarek@med.tn",
+  "password": "$2b$12$1W0fB5yazLqQ1j3B92aUgeu7usnhwgi0O6KH1bRsy6Xw0Hk.vxhOW",
+  "image": "Medecin-avec-masque.jpg",
+  "role": "doctor",
+  "availability": "[\n    { \"day\": \"Monday\", \"hours\": [\"9:00\", \"14:00\"] },\n    { \"day\": \"Wednesday\", \"hours\": [\"10:00\"] }]"
 }]
