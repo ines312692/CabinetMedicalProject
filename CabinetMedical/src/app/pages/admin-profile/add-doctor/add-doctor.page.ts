@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { DoctorService } from 'src/app/services/doctor.service';
@@ -28,10 +28,11 @@ export class AddDoctorPage implements OnInit {
       address: ['', Validators.required],
       phone: ['', [
         Validators.required,
-        Validators.pattern('^[0-9]{8}$') // Validation pour 8 chiffres
+        Validators.pattern('^[0-9]{8}$') 
       ]],
-      email: ['', [Validators.required, Validators.email]], // Validation de l'email
-      password: ['', [Validators.required, Validators.minLength(8)]], // Validation du mot de passe
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]], 
+      availability: this.formBuilder.array([])
     });
   }
 
@@ -93,6 +94,7 @@ export class AddDoctorPage implements OnInit {
       return;
     }
 
+
     const formData = new FormData();
     formData.append('name', this.doctorForm.get('name')?.value);
     formData.append('specialty', this.doctorForm.get('specialty')?.value);
@@ -102,6 +104,12 @@ export class AddDoctorPage implements OnInit {
     formData.append('email', this.doctorForm.get('email')?.value);
     formData.append('password', this.doctorForm.get('password')?.value);
     formData.append('image', this.selectedFile);
+    const availabilityArray = this.doctorForm.value.availability.map((item: any) => ({
+      day: item.day,
+      hours: item.hours.split(',').map((hour: string) => hour.trim()) // séparer les heures par ,
+    }));
+    
+    formData.append('availability', JSON.stringify(availabilityArray));
 
     this.doctorService.addDoctor(formData).subscribe({
       next: async (response: any) => {
@@ -136,5 +144,22 @@ export class AddDoctorPage implements OnInit {
         await this.handleFormFieldError(controlName, control);
       }
     }
+  }
+  get availabilityControls() {
+    return this.doctorForm.get('availability') as FormArray;
+  }
+  
+  // Ajouter une disponibilité
+  addAvailability() {
+    const availabilityGroup = this.formBuilder.group({
+      day: ['', Validators.required],
+      hours: ['', Validators.required] // on entre les heures sous forme de string (ex: "9:00,14:00")
+    });
+    this.availabilityControls.push(availabilityGroup);
+  }
+  
+  // Supprimer une disponibilité
+  removeAvailability(index: number) {
+    this.availabilityControls.removeAt(index);
   }
 }

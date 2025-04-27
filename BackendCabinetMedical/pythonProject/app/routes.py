@@ -9,6 +9,8 @@ from flask_cors import CORS
 import bcrypt
 from bcrypt import hashpw, gensalt
 from flask import send_from_directory
+import json
+
 
 
 CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS"]}})
@@ -89,12 +91,6 @@ def get_doctor(id):
     if doctor:
         # Convert ObjectId to string for JSON serialization
         doctor['_id'] = str(doctor['_id'])
-
-        # Make sure all required fields are present (with defaults if missing)
-        if 'latitude' not in doctor:
-            doctor['latitude'] = None
-        if 'longitude' not in doctor:
-            doctor['longitude'] = None
         if 'availability' not in doctor:
             doctor['availability'] = []
 
@@ -321,8 +317,6 @@ def add_doctor():
 
     filename = secure_filename(image.filename)
     upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-
-    # Créer le dossier s'il n'existe pas
     os.makedirs(os.path.dirname(upload_path), exist_ok=True)
     image.save(upload_path)
 
@@ -332,28 +326,30 @@ def add_doctor():
     if not all(field in data for field in required_fields):
         return jsonify({"error": "All fields are required"}), 400
 
-    # Vérifier si l'email existe déjà
     if mongo.db.doctors.find_one({"email": data['email']}):
         return jsonify({"error": "Email already exists"}), 409
 
-    # Cryptage du mot de passe
     hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
 
+    availability = []
+    if 'availability' in data and data['availability']:
+        try:
+            availability = json.loads(data['availability'])
+        except json.JSONDecodeError:
+            return jsonify({"error": "Invalid availability format"}), 400
+
     doctor = {
-            "name": data['name'],
-            "specialty": data['specialty'],
-            "description": data['description'],
-            "address": data['address'],
-            "phone": data['phone'],
-            "email": data['email'],
-            "password": hashed_password.decode('utf-8'),
-            "image": filename,
-            "role": "doctor",
-            # Add these fields
-            "latitude": float(data.get('latitude', 0)),  # Default to 0 if not provided
-            "longitude": float(data.get('longitude', 0)),  # Default to 0 if not provided
-            "availability": data.get('availability', [])  # Default to empty list if not provided
-        }
+        "name": data['name'],
+        "specialty": data['specialty'],
+        "description": data['description'],
+        "address": data['address'],
+        "phone": data['phone'],
+        "email": data['email'],
+        "password": hashed_password.decode('utf-8'),
+        "image": filename,
+        "role": "doctor",
+        "availability": availability
+    }
 
     result = mongo.db.doctors.insert_one(doctor)
 
