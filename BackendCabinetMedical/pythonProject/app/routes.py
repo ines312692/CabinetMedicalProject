@@ -83,7 +83,6 @@ def list_doctors():
     doctors_list = []
     for doctor in doctors:
         doctor_dict = doctor
-        # Ajouter l'URL complète de l'image
         if 'image' in doctor:
             doctor_dict['image_url'] = f"/uploads/{doctor['image']}"
         doctors_list.append(doctor_dict)
@@ -95,19 +94,16 @@ def list_doctors():
 @app.route('/doctors/<id>', methods=['GET'])
 def get_doctor(id):
     try:
-        # Convert string ID to ObjectId
+
         doctor_id = ObjectId(id)
     except:
         return jsonify({'error': 'Invalid ID format'}), 400
 
-    # Find the doctor in the database
     doctor = mongo.db.doctors.find_one({"_id": doctor_id})
 
     if doctor:
-        # Convert ObjectId to string for JSON serialization
         doctor['_id'] = str(doctor['_id'])
 
-        # Make sure all required fields are present (with defaults if missing)
         if 'latitude' not in doctor:
             doctor['latitude'] = None
         if 'longitude' not in doctor:
@@ -115,7 +111,6 @@ def get_doctor(id):
         if 'availability' not in doctor:
             doctor['availability'] = []
 
-        # Add the complete image URL
         if 'image' in doctor:
             doctor['image_url'] = f"/uploads/{doctor['image']}"
 
@@ -176,7 +171,7 @@ def signup():
         "email": data["email"],
         "password": hashed_password.decode('utf-8'),
         "role": "patient",
-        "fcm_token": data.get("fcm_token", None)  # Store FCM token if provided
+        "fcm_token": data.get("fcm_token", None)
     }
 
     result = mongo.db.patients.insert_one(patient)
@@ -224,7 +219,6 @@ def login():
             break
 
     if user and bcrypt.checkpw(password, user['password'].encode('utf-8')):
-        # Update FCM token if provided
         if fcm_token:
             collection.update_one(
                 {"_id": user['_id']},
@@ -294,7 +288,6 @@ def get_patient_diagnostics(patient_id):
 
     data = DiagnosticsData(diagnostics_data, prescriptions_data).__dict__
 
-    # Notify patient of diagnostic availability
     if patient.get('fcm_token'):
         send_fcm_notification(
             fcm_token=patient['fcm_token'],
@@ -860,7 +853,6 @@ def send_fcm_notification(fcm_token, title, body, data=None):
         print(f"Error sending FCM notification: {str(e)}")
         return False
 
-# Utility function to send email
 def send_email(recipient, subject, body):
     try:
         msg = Message(
@@ -876,7 +868,6 @@ def send_email(recipient, subject, body):
         print(f"Error sending email to {recipient}: {str(e)}")
         return False
 
-# Route to register FCM token for a user
 @app.route('/register-fcm-token', methods=['POST'])
 def register_fcm_token():
     try:

@@ -8,11 +8,9 @@ class Config:
 
     SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key')
 
-        # Firebase configuration
         FIREBASE_CREDENTIALS = os.getenv('FIREBASE_CREDENTIALS', os.path.join(os.path.dirname(__file__),
         'firebase-service-account.json'))
 
-        # Email configuration (e.g., Gmail SMTP)
         MAIL_SERVER = 'smtp.gmail.com'
         MAIL_PORT = 587
         MAIL_USE_TLS = True
