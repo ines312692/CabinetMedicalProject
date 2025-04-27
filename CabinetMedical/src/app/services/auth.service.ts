@@ -1,39 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-
-export interface SignupData {
-  firstName: string;
-  lastName: string;
-  birthDate: string;
-  email: string;
-  password: string;
-  phone?: string;
-  allergies?: string;
-  image?: File;
-}
-export interface LoginData {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  message: string;
-  role: string;
-  id: string;
-}
+import { LoginResponse } from '../models/LoginResponse.interface';
+import { LoginData } from '../models/LoginData.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:5000';
-  private currentUserSubject = new BehaviorSubject<LoginResponse | null>(null);
+  private readonly apiUrl = 'http://localhost:5000';
+  private readonly currentUserSubject = new BehaviorSubject<LoginResponse | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {
-    // Check localStorage on initialization
+  constructor(private readonly http: HttpClient) {
     const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
       this.currentUserSubject.next(JSON.parse(storedUser));
@@ -46,14 +26,12 @@ export class AuthService {
   login(loginData: LoginData): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, loginData).pipe(
       tap((response: any) => {
-        // Store user data in localStorage and BehaviorSubject
         localStorage.setItem('currentUser', JSON.stringify(response));
         this.currentUserSubject.next(response);
       })
     );
   }
   logout() {
-    // Clear authentication data
     localStorage.removeItem('currentUser');
     this.currentUserSubject.next(null);
   }

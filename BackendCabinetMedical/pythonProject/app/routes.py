@@ -268,7 +268,7 @@ def get_patient_diagnostics(patient_id):
     try:
         patient_id_obj = ObjectId(patient_id)
     except:
-        response = jsonify({"error": "Invalid patient ID format"})
+        response = jsonify({"error": "Invalide patient ID format"})
         response.status_code = 400
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
@@ -478,6 +478,8 @@ def get_appointment(id):
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+
+
 @app.route('/appointments', methods=['POST'])
 def add_appointment():
     data = request.json
@@ -504,37 +506,42 @@ def add_appointment():
 
     # Notify doctor and patient
     doctor = mongo.db.doctors.find_one({"_id": ObjectId(data['doctor_id'])})
-    patient = mongo.db.patients.find_one({"_id": ObjectId(data['patient_id'])})
+    if not doctor:
+        return jsonify({"error": "Doctor not found"}), 404
 
-    if doctor and doctor.get('fcm_token'):
+    patient = mongo.db.patients.find_one({"_id": ObjectId(data['patient_id'])})
+    if not patient:
+        return jsonify({"error": "Patient not found"}), 404
+
+    if doctor.get('fcm_token'):
         send_fcm_notification(
             fcm_token=doctor['fcm_token'],
             title="New Appointment Request",
-            body=f"New appointment scheduled with {patient['first_name']} on {data['date']} at {data['time']}.",
+            body=f"New appointment scheduled with {patient.get('first_name', 'Unknown')} on {data['date']} at {data['time']}.",
             data={"type": "appointment", "appointment_id": str(appointment['_id'])}
         )
-    if doctor:
-        send_email(
-            recipient=doctor['email'],
-            subject="New Appointment Request",
-            body=f"Dear Dr. {doctor['name']},\n\nA new appointment has been scheduled with {patient['first_name']} on {data['date']} at {data['time']}.\n\nBest regards,\nMedical Team"
-        )
+    send_email(
+        recipient=doctor['email'],
+        subject="New Appointment Request",
+        body=f"Dear Dr. {doctor.get('name', 'Unknown')},\n\nA new appointment has been scheduled with {patient.get('first_name', 'Unknown')} on {data['date']} at {data['time']}.\n\nBest regards,\nMedical Team"
+    )
 
-    if patient and patient.get('fcm_token'):
+    if patient.get('fcm_token'):
         send_fcm_notification(
             fcm_token=patient['fcm_token'],
             title="Appointment Scheduled",
-            body=f"Your appointment with Dr. {doctor['name']} on {data['date']} at {data['time']} is pending.",
+            body=f"Your appointment with Dr. {doctor.get('name', 'Unknown')} on {data['date']} at {data['time']} is pending.",
             data={"type": "appointment", "appointment_id": str(appointment['_id'])}
         )
-    if patient:
-        send_email(
-            recipient=patient['email'],
-            subject="Appointment Scheduled",
-            body=f"Dear {patient['first_name']},\n\nYour appointment with Dr. {doctor['name']} on {data['date']} at {data['time']} has been scheduled and is pending approval.\n\nBest regards,\nMedical Team"
-        )
+    send_email(
+        recipient=patient['email'],
+        subject="Appointment Scheduled",
+        body=f"Dear {patient.get('first_name', 'Unknown')},\n\nYour appointment with Dr. {doctor.get('name', 'Unknown')} on {data['date']} at {data['time']} has been scheduled and is pending approval.\n\nBest regards,\nMedical Team"
+    )
 
     return jsonify({"message": "Appointment added successfully"}), 201
+
+
 
 @app.route('/appointments/<id>', methods=['PUT'])
 def update_appointment(id):
@@ -901,3 +908,24 @@ def tester_notification():
         return jsonify({"message": "Notification envoyée avec succès"}), 200
     else:
         return jsonify({"erreur": "Échec de l'envoi de la notification"}), 500
+
+
+import smtplib
+from email.mime.text import MIMEText
+
+def send_email(recipient, subject, body):
+    try:
+        msg = MIMEText(body)
+        msg['Subject'] = subject
+        msg['From'] = 'testernr009@gmail.com'
+        msg['To'] = recipient
+
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            server.starttls()
+            server.login('testernr009@gmail.com', 'f5J2ox9[)39/<1/9jWj2')
+            server.sendmail('testernr009@gmail.com', recipient, msg.as_string())
+        print(f"Successfully sent email to {recipient}")
+        return True
+    except Exception as e:
+        print(f"Error sending email to {recipient}: {str(e)}")
+        return False

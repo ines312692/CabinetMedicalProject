@@ -16,7 +16,7 @@ export class AppointmentService {
     return this.http.get<any[]>(`${this.apiUrl}/doctors/${doctorId}/appointments`).pipe(
       map(appointments => appointments.map(app => ({
         ...app,
-        _id: app._id?.$oid || app._id, // Handle both formats
+        _id: app._id?.$oid || app._id,
         doctor_id: app.doctor_id?.$oid || app.doctor_id,
         patient_id: app.patient_id?.$oid || app.patient_id
       })))

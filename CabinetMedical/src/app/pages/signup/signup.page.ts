@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, Validators} from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService, SignupData } from 'src/app/services/auth.service';
+import { AuthService } from 'src/app/services/auth.service';
 import {IonicModule} from "@ionic/angular";
 import {NgIf} from "@angular/common";
+
 
 @Component({
   selector: 'app-signup',
