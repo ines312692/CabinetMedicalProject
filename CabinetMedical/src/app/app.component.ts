@@ -5,6 +5,8 @@ import { getAnalytics } from 'firebase/analytics';
 import { getMessaging, getToken } from 'firebase/messaging';
 import { Capacitor } from '@capacitor/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 // Configuration Firebase
 const firebaseConfig = {
@@ -25,12 +27,24 @@ const firebaseConfig = {
 })
 export class AppComponent implements OnInit {
   private app: any;
+  isLoggedIn = false;
+  userRole: string | null = null;
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private router: Router
+  ) {
     // Initialize Firebase
     this.app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(this.app);
     console.log('Firebase initialized with analytics:', analytics);
+
+    // Subscribe to auth changes
+    this.authService.currentUser$.subscribe(user => {
+      this.isLoggedIn = !!user;
+      this.userRole = user?.role || null;
+    });
   }
 
   ngOnInit() {
@@ -114,6 +128,15 @@ export class AppComponent implements OnInit {
     } catch (error) {
       console.error('FCM initialization failed:', error);
       return null;
+    }
+  }
+
+  handleAuthAction() {
+    if (this.isLoggedIn) {
+      this.authService.logout();
+      this.router.navigate(['/home']);
+    } else {
+      this.router.navigate(['/login']);
     }
   }
 }

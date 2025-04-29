@@ -1,8 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {DoctorService} from "../services/doctor.service";
 import { PubserviceService } from '../services/pubservice.service';
-import { AlertController } from '@ionic/angular';
 import {Router} from "@angular/router";
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -26,12 +26,25 @@ export class HomePage implements OnInit, OnDestroy {
     'Gabès', 'Medenine', 'Tataouine', 'Gafsa', 'Tozeur', 'Kebili'
   ];
   filteredPubs: any[] = [];
-  constructor(private doctorService: DoctorService, private pubService:PubserviceService,private router:Router ) {}
+  isLoggedIn: boolean = false;
+
+  constructor(
+    private doctorService: DoctorService,
+    private pubService: PubserviceService,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.loadDoctors();
     this.loadPubs();
     this.startImageRotation();
+
+    // Subscribe to authentication state changes
+    this.authService.currentUser$.subscribe(user => {
+      console.log('User:', user);
+      this.isLoggedIn = !!user;
+    });
   }
 
   ngOnDestroy() {
@@ -52,6 +65,7 @@ export class HomePage implements OnInit, OnDestroy {
       }
     );
   }
+
   loadPubs() {
     this.pubService.getPubs().subscribe(
       (data2) => {
@@ -64,16 +78,15 @@ export class HomePage implements OnInit, OnDestroy {
     );
   }
 
-
   startImageRotation() {
     this.intervalId = setInterval(() => {
       this.currentDoctorIndex = (this.currentDoctorIndex + 1) % this.filteredDoctors.length;
     }, 3000); // Change image every 3 seconds
   }
+
   swiperSlideChanged(e:any) {
     console.log('slide changed', e);
   }
-
 
   toggleSpecialtyFilter(specialty: string) {
     this.selectedSpecialty = this.selectedSpecialty === specialty ? null : specialty;
@@ -81,59 +94,53 @@ export class HomePage implements OnInit, OnDestroy {
 
   clearSpecialtyFilter() {
     this.selectedSpecialty = null;
-
   }
 
-    toggleGovernoratFilter(governorat: string) {
-      this.selectedGovernorat = this.selectedGovernorat === governorat ? null : governorat;
-      this.searchDoctors({ target: { value: '' } });
-    }
+  toggleGovernoratFilter(governorat: string) {
+    this.selectedGovernorat = this.selectedGovernorat === governorat ? null : governorat;
+    this.searchDoctors({ target: { value: '' } });
+  }
 
-    clearGovernoratFilter() {
-      this.selectedGovernorat = null;
-      this.searchDoctors({ target: { value: '' } });
-    }
+  clearGovernoratFilter() {
+    this.selectedGovernorat = null;
+    this.searchDoctors({ target: { value: '' } });
+  }
+
   goToProfile() {
     this.router.navigate(['/patient-profile']);
   }
 
-    searchDoctors(event: any) {
-      const query = event.target.value.toLowerCase();
-      this.filteredDoctors = this.doctors.filter(doctor => {
-        // Filtre par recherche
-        const matchesSearch = !query ||
-                           doctor.name.toLowerCase().includes(query) ||
-                           doctor.specialty.toLowerCase().includes(query);
+  searchDoctors(event: any) {
+    const query = event.target.value.toLowerCase();
+    this.filteredDoctors = this.doctors.filter(doctor => {
+      // Filtre par recherche
+      const matchesSearch = !query ||
+        doctor.name.toLowerCase().includes(query) ||
+        doctor.specialty.toLowerCase().includes(query);
 
-        // Filtre par spécialité
-        const matchesSpecialty = !this.selectedSpecialty ||
-                              doctor.specialty.toLowerCase().includes(this.selectedSpecialty.toLowerCase());
+      // Filtre par spécialité
+      const matchesSpecialty = !this.selectedSpecialty ||
+        doctor.specialty.toLowerCase().includes(this.selectedSpecialty.toLowerCase());
 
-        // Filtre par gouvernorat (nouveau)
-        const matchesGovernorat = !this.selectedGovernorat ||
-                               doctor.address.toLowerCase().includes(this.selectedGovernorat.toLowerCase());
+      // Filtre par gouvernorat (nouveau)
+      const matchesGovernorat = !this.selectedGovernorat ||
+        doctor.address.toLowerCase().includes(this.selectedGovernorat.toLowerCase());
 
-        return matchesSearch && matchesSpecialty && matchesGovernorat;
-      });
-    }
+      return matchesSearch && matchesSpecialty && matchesGovernorat;
+    });
+  }
 
+  filterPubsByDate() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Pour ignorer l'heure dans la comparaison
 
-    filterPubsByDate() {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0); // Pour ignorer l'heure dans la comparaison
+    this.filteredPubs = this.pubs.filter(pub => {
+      if (!pub.dateFin) return true; // Si pas de date de fin, on affiche
 
-      this.filteredPubs = this.pubs.filter(pub => {
-        if (!pub.dateFin) return true; // Si pas de date de fin, on affiche
+      const dateFin = new Date(pub.dateFin);
+      dateFin.setHours(0, 0, 0, 0);
 
-        const dateFin = new Date(pub.dateFin);
-        dateFin.setHours(0, 0, 0, 0);
-
-        return dateFin >= today;
-      });
-    }
-
+      return dateFin >= today;
+    });
+  }
 }
-
-
-
-

@@ -3,7 +3,7 @@
     <ion-buttons slot="start" style="color: #132d5e;">
       <ion-menu-button menu="main-menu"></ion-menu-button>
     </ion-buttons>
-    <ion-buttons slot="end">
+    <ion-buttons slot="end" *ngIf="isLoggedIn">
       <ion-button class="profile-button" (click)="goToProfile()">
         <ion-icon name="person-circle" class="profile-icon"></ion-icon>
       </ion-button>

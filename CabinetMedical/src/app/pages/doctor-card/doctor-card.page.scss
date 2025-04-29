@@ -50,8 +50,8 @@
   display: flex;
   align-items: center;
   z-index: 2;
-  
-  
+
+
   ion-icon {
     color: #FFC107;
     margin-right: 4px;
@@ -124,5 +124,53 @@
   .doctor-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+  }
+}
+.doctor-meta {
+  margin-bottom: 12px;
+
+  .doctor-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: var(--ion-color-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .doctor-specialty {
+    font-size: 0.9rem;
+    color: var(--ion-color-primary);
+    margin: 0 0 8px 0;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .location {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--ion-color-medium);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+
+    ion-icon {
+      margin-right: 6px;
+      font-size: 1rem;
+      flex-shrink: 0; /* Empêche l'icône de rétrécir */
+    }
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 }
