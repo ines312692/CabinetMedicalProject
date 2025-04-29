@@ -11,13 +11,13 @@
   --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-// Main container styles
+/* Main container styles */
 ion-content {
   --background: var(--background-light);
   font-family: 'Roboto', sans-serif;
 }
 
-// Loading spinner
+/* Loading spinner */
 .loading-spinner {
   display: block;
   margin: 30px auto;
@@ -26,7 +26,7 @@ ion-content {
   height: 40px;
 }
 
-// Profile card
+/* Profile card */
 .profile-card {
   margin: 12px;
   border-radius: 12px;
@@ -128,7 +128,7 @@ ion-item {
   }
 }
 
-// Tabs section
+/* Tabs section */
 .tabs-section {
   margin: 12px;
 }
@@ -161,7 +161,7 @@ ion-segment-button {
   }
 }
 
-// Component container
+/* Component container */
 .component-container {
   background-color: var(--white);
   border-radius: 12px;
@@ -170,7 +170,18 @@ ion-segment-button {
   box-shadow: var(--shadow);
 }
 
-// Responsive adjustments
+/* FAB styles */
+ion-fab-button {
+  --background: var(--primary-blue);
+  --background-activated: var(--primary-blue-dark);
+  --box-shadow: var(--shadow);
+}
+
+ion-fab-button ion-icon {
+  font-size: 24px;
+}
+
+/* Responsive adjustments */
 @media (min-width: 992px) {
   .profile-card, .component-container {
     max-width: 800px;
@@ -185,7 +196,7 @@ ion-segment-button {
   }
 }
 
-// Header profile button style
+/* Header profile button style */
 .profile-button {
   --padding-start: 8px;
   --padding-end: 8px;
@@ -196,7 +207,7 @@ ion-segment-button {
   color: var(--primary-blue);
 }
 
-// Compact layout for small screens
+/* Compact layout for small screens */
 @media (max-width: 400px) {
   .profile-content {
     padding: 10px 8px;

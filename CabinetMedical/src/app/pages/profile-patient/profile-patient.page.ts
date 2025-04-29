@@ -10,6 +10,7 @@ import { PatientHistoryPage } from "../patient-history/patient-history.page";
 import { ListAppointmentPage } from "../list-appointment/list-appointment.page";
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile-patient',
@@ -34,10 +35,12 @@ export class ProfilePatientPage implements OnInit {
     private patientService: PatientService,
     private authService: AuthService,
     private dataService: DataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit() {
+
     const patientIdFromRoute = this.route.snapshot.paramMap.get('patient_id');
 
     if (patientIdFromRoute) {
@@ -51,6 +54,7 @@ export class ProfilePatientPage implements OnInit {
         console.error('No logged-in patient found or user is not a patient');
       }
     }
+
   }
 
   private loadPatientData(patientId: string) {
@@ -67,5 +71,8 @@ export class ProfilePatientPage implements OnInit {
         this.isLoadingPatient = false;
       }
     });
+  }
+  openDocumentUpload() {
+   this.router.navigate(['/document-management']);
   }
 }

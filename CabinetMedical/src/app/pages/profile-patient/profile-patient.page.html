@@ -4,7 +4,7 @@
       <ion-menu-button menu="main-menu"></ion-menu-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button class="profile-button" >
+      <ion-button class="profile-button">
         <ion-icon name="person-circle" class="profile-icon"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -79,4 +79,11 @@
   <div *ngIf="selectedTab === 'appointments' && patientDetails" class="component-container">
     <app-list-appointment [patientId]="patientDetails._id"></app-list-appointment>
   </div>
+
+  <!-- Floating Action Button for Adding Documents -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="patientDetails && !isLoadingPatient">
+    <ion-fab-button color="primary" (click)="openDocumentUpload()">
+      <ion-icon name="document-attach-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>
