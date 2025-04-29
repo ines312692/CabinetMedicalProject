@@ -27,6 +27,7 @@ export class HomePage implements OnInit, OnDestroy {
   ];
   filteredPubs: any[] = [];
   isLoggedIn: boolean = false;
+  currentUserId: string | null = null;
 
   constructor(
     private doctorService: DoctorService,
@@ -44,6 +45,11 @@ export class HomePage implements OnInit, OnDestroy {
     this.authService.currentUser$.subscribe(user => {
       console.log('User:', user);
       this.isLoggedIn = !!user;
+      if (user) {
+        this.currentUserId = user.id;
+      } else {
+        this.currentUserId = null;
+      }
     });
   }
 
@@ -106,8 +112,14 @@ export class HomePage implements OnInit, OnDestroy {
     this.searchDoctors({ target: { value: '' } });
   }
 
+  // Méthode mise à jour pour naviguer vers profile-patient avec le patient_id
   goToProfile() {
-    this.router.navigate(['/patient-profile']);
+    if (this.isLoggedIn && this.currentUserId) {
+      this.router.navigate(['/profile-patient', this.currentUserId]);
+    } else {
+      // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+      this.router.navigate(['/login']);
+    }
   }
 
   searchDoctors(event: any) {

@@ -38,7 +38,6 @@ export class ProfilePatientPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Check if there's a patient ID in the route params
     const patientIdFromRoute = this.route.snapshot.paramMap.get('patient_id');
 
     if (patientIdFromRoute) {
