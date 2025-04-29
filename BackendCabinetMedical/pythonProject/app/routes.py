@@ -507,6 +507,11 @@ def get_appointment(id):
     return response
 
 
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @app.route('/appointments', methods=['POST'])
 def add_appointment():
@@ -519,20 +524,23 @@ def add_appointment():
         if field not in data:
             return jsonify({"error": f"Missing field: {field}"}), 400
 
-    appointment = {
-        "_id": ObjectId(),
-        "date": data['date'],
-        "reason": data['reason'],
-        "time": data['time'],
-        "location": data['location'],
-        "doctor_id": ObjectId(data['doctor_id']),
-        "patient_id": ObjectId(data['patient_id']),
-        "status": data.get('status', 'pending')
-    }
+    try:
+        appointment = {
+            "_id": ObjectId(),
+            "date": data['date'],
+            "reason": data['reason'],
+            "time": data['time'],
+            "location": data['location'],
+            "doctor_id": ObjectId(data['doctor_id']),
+            "patient_id": ObjectId(data['patient_id']),
+            "status": data.get('status', 'pending')
+        }
+    except Exception as e:
+        return jsonify({"error": "Invalid ObjectId format"}), 400
 
     result = mongo.db.appointments.insert_one(appointment)
 
-    # Notify doctor and patient
+    # Fetch doctor and patient
     doctor = mongo.db.doctors.find_one({"_id": ObjectId(data['doctor_id'])})
     if not doctor:
         return jsonify({"error": "Doctor not found"}), 404
@@ -541,26 +549,48 @@ def add_appointment():
     if not patient:
         return jsonify({"error": "Patient not found"}), 404
 
+    # Notify doctor
     if doctor.get('fcm_token'):
-        send_fcm_notification(
-            fcm_token=doctor['fcm_token'],
-            title="New Appointment Request",
-            body=f"New appointment scheduled with {patient.get('first_name', 'Unknown')} on {data['date']} at {data['time']}.",
-            data={"type": "appointment", "appointment_id": str(appointment['_id'])}
-        )
+        try:
+            send_fcm_notification(
+                fcm_token=doctor['fcm_token'],
+                title="New Appointment Request",
+                body=f"New appointment scheduled with {patient.get('first_name', 'Unknown')} on {data['date']} at {data['time']}.",
+                data={"type": "appointment", "appointment_id": str(appointment['_id'])}
+            )
+        except Exception as e:
+            logger.error(f"Failed to send FCM to doctor {doctor['email']}: {str(e)}")
+            # Optionally, clear invalid token
+            if "Requested entity was not found" in str(e):
+                mongo.db.doctors.update_one(
+                    {"_id": ObjectId(data['doctor_id'])},
+                    {"$unset": {"fcm_token": ""}}
+                )
+
     send_email(
         recipient=doctor['email'],
         subject="New Appointment Request",
         body=f"Dear Dr. {doctor.get('name', 'Unknown')},\n\nA new appointment has been scheduled with {patient.get('first_name', 'Unknown')} on {data['date']} at {data['time']}.\n\nBest regards,\nMedical Team"
     )
 
+    # Notify patient
     if patient.get('fcm_token'):
-        send_fcm_notification(
-            fcm_token=patient['fcm_token'],
-            title="Appointment Scheduled",
-            body=f"Your appointment with Dr. {doctor.get('name', 'Unknown')} on {data['date']} at {data['time']} is pending.",
-            data={"type": "appointment", "appointment_id": str(appointment['_id'])}
-        )
+        try:
+            send_fcm_notification(
+                fcm_token=patient['fcm_token'],
+                title="Appointment Scheduled",
+                body=f"Your appointment with Dr. {doctor.get('name', 'Unknown')} on {data['date']} at {data['time']} is pending.",
+                data={"type": "appointment", "appointment_id": str(appointment['_id'])}
+            )
+        except Exception as e:
+            logger.error(f"Failed to send FCM to patient {patient['email']}: {str(e)}")
+            # Optionally, clear invalid token
+            if "Requested entity was not found" in str(e):
+                mongo.db.patients.update_one(
+                    {"_id": ObjectId(data['patient_id'])},
+                    {"$unset": {"fcm_token": ""}}
+                )
+
     send_email(
         recipient=patient['email'],
         subject="Appointment Scheduled",
@@ -874,20 +904,20 @@ def register_fcm_token():
         data = request.json
         print(f"Received payload: {data}")
 
-        if not data or 'user_id' not in data or 'fcm_token' not in data or 'role' not in data:
+        if not data or 'userId' not in data or 'fcmToken' not in data or 'role' not in data:
             print("Missing required fields")
-            return jsonify({"error": "user_id, fcm_token, and role are required"}), 400
+            return jsonify({"error": "userId, fcmToken, and role are required"}), 400
 
-        user_id = data['user_id']
-        fcm_token = data['fcm_token']
+        user_id = data['userId']
+        fcm_token = data['fcmToken']
         role = data['role']
-        print(f"Processing: user_id={user_id}, role={role}, fcm_token={fcm_token}")
+        print(f"Processing: userId={user_id}, role={role}, fcmToken={fcm_token}")
 
         try:
             user_id_obj = ObjectId(user_id)
         except Exception as e:
             print(f"Invalid user_id format: {str(e)}")
-            return jsonify({"error": "Invalid user_id format"}), 400
+            return jsonify({"error": "Invalid userId format"}), 400
 
         collection = {
             'patient': mongo.db.patients,
@@ -914,27 +944,6 @@ def register_fcm_token():
     except Exception as e:
         print(f"Server error in register_fcm_token: {str(e)}")
         return jsonify({"error": f"Internal server error: {str(e)}"}), 500
-
-@app.route('/tester-notification', methods=['POST'])
-def tester_notification():
-    data = request.json
-    fcm_token = data.get('fcm_token')
-
-    if not fcm_token:
-        return jsonify({"erreur": "Token FCM requis"}), 400
-
-    resultat = send_fcm_notification(
-        fcm_token=fcm_token,
-        title="Notification Test",
-        body="Ceci est une notification de test",
-        data={"type": "test"}
-    )
-
-    if resultat:
-        return jsonify({"message": "Notification envoyée avec succès"}), 200
-    else:
-        return jsonify({"erreur": "Échec de l'envoi de la notification"}), 500
-
 
 import smtplib
 from email.mime.text import MIMEText
@@ -1009,9 +1018,8 @@ def export_combined_pdf(patient_id):
         else:
             p.drawString(120, y, f"No {label} available")
             y -= 20
-        y -= 10  # Extra spacing after section
+        y -= 10
 
-    # Patient Details
     add_section_header("Patient Details")
     p.drawString(120, y, f"Email: {patient.get('email', 'N/A')}")
     y -= 20
@@ -1025,7 +1033,6 @@ def export_combined_pdf(patient_id):
         y -= 20
     y -= 10
 
-    # Diagnostics
     add_section_header("Diagnostics")
     add_data_or_empty(
         diagnostics,
@@ -1033,7 +1040,6 @@ def export_combined_pdf(patient_id):
         "diagnostics"
     )
 
-    # Consultations
     add_section_header("Consultations")
     add_data_or_empty(
         consultations,
@@ -1041,7 +1047,6 @@ def export_combined_pdf(patient_id):
         "consultations"
     )
 
-    # Prescriptions
     add_section_header("Prescriptions")
     add_data_or_empty(
         prescriptions,
@@ -1054,10 +1059,61 @@ def export_combined_pdf(patient_id):
     p.save()
     buffer.seek(0)
 
-    # Send PDF as file
     return send_file(
         buffer,
         as_attachment=True,
         download_name=f"patient_report_{patient['first_name']}_{patient['last_name']}.pdf",
         mimetype='application/pdf'
     )
+
+
+
+
+
+def send_fcm_notification(fcm_token, title, body, data=None):
+    """Send an FCM notification to the specified token."""
+    try:
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title=title,
+                body=body
+            ),
+            token=fcm_token,
+            data=data or {}
+        )
+        response = messaging.send(message)
+        logger.info(f"Successfully sent FCM notification: {response}")
+        return True
+    except Exception as e:
+        logger.error(f"Error sending FCM notification: {str(e)}")
+        return False
+
+@app.route('/tester-notification', methods=['POST'])
+def tester_notification():
+    """Test FCM notification by sending a test message to the provided FCM token."""
+    try:
+        data = request.json
+        if not data or 'fcm_token' not in data:
+            logger.error("Missing fcm_token in request")
+            return jsonify({"erreur": "Token FCM requis"}), 400
+
+        fcm_token = data['fcm_token']
+        logger.info(f"Received test notification request for token: {fcm_token}")
+
+        result = send_fcm_notification(
+            fcm_token=fcm_token,
+            title="Notification Test",
+            body="Ceci est une notification de test",
+            data={"type": "test"}
+        )
+
+        if result:
+            logger.info("Test notification sent successfully")
+            return jsonify({"message": "Notification envoyée avec succès"}), 200
+        else:
+            logger.error("Failed to send test notification")
+            return jsonify({"erreur": "Échec de l'envoi de la notification"}), 500
+
+    except Exception as e:
+        logger.error(f"Server error in tester_notification: {str(e)}")
+        return jsonify({"erreur": f"Erreur serveur: {str(e)}"}), 500

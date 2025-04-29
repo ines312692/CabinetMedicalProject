@@ -8,7 +8,6 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from './services/auth.service';
 
-// Configuration Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyB44xvEJeZM-z12PJlCO8RRCPWjnO8hfvI",
   authDomain: "appmedical-936e4.firebaseapp.com",
@@ -44,33 +43,21 @@ export class AppComponent implements OnInit {
     this.authService.currentUser$.subscribe(user => {
       this.isLoggedIn = !!user;
       this.userRole = user?.role || null;
+      if (user && user.id) {
+        // Initialize FCM when user logs in
+        this.initializeFCM(user.id, user.role || 'patient');
+      }
     });
   }
 
   ngOnInit() {
+    // Check for existing user on app load
     const userId = localStorage.getItem('user_id');
     const role = localStorage.getItem('role') || 'patient';
     if (userId) {
       this.initializeFCM(userId, role);
     } else {
       console.warn('No user_id found in localStorage, skipping FCM initialization');
-    }
-  }
-
-  async login(email: string, password: string) {
-    try {
-      const response: any = await this.http
-        .post('http://localhost:5000/login', { email, password })
-        .toPromise();
-      if (response.id) {
-        localStorage.setItem('user_id', response.id);
-        localStorage.setItem('role', response.role || 'patient');
-        await this.initializeFCM(response.id, response.role || 'patient');
-      }
-      return response;
-    } catch (error) {
-      console.error('Login failed:', error);
-      throw error;
     }
   }
 
@@ -106,7 +93,7 @@ export class AppComponent implements OnInit {
 
       console.log('FCM Token:', fcmToken);
 
-      const payload = { user_id: userId, fcm_token: fcmToken, role };
+      const payload = { userId, fcmToken, role };
       console.log('Sending payload to backend:', payload);
 
       const response = await fetch('http://localhost:5000/register-fcm-token', {

@@ -2,9 +2,9 @@
   <ion-tab-bar slot="bottom">
     <ion-tab-button tab="home">
       <span class="material-icons">home</span>
-      <ion-label>Accueil</ion-label>
+      <ion-label routerLink="/home">Accueil</ion-label>
     </ion-tab-button>
-    <ion-tab-button tab="accueil">
+    <ion-tab-button (click)="navigateToProfile()">
       <span class="material-icons">person</span>
       <ion-label>Profil</ion-label>
     </ion-tab-button>
