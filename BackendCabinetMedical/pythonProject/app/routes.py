@@ -955,3 +955,109 @@ def send_email(recipient, subject, body):
     except Exception as e:
         print(f"Error sending email to {recipient}: {str(e)}")
         return False
+
+
+@app.route('/patient/<patient_id>/combined/pdf', methods=['GET'])
+def export_combined_pdf(patient_id):
+    try:
+        patient_id_obj = ObjectId(patient_id)
+    except Exception:
+        return jsonify({"error": "Invalid patient ID format"}), 400
+
+    # Fetch patient data
+    patient = mongo.db.patients.find_one({"_id": patient_id_obj})
+    if not patient:
+        return jsonify({"error": "Patient not found"}), 404
+
+    # Fetch diagnostics, consultations, and prescriptions
+    diagnostics = list(mongo.db.diagnostics.find({"patient_id": patient_id_obj}))
+    consultations = list(mongo.db.consultations.find({"patient_id": patient_id_obj}))
+    prescriptions = list(mongo.db.prescriptions.find({"patient_id": patient_id_obj}))
+
+    # Initialize PDF buffer
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+
+    # Set fonts
+    p.setFont("Helvetica-Bold", 16)
+    p.drawString(100, height - 50, f"Patient Report for {patient['first_name']} {patient['last_name']}")
+    p.setFont("Helvetica", 12)
+    p.drawString(100, height - 70, f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+    # Starting Y position for content
+    y = height - 100
+
+    # Helper function to add section header
+    def add_section_header(title):
+        nonlocal y
+        p.setFont("Helvetica-Bold", 14)
+        p.drawString(100, y, title)
+        y -= 20
+        p.setFont("Helvetica", 12)
+
+    # Helper function to add data or "No data" message
+    def add_data_or_empty(items, format_fn, label):
+        nonlocal y
+        if items:
+            for item in items:
+                if y < 50:  # Check for page overflow
+                    p.showPage()
+                    y = height - 50
+                p.drawString(120, y, format_fn(item))
+                y -= 20
+        else:
+            p.drawString(120, y, f"No {label} available")
+            y -= 20
+        y -= 10  # Extra spacing after section
+
+    # Patient Details
+    add_section_header("Patient Details")
+    p.drawString(120, y, f"Email: {patient.get('email', 'N/A')}")
+    y -= 20
+    p.drawString(120, y, f"Date of Birth: {patient.get('birth_date', 'N/A')}")
+    y -= 20
+    if patient.get('phone'):
+        p.drawString(120, y, f"Phone: {patient['phone']}")
+        y -= 20
+    if patient.get('address'):
+        p.drawString(120, y, f"Address: {patient['address']}")
+        y -= 20
+    y -= 10
+
+    # Diagnostics
+    add_section_header("Diagnostics")
+    add_data_or_empty(
+        diagnostics,
+        lambda d: f"Date: {d['date']} - Result: {d['result']}",
+        "diagnostics"
+    )
+
+    # Consultations
+    add_section_header("Consultations")
+    add_data_or_empty(
+        consultations,
+        lambda c: f"Date: {c['date']} - Notes: {c['notes']}",
+        "consultations"
+    )
+
+    # Prescriptions
+    add_section_header("Prescriptions")
+    add_data_or_empty(
+        prescriptions,
+        lambda p: f"Date: {p['date']} - Medication: {p['medication']}",
+        "prescriptions"
+    )
+
+    # Finalize PDF
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+
+    # Send PDF as file
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"patient_report_{patient['first_name']}_{patient['last_name']}.pdf",
+        mimetype='application/pdf'
+    )

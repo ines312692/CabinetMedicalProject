@@ -22,8 +22,8 @@ export class PatientHistoryPage implements OnInit, OnChanges {
   diagnostics: any;
 
   constructor(
-    private medicalHistoryService: MedicalHistoryService,
-    private http: HttpClient
+    private readonly medicalHistoryService: MedicalHistoryService,
+    private readonly http: HttpClient
   ) {}
 
   ngOnInit() {
@@ -53,9 +53,9 @@ export class PatientHistoryPage implements OnInit, OnChanges {
   }
 
   downloadDiagnosticsPdf() {
-    const url = `http://127.0.0.1:5000/patient/${this.patientId}/diagnostics/pdf`;
+    const url = `http://127.0.0.1:5000/patient/${this.patientId}/combined/pdf`;
     this.http.get(url, { responseType: 'blob' }).subscribe(blob => {
-      saveAs(blob, 'diagnostics.pdf');
+      saveAs(blob, 'report.pdf');
     });
   }
 }

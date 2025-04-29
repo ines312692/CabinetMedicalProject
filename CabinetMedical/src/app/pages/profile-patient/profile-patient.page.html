@@ -12,10 +12,8 @@
 </ion-header>
 
 <ion-content>
-  <!-- Loading state -->
   <ion-spinner *ngIf="isLoadingPatient" name="crescent" class="loading-spinner"></ion-spinner>
 
-  <!-- Profile Card -->
   <ion-card *ngIf="patientDetails && !isLoadingPatient" class="profile-card">
     <ion-card-content>
       <div class="profile-content">
@@ -70,12 +68,10 @@
     </ion-segment>
   </div>
 
-  <!-- Patient History Component -->
   <div *ngIf="selectedTab === 'history' && patientDetails" class="component-container">
     <app-patient-history [patientId]="patientDetails._id"></app-patient-history>
   </div>
 
-  <!-- List Appointments Component -->
   <div *ngIf="selectedTab === 'appointments' && patientDetails" class="component-container">
     <app-list-appointment [patientId]="patientDetails._id"></app-list-appointment>
   </div>
