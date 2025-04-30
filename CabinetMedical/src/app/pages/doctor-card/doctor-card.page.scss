@@ -50,8 +50,8 @@
   display: flex;
   align-items: center;
   z-index: 2;
-  
-  
+
+
   ion-icon {
     color: #FFC107;
     margin-right: 4px;
@@ -166,11 +166,11 @@
       font-size: 1rem;
       flex-shrink: 0; /* Empêche l'icône de rétrécir */
     }
-    
+
     span {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
   }
-}
+

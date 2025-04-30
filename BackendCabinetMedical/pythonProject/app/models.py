@@ -1,8 +1,11 @@
 from bson import ObjectId
-
+from typing import List, Dict
+from datetime import datetime
 
 class Doctor:
-    def __init__(self, id, name, specialty, description, address, phone, image):
+
+    def __init__(self, id, name, specialty, description, address, phone, latitude, longitude, image, password, email, role="doctor", availability=None, fcm_token=None):
+
         self.id = id
         self.name = name
         self.specialty = specialty
@@ -10,10 +13,11 @@ class Doctor:
         self.address = address
         self.phone = phone
         self.image = image
-        self.password=password
-        self.email=email
+        self.password = password
+        self.email = email
         self.role = role
-        self.availability = availability
+        self.availability = availability or []
+        self.fcm_token = fcm_token
 
     @staticmethod
     def from_mongo(doc):
@@ -28,11 +32,12 @@ class Doctor:
             image=doc['image'],
             password=doc['password'],
             email=doc['email'],
-            role=doc.get('role', 'doctor')
+            role=doc.get('role', 'doctor'),
+            fcm_token=doc.get('fcm_token', None)
         )
 
 class Patient:
-    def __init__(self, id, first_name, last_name, birth_date, email, password, role="patient"):
+    def __init__(self, id, first_name, last_name, birth_date, email, password, role="patient", fcm_token=None):
         self.id = id
         self.first_name = first_name
         self.last_name = last_name
@@ -40,6 +45,7 @@ class Patient:
         self.email = email
         self.password = password
         self.role = role
+        self.fcm_token = fcm_token
 
     @staticmethod
     def from_mongo(doc):
@@ -50,11 +56,12 @@ class Patient:
             birth_date=doc['birth_date'],
             email=doc['email'],
             password=doc['password'],
-            role=doc.get('role', 'patient')
+            role=doc.get('role', 'patient'),
+            fcm_token=doc.get('fcm_token', None)
         )
 
 class Administrator:
-    def __init__(self, id, first_name, last_name, birth_date, email, password, role="admin"):
+    def __init__(self, id, first_name, last_name, birth_date, email, password, role="admin", fcm_token=None):
         self.id = id
         self.first_name = first_name
         self.last_name = last_name
@@ -62,6 +69,7 @@ class Administrator:
         self.email = email
         self.password = password
         self.role = role
+        self.fcm_token = fcm_token
 
     @staticmethod
     def from_mongo(doc):
@@ -72,29 +80,27 @@ class Administrator:
             birth_date=doc['birth_date'],
             email=doc['email'],
             password=doc['password'],
-            role=doc.get('role', 'admin')
+            role=doc.get('role', 'admin'),
+            fcm_token=doc.get('fcm_token', None)
         )
 
-
-from bson import ObjectId
-
 class File:
-    def __init__(self, id, filename, status):
+    def __init__(self, id, filename, status, patient_id=None, doctor_id=None):
         self.id = id
         self.filename = filename
         self.status = status
+        self.patient_id = patient_id
+        self.doctor_id = doctor_id
 
     @staticmethod
     def from_mongo(doc):
         return File(
             id=doc['_id'],
             filename=doc['filename'],
-            status=doc['status']
+            status=doc['status'],
+            patient_id=doc.get('patient_id'),
+            doctor_id=doc.get('doctor_id')
         )
-
-
-from bson import ObjectId
-from typing import List, Dict
 
 class Appointment:
     def __init__(self, _id: ObjectId, date: str, reason: str, time: str, location: Dict[str, float], doctor_id: ObjectId, patient_id: ObjectId, status: str = "pending"):
@@ -131,6 +137,7 @@ class Appointment:
             "patient_id": self.patient_id,
             "status": self.status
         }
+
 class Consultation:
     def __init__(self, date: str, notes: str):
         self.date = date
@@ -151,15 +158,10 @@ class Prescription:
         self.date = date
         self.medication = medication
 
-# models.py
 class DiagnosticsData:
     def __init__(self, diagnostics, prescriptions):
         self.diagnostics = diagnostics
         self.prescriptions = prescriptions
-
-
-from bson import ObjectId
-from datetime import datetime
 
 class Message:
     def __init__(self, _id: ObjectId, unique_id: str, sender_id: ObjectId, receiver_id: ObjectId, message: str, timestamp: datetime, first_message: bool = False):
@@ -193,7 +195,6 @@ class Message:
             "timestamp": self.timestamp,
             "first_message": self.first_message
         }
-        self.prescriptions = prescriptionscd
 
 class Advertisement:
     def __init__(self, id, title, description, image, end_date):
@@ -207,9 +208,8 @@ class Advertisement:
     def from_mongo(doc):
         return Advertisement(
             id=doc['_id'],
-            title=doc['title'],
+            title=doc['titre'],
             description=doc['description'],
             image=doc['image'],
-            end_date=doc['end_date']
+            end_date=doc['dateFin']
         )
-

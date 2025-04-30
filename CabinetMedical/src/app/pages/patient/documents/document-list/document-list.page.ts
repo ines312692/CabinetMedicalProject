@@ -1,8 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { IonicModule } from "@ionic/angular";
 import { DocumentService } from "../../../../services/document.service";
-import {NgForOf} from "@angular/common";
-
+import { NgForOf, NgIf } from "@angular/common";
 
 @Component({
   selector: 'app-document-list',
@@ -11,19 +10,47 @@ import {NgForOf} from "@angular/common";
   imports: [
     IonicModule,
     NgForOf,
-
+    NgIf
   ],
   standalone: true
 })
-export class DocumentListPage implements OnInit {
+export class DocumentListPage implements OnInit, OnChanges {
   @Input() documents: any[] = [];
+  @Input() doctorId: string = '';
+
+  filteredDocuments: any[] = [];
 
   constructor(
-    private documentService: DocumentService,
-
+    private readonly documentService: DocumentService,
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.filterDocumentsByDoctor();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // Re-filter documents when either documents array or doctorId changes
+    if (changes['documents'] || changes['doctorId']) {
+      this.filterDocumentsByDoctor();
+    }
+  }
+
+  filterDocumentsByDoctor() {
+    if (!this.doctorId || !this.documents.length) {
+      this.filteredDocuments = [];
+      return;
+    }
+
+    this.filteredDocuments = this.documents.filter(doc => {
+      const docDoctorId = typeof doc.doctor_id === 'object'
+        ? doc.doctor_id
+        : doc.doctor_id.$oid;
+
+      return docDoctorId === this.doctorId;
+
+    });
+    console.log('Filtered documents:', this.filteredDocuments);
+  }
 
   deleteDocument(documentId: string) {
     if (!documentId) {
@@ -32,6 +59,7 @@ export class DocumentListPage implements OnInit {
     }
     this.documentService.deleteDocument(documentId).subscribe(() => {
       this.documents = this.documents.filter(doc => doc.id !== documentId);
+      this.filteredDocuments = this.filteredDocuments.filter(doc => doc.id !== documentId);
     }, error => {
       console.error('Error deleting document', error);
     });

@@ -1,53 +1,111 @@
+// Variables de couleur - Thème bleu
+:host {
+  --primary-blue: #1a73e8;
+  --primary-blue-dark: #0d47a1;
+  --primary-blue-light: #e8f0fe;
+  --accent-blue: #4285f4;
+  --text-dark: #202124;
+  --text-medium: #5f6368;
+  --text-light: #9aa0a6;
+  --background-light: #f8f9fa;
+  --white: #ffffff;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+  display: block;
+  width: 100%;
+}
+
 .card {
-  padding: 16px;
-  background: #ffffff;
+  margin-bottom: 20px;
+  padding: 20px;
   border-radius: 12px;
-  border: 1px solid #b2dfdb;
-  margin-bottom: 24px;
-  transition: transform 0.3s ease, border-color 0.3s ease;
+  background-color: var(--white);
+  border-left: 4px solid var(--primary-blue);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  h2 {
+    color: var(--primary-blue);
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    margin-bottom: 16px;
+    font-weight: 600;
+
+    ion-icon {
+      margin-right: 10px;
+      font-size: 22px;
+    }
+  }
+
+  ul {
+    padding-left: 8px;
+    margin: 0;
+    list-style-type: none;
+
+    li {
+      margin-bottom: 12px;
+      display: flex;
+      align-items: flex-start;
+      padding: 10px;
+      background-color: var(--primary-blue-light);
+      border-radius: 8px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(26, 115, 232, 0.15);
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      ion-icon {
+        margin-right: 10px;
+        color: var(--primary-blue);
+        font-size: 18px;
+        min-width: 18px;
+      }
+    }
+  }
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  border-color: #00796b;
+ion-button {
+  --background: var(--primary-blue);
+  --background-hover: var(--primary-blue-dark);
+  --color: var(--white);
+  --border-radius: 8px;
+  margin: 20px 0;
+  font-weight: 500;
+  --box-shadow: 0 4px 8px rgba(26, 115, 232, 0.25);
+  height: 44px;
+
+  &:hover {
+    --opacity: 0.9;
+  }
 }
 
-.card h2 {
+// État vide
+.empty-state {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  font-size: 1.75em;
-  margin-bottom: 12px;
-  color: #00796b;
-}
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
 
-.card h2 ion-icon {
-  margin-right: 12px;
-  color: #00796b;
-}
+  ion-icon {
+    font-size: 48px;
+    color: var(--primary-blue-light);
+    margin-bottom: 16px;
+  }
 
-.card ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.card ul li {
-  display: flex;
-  align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid #b2dfdb;
-  transition: background-color 0.3s ease, padding-left 0.3s ease;
-}
-
-.card ul li:hover {
-  background-color: #b2dfdb;
-  padding-left: 8px;
-}
-
-.card ul li ion-icon {
-  margin-right: 12px;
-  color: #00796b;
-}
-
-.card ul li:last-child {
-  border-bottom: none;
+  p {
+    color: var(--text-medium);
+    font-size: 16px;
+  }
 }

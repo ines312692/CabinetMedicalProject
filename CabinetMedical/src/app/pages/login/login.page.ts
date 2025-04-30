@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonicModule, ToastController } from '@ionic/angular';
-import { AuthService, LoginData } from "../../services/auth.service";
+import { AuthService} from "../../services/auth.service";
 import { NgIf } from "@angular/common";
+import { LoginData } from "../../models/LoginData.interface";
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,7 @@ export class LoginPage implements OnInit {
   form: FormGroup | any;
   loginError: string | null = null;
 
-  constructor(private router: Router, private authService: AuthService, private toastController: ToastController) {
+  constructor(private readonly router: Router, private readonly authService: AuthService, private readonly toastController: ToastController) {
     this.initForm();
   }
 
@@ -63,12 +64,10 @@ export class LoginPage implements OnInit {
       next: (response: { role: string }) => {
         console.log('Login successful', response);
         this.presentToast('Connexion réussie!', 'success');
-
-        // Redirection selon le rôle
         if (response.role === 'doctor') {
-          this.router.navigate(['/doctor-profile']);
+          this.router.navigate(['/home']);
         } else if (response.role === 'patient') {
-          this.router.navigate(['/patient-profile']);
+          this.router.navigate(['/home']);
         } else if (response.role === 'admin') {
           this.router.navigate(['/admin-profile']);
         }

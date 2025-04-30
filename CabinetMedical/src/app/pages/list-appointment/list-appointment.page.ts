@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { AppointmentService } from "../../services/appointmentservice.service";
 import { IonicModule } from "@ionic/angular";
-import {NgClass, NgForOf} from "@angular/common";
+import { NgClass, NgForOf, NgIf } from "@angular/common";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-list-appointment',
@@ -12,21 +12,32 @@ import {NgClass, NgForOf} from "@angular/common";
   imports: [
     IonicModule,
     NgForOf,
-    NgClass
+    NgClass,
+    NgIf
   ]
 })
-export class ListAppointmentPage implements OnInit {
+export class ListAppointmentPage implements OnInit, OnChanges {
+  @Input() patientId: string = '';
+
   appointments: any[] = [];
-  patientId: string = '';
 
   constructor(
-    private readonly route: ActivatedRoute,
-    private readonly appointmentService: AppointmentService
+    private readonly appointmentService: AppointmentService,
+    private readonly router: Router,
   ) {}
 
   ngOnInit() {
-    this.patientId = this.route.snapshot.paramMap.get('patient_id') || '';
-    this.loadAppointments();
+    if (this.patientId) {
+      console.log('Patient ID:', this.patientId);
+      this.loadAppointments();
+
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['patientId'] && changes['patientId'].currentValue) {
+      this.loadAppointments();
+    }
   }
 
   loadAppointments() {
@@ -34,10 +45,14 @@ export class ListAppointmentPage implements OnInit {
       (response) => {
         // Vérifiez si la réponse contient un tableau
         this.appointments = response.appointments || [];
+        console.log('Appointments:', this.appointments);
       },
       (error) => {
         console.error('Erreur lors du chargement des rendez-vous :', error);
       }
     );
+  }
+  viewAppointmentDetails(appointment: any) {
+    this.router.navigate(['/appointment-details'], { state: { appointment } });
   }
 }

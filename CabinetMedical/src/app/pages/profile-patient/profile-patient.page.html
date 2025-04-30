@@ -1,0 +1,80 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start" style="color: #132d5e;">
+      <ion-menu-button menu="main-menu"></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button class="profile-button">
+        <ion-icon name="person-circle" class="profile-icon"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-spinner *ngIf="isLoadingPatient" name="crescent" class="loading-spinner"></ion-spinner>
+
+  <ion-card *ngIf="patientDetails && !isLoadingPatient" class="profile-card">
+    <ion-card-content>
+      <div class="profile-content">
+        <!-- Large profile image -->
+        <div class="profile-image-container">
+          <img [src]="'/assets/img/default.jpg'"
+               class="profile-image"
+               alt="Patient profile image">
+        </div>
+
+        <!-- Profile details -->
+        <div class="profile-details">
+          <h1 class="patient-name">{{ patientDetails.first_name }} {{ patientDetails.last_name }}</h1>
+
+          <ion-list lines="none">
+            <ion-item>
+              <ion-icon name="mail-outline" slot="start"></ion-icon>
+              <ion-label>Email: {{ patientDetails.email }}</ion-label>
+            </ion-item>
+
+            <ion-item>
+              <ion-icon name="calendar-outline" slot="start"></ion-icon>
+              <ion-label>Date de naissance: {{ patientDetails.birth_date }}</ion-label>
+            </ion-item>
+
+            <ion-item *ngIf="patientDetails.phone">
+              <ion-icon name="call-outline" slot="start"></ion-icon>
+              <ion-label>Téléphone: {{ patientDetails.phone }}</ion-label>
+            </ion-item>
+
+            <ion-item *ngIf="patientDetails.address">
+              <ion-icon name="location-outline" slot="start"></ion-icon>
+              <ion-label>Adresse: {{ patientDetails.address }}</ion-label>
+            </ion-item>
+          </ion-list>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <div *ngIf="patientDetails && !isLoadingPatient" class="tabs-section">
+    <ion-segment [(ngModel)]="selectedTab" mode="md">
+      <ion-segment-button value="history">
+        <ion-label>Historique médical</ion-label>
+        <ion-icon name="document-text-outline"></ion-icon>
+      </ion-segment-button>
+      <ion-segment-button value="appointments">
+        <ion-label>Rendez-vous</ion-label>
+        <ion-icon name="calendar-outline"></ion-icon>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <div *ngIf="selectedTab === 'history' && patientDetails" class="component-container">
+    <app-patient-history [patientId]="patientDetails._id"></app-patient-history>
+  </div>
+
+  <div *ngIf="selectedTab === 'appointments' && patientDetails" class="component-container">
+    <app-list-appointment [patientId]="patientDetails._id"></app-list-appointment>
+  </div>
+
+  <!-- Floating Action Button for Adding Documents -->
+
+</ion-content>

@@ -7,7 +7,7 @@
     </ion-header>
     <ion-content>
       <ion-list>
-        <ion-item routerLink="/accueil">
+        <ion-item routerLink="/home">
           <span class="material-icons" slot="start">home</span>
           <ion-label>Accueil</ion-label>
         </ion-item>
@@ -28,9 +28,13 @@
           <span class="material-icons" slot="start">settings</span>
           <ion-label>Paramètres</ion-label>
         </ion-item>
-        <ion-item routerLink="/login">
-          <span class="material-icons" slot="start">login</span>
-          <ion-label>Se connecter</ion-label>
+        <ion-item (click)="handleAuthAction()">
+          <span class="material-icons" slot="start">
+            {{ isLoggedIn ? 'logout' : 'login' }}
+          </span>
+          <ion-label>
+            {{ isLoggedIn ? 'Se déconnecter' : 'Se connecter' }}
+          </ion-label>
         </ion-item>
 
       </ion-list>

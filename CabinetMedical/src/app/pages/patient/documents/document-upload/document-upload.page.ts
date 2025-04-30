@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, OnInit, Input } from '@angular/core';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { IonicModule } from "@ionic/angular";
 import { NgIf } from "@angular/common";
+import { AuthService } from '../../../../services/auth.service';
 
 @Component({
   selector: 'app-document-upload',
@@ -14,14 +15,36 @@ import { NgIf } from "@angular/common";
   ],
   standalone: true
 })
-export class DocumentUploadPage {
+export class DocumentUploadPage implements OnInit {
+  @Input() doctorId: string = '';
   @Output() documentUploaded = new EventEmitter<any>();
+
   selectedFile: File | null = null;
   selectedFileName: string | null = null;
   uploadProgress: number = -1;
   uploadPercentage: number = 0;
+  patientId: string = '';
 
-  constructor(private http: HttpClient, private alertController: AlertController) {}
+  constructor(
+    private http: HttpClient,
+    private alertController: AlertController,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit() {
+    // Get patient ID from the authenticated user
+    this.getPatientId();
+  }
+
+  getPatientId() {
+    // Get the current user/patient ID
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser && currentUser.id) {
+      this.patientId = typeof currentUser.id === 'object'
+        ? (currentUser.id as any).$oid
+        : currentUser.id;
+    }
+  }
 
   async showAlert(message: string, cssClass: string) {
     const alert = await this.alertController.create({
@@ -43,12 +66,25 @@ export class DocumentUploadPage {
 
   onUpload() {
     if (!this.selectedFile) {
-      this.showAlert('No file selected!', 'error-alert').then(r => console.log(r));
+      this.showAlert('No file selected!', 'error-alert');
+      return;
+    }
+
+    if (!this.patientId) {
+      this.showAlert('Patient ID not available', 'error-alert');
+      return;
+    }
+
+    if (!this.doctorId) {
+      this.showAlert('Doctor ID not available', 'error-alert');
       return;
     }
 
     const formData = new FormData();
     formData.append('file', this.selectedFile);
+    formData.append('patient_id', this.patientId);
+    formData.append('doctor_id', this.doctorId);
+    formData.append('status', 'not viewed'); // Default status
 
     this.http.post('http://127.0.0.1:5000/upload', formData, {
       reportProgress: true,
@@ -62,14 +98,16 @@ export class DocumentUploadPage {
       } else if (event.type === HttpEventType.Response) {
         this.uploadProgress = -1;
         this.uploadPercentage = 0;
-        this.showAlert('Send complete!', 'success-alert').then(r => console.log(r));
+        this.showAlert('Send complete!', 'success-alert');
         this.documentUploaded.emit(event.body);
+        this.selectedFile = null;
+        this.selectedFileName = null;
         console.log('Upload complete', event.body);
       }
     }, error => {
       this.uploadProgress = -1;
       this.uploadPercentage = 0;
-      this.showAlert('send failed!', 'error-alert').then(r => console.log(r));
+      this.showAlert('Send failed!', 'error-alert');
       console.error('Upload failed', error);
     });
   }

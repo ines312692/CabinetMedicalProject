@@ -1,105 +1,24 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title> Mes Rendez-vous</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
-  <ion-list>
-    <ion-item *ngFor="let appointment of appointments" class="appointment-item">
-      <ion-icon name="calendar-outline" slot="start" class="icon-calendar"></ion-icon>
-      <ion-label>
-        <h2 class="appointment-date"> Date : {{ appointment.date }}</h2>
-        <p class="appointment-time"> Heure : {{ appointment.time }}</p>
-        <p class="appointment-status"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-           [ngClass]="{
-          'status-approved': appointment.status === 'approved',
+<ion-list>
+  <ion-item *ngFor="let appointment of appointments" class="appointment-item">
+    <ion-icon name="calendar-outline" slot="start" class="icon-calendar"></ion-icon>
+    <ion-label (click)="viewAppointmentDetails(appointment)">
+      <h2 class="appointment-date">Date : {{ appointment.date }}</h2>
+      <p class="appointment-time">Heure : {{ appointment.time }}</p>
+      <p class="appointment-status"
+         [ngClass]="{
+          'status-approved': appointment.status === 'accepted',
           'status-pending': appointment.status === 'pending',
           'status-refused': appointment.status === 'refused'
-        }">
-          <ion-icon
-            [name]="appointment.status === 'approved' ? 'checkmark-circle-outline' : appointment.status === 'pending' ? 'time-outline' : 'close-circle-outline'"
-            class="status-icon"
-          ></ion-icon>
-          Statut : {{ appointment.status }}
-        </p>
-      </ion-label>
-    </ion-item>
-  </ion-list>
-</ion-content>
+         }">
+        <ion-icon
+          [name]="appointment.status === 'approved' ? 'checkmark-circle-outline' : appointment.status === 'pending' ? 'time-outline' : 'close-circle-outline'"
+          class="status-icon"
+        ></ion-icon>
+        Statut : {{ appointment.status }}
+      </p>
+    </ion-label>
+    <ion-button fill="clear" slot="end" (click)="viewAppointmentDetails(appointment)" class="details-button">
+      <ion-icon name="eye-outline" color="primary" size="large"></ion-icon>
+    </ion-button>
+  </ion-item>
+</ion-list>

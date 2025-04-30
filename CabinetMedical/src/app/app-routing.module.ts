@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { DoctorDetailsPage } from "./pages/doctor-details/doctor-details.page";
-import {DocumentManagementPage} from "./pages/patient/documents/document-management/document-management.page";
 
 const routes: Routes = [
   {
@@ -49,12 +48,9 @@ const routes: Routes = [
     path: 'doctor-grid',
     loadChildren: () => import('./pages/doctor-grid/doctor-grid.module').then(m => m.DoctorGridPageModule)
   },
+
   {
-    path: 'patient-profile',
-    loadChildren: () => import('./pages/patient-profile/patient-profile.module').then(m => m.PatientProfilePageModule)
-  },
-  {
-    path: 'doctor-profile',
+    path: 'doctor-profile/:doctor_id',
     loadChildren: () => import('./pages/doctor-profile/doctor-profile.module').then(m => m.DoctorProfilePageModule)
   },
   {
@@ -108,7 +104,20 @@ const routes: Routes = [
   {
     path: 'modif-profil-patient',
     loadChildren: () => import('./pages/modif-profil-patient/modif-profil-patient.module').then( m => m.ModifProfilPatientPageModule)
+  },
+  {
+    path: 'profile-patient/:patient_id',
+    loadChildren: () => import('./pages/profile-patient/profile-patient.module').then( m => m.ProfilePatientPageModule)
+  },  {
+    path: 'settings',
+    loadChildren: () => import('./pages/settings/settings.module').then( m => m.SettingsPageModule)
+  },
+  {
+    path: 'appointment-details',
+    loadChildren: () => import('./pages/appointment-details/appointment-details.module').then( m => m.AppointmentDetailsPageModule)
   }
+
+
 
 ];
 

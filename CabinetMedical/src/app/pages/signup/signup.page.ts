@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, Validators} from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService, SignupData } from 'src/app/services/auth.service';
+import { AuthService } from 'src/app/services/auth.service';
 import {IonicModule} from "@ionic/angular";
 import {NgIf} from "@angular/common";
+
 
 @Component({
   selector: 'app-signup',
@@ -61,19 +62,19 @@ export class SignupPage implements OnInit {
       return;
     }
 
-    const signupData: SignupData = {
-      firstName: this.form.get('firstName')?.value,
-      lastName: this.form.get('lastName')?.value,
-      birthDate: this.form.get('birthDate')?.value,
-      email: this.form.get('email')?.value,
-      password: this.form.get('password')?.value
-    };
+    // Création d'une instance de FormData
+    const formData = new FormData();
+    formData.append('firstName', this.form.get('firstName')?.value);
+    formData.append('lastName', this.form.get('lastName')?.value);
+    formData.append('birthDate', this.form.get('birthDate')?.value);
+    formData.append('email', this.form.get('email')?.value);
+    formData.append('password', this.form.get('password')?.value);
 
-    this.authService.signup(signupData).subscribe({
+    // Appel du service avec FormData
+    this.authService.signup(formData).subscribe({
       next: (response) => {
         console.log('Signup successful', response);
         this.router.navigate(['/login']);
-
       },
       error: (error) => {
         console.error('Signup failed', error);

@@ -6,7 +6,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { PatientHistoryPageRoutingModule } from './patient-history-routing.module';
 import { PatientHistoryPage } from './patient-history.page';
-import {PatientProfilePageModule} from "../patient-profile/patient-profile.module";
+
 
 @NgModule({
   imports: [

@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { DocumentService } from '../../../../services/document.service';
-import {DocumentUploadPage} from "../document-upload/document-upload.page";
-import {DocumentListPage} from "../document-list/document-list.page";
-import {IonicModule} from "@ionic/angular";
+import { DocumentUploadPage } from "../document-upload/document-upload.page";
+import { DocumentListPage } from "../document-list/document-list.page";
+import { IonicModule } from "@ionic/angular";
+import { ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-document-management',
@@ -11,27 +13,40 @@ import {IonicModule} from "@ionic/angular";
   imports: [
     DocumentUploadPage,
     DocumentListPage,
-    IonicModule
+    IonicModule,
+    CommonModule
   ],
   styleUrls: ['./document-management.page.scss']
 })
 
 export class DocumentManagementPage implements OnInit {
   documents: any[] = [];
+  doctorId: string = '';
 
-  constructor(private documentService: DocumentService) {}
+  constructor(
+    private documentService: DocumentService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
-    this.loadDocuments();
+    // Get the doctor ID from query parameters
+    this.route.queryParams.subscribe(params => {
+      if (params['doctorId']) {
+        this.doctorId = params['doctorId'];
+      }
+      this.loadDocuments();
+    });
   }
 
   loadDocuments() {
-    // @ts-ignore
-    this.documentService.getDocuments().subscribe((docs: any[]) => {
-      this.documents = docs.map(doc => ({
-        ...doc,
-        id: doc.id?.$oid || doc._id?.$oid || doc._id
-      }));
+    // Get documents, potentially filtered by doctor ID and patient ID
+    this.documentService.getDocuments().subscribe((docs: unknown) => {
+      if (Array.isArray(docs)) {
+        this.documents = docs.map(doc => ({
+          ...doc,
+          id: doc.id?.$oid || doc._id?.$oid || doc._id
+        }));
+      }
     });
   }
 
