@@ -72,7 +72,5 @@ export class ProfilePatientPage implements OnInit {
       }
     });
   }
-  openDocumentUpload() {
-   this.router.navigate(['/document-management']);
-  }
+
 }

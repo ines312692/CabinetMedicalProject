@@ -2,6 +2,7 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/cor
 import { AppointmentService } from "../../services/appointmentservice.service";
 import { IonicModule } from "@ionic/angular";
 import { NgClass, NgForOf, NgIf } from "@angular/common";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-list-appointment',
@@ -21,7 +22,8 @@ export class ListAppointmentPage implements OnInit, OnChanges {
   appointments: any[] = [];
 
   constructor(
-    private readonly appointmentService: AppointmentService
+    private readonly appointmentService: AppointmentService,
+    private readonly router: Router,
   ) {}
 
   ngOnInit() {
@@ -49,5 +51,8 @@ export class ListAppointmentPage implements OnInit, OnChanges {
         console.error('Erreur lors du chargement des rendez-vous :', error);
       }
     );
+  }
+  viewAppointmentDetails(appointment: any) {
+    this.router.navigate(['/appointment-details'], { state: { appointment } });
   }
 }
