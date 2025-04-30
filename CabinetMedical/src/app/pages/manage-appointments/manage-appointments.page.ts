@@ -1,4 +1,3 @@
-// Fixed ManageAppointmentsPage Component
 import { Component, Input, OnInit } from '@angular/core';
 import { Appointment } from '../../models/Appointment.interface';
 import { ActivatedRoute } from '@angular/router';

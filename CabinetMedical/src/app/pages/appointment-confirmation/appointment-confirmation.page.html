@@ -20,7 +20,7 @@
     <ion-card-content>
       <ion-item *ngIf="appointment.doctor">
         <ion-avatar slot="start">
-          <img *ngIf="appointment.doctor.image" [src]="'assets/img/' + appointment.doctor.image" alt="Doctor Avatar">
+          <img *ngIf="appointment.doctor.image" [src]="'http://localhost:5000/uploads/'  + appointment.doctor.image" alt="Doctor Avatar">
         </ion-avatar>
         <ion-label>
           <h2>Doctor: {{ appointment.doctor.name }}</h2>

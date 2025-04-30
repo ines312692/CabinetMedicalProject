@@ -108,7 +108,11 @@ const routes: Routes = [
   {
     path: 'profile-patient/:patient_id',
     loadChildren: () => import('./pages/profile-patient/profile-patient.module').then( m => m.ProfilePatientPageModule)
+  },  {
+    path: 'settings',
+    loadChildren: () => import('./pages/settings/settings.module').then( m => m.SettingsPageModule)
   }
+
 
 
 ];

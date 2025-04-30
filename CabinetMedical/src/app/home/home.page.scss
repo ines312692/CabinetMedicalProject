@@ -1,13 +1,13 @@
 
 ion-header {
-  --background: #ffffff;
+
   --color: #132d5e;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 ion-toolbar {
-  --background: #ffffff;
-  --color: #132d5e;
+
+  --color: #0c52d6;
 }
 
 ion-title {
@@ -42,7 +42,7 @@ ion-card-content p {
 ion-button {
   margin: 20px;
   --background: #132d5e;
-  --color: #ffffff;
+
   border-radius: 5px;
   transition: background-color 0.3s ease;
 }
@@ -52,7 +52,7 @@ ion-button:hover {
 }
 
 .loading-placeholder {
-  background: #e0e0e0;
+
   border-radius: var(--border-radius);
   height: 150px;
   animation: pulse 1.5s infinite;
@@ -113,7 +113,7 @@ swiper-slide {
 // home.page.scss
 ion-header {
   ion-toolbar {
-    --background: #ffffff; // White background for the toolbar
+
     --min-height: 44px; // Reduce toolbar height (default is ~56px)
     --padding-top: 4px; // Reduce top padding
     --padding-bottom: 4px; // Reduce bottom padding
@@ -155,7 +155,7 @@ ion-header {
 
 ion-searchbar {
   margin: 5px 10px 15px;
-  --background: #ffffff;
+
   --color: #132d5e;
   --placeholder-color: #6c757d;
   --icon-color: #132d5e;
@@ -177,18 +177,16 @@ ion-searchbar {
   .searchbar-clear-icon {
     font-size: 1.2em;
     color: #132d5e;
-    background: #f8f9fa;
     border-radius: 50%;
     padding: 4px;
   }
 
   &.searchbar-has-focus {
-    --background: #f8f9fa;
     --box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   }
 
   &:hover {
-    --background: #f8f9fa;
+
     --box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   }
 }
@@ -203,7 +201,6 @@ ion-searchbar {
   white-space: nowrap;
   -webkit-overflow-scrolling: touch; /* Smooth scrolling sur iOS */
   scrollbar-width: none; /* Cache la scrollbar sur Firefox */
-  background: #f8f9fa;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 
   &::-webkit-scrollbar {
@@ -211,7 +208,7 @@ ion-searchbar {
   }
 
   ion-chip {
-    --background: #ffffff;
+
     --color: #132d5e;
     --background-activated: var(--ion-color-primary);
     --color-activated: white;
@@ -260,18 +257,18 @@ ion-searchbar {
   }
 }
 .governorats-row {
-  background: #f8f9fa;
-  border-bottom: 1px solid #e0f0e0;
+
+
 
   ion-chip {
-    --background: #e8f5e9;
+
     --color: #1b5e20;
     --background-activated: var(--ion-color-success);
-    --color-activated: white;
+
 
     &[color="success"] {
       --background: var(--ion-color-success);
-      --color: white;
+
       --box-shadow: 0 2px 6px rgba(var(--ion-color-success-rgb), 0.3);
       border-color: transparent;
     }

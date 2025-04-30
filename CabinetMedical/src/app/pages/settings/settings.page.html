@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start" style="color: #0f52d1;">
+      <ion-menu-button menu="main-menu"></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button class="profile-button">
+        <ion-icon name="person-circle" class="profile-icon"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-icon name="notifications-outline" slot="start" class="icon-style"></ion-icon>
+      <ion-label>Activer les notifications</ion-label>
+      <ion-toggle [(ngModel)]="notificationsEnabled"></ion-toggle>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="moon-outline" slot="start" class="icon-style"></ion-icon>
+      <ion-label>Mode sombre</ion-label>
+      <ion-toggle (ionChange)="toggleDarkMode()"></ion-toggle>
+    </ion-item>
+  </ion-list>
+</ion-content>

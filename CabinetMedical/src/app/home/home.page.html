@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start" style="color: #132d5e;">
+    <ion-buttons slot="start" style="color: #1358dc;">
       <ion-menu-button menu="main-menu"></ion-menu-button>
     </ion-buttons>
     <ion-buttons slot="end" *ngIf="isLoggedIn">
@@ -19,8 +19,6 @@
     </swiper-slide>
   </swiper-container>
   <ion-searchbar show-clear-button="always" clear-icon="trash-bin" placeholder="Rechercher" (ionInput)="searchDoctors($event)"></ion-searchbar>
-
-  <!-- Filtre par spécialité sous forme de chips -->
   <div class="chips-container">
     <ion-chip
       [color]="!selectedSpecialty ? 'primary' : 'medium'"
@@ -35,7 +33,6 @@
     </ion-chip>
   </div>
 
-  <!-- Filtre par gouvernorat -->
   <div class="chips-container governorats-row">
     <ion-chip
       [color]="!selectedGovernorat ? 'success' : 'medium'"

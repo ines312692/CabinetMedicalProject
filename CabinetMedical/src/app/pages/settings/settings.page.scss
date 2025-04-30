@@ -1,0 +1,21 @@
+ion-item {
+
+  border-radius: 8px;
+  margin: 8px 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.icon-style {
+  color: #0b4ecc;
+  font-size: 1.5rem;
+}
+
+ion-label {
+  font-weight: bold;
+  color: #105ae6;
+}
+
+ion-toggle {
+  --handle-background: #0956e8;
+  --background-checked: #4caf50;
+}
