@@ -50,16 +50,42 @@
     </ion-card-content>
   </ion-card>
 
-<div *ngIf="doctorDetails && !isLoadingDoctor" class="tabs-section">
+  <div *ngIf="doctorDetails && !isLoadingDoctor" class="tabs-section">
     <ion-segment [(ngModel)]="selectedTab" mode="md">
       <ion-segment-button value="manage-appointments">
         <ion-label>Gérer les rendez-vous</ion-label>
         <ion-icon name="calendar-outline"></ion-icon>
+      </ion-segment-button>
+      <ion-segment-button value="my-documents">
+        <ion-label>Mes documents</ion-label>
+        <ion-icon name="document-outline"></ion-icon>
       </ion-segment-button>
     </ion-segment>
   </div>
 
   <div *ngIf="selectedTab === 'manage-appointments' && doctorId" class="component-container">
     <app-manage-appointments [doctorId]="doctorId"></app-manage-appointments>
+  </div>
+
+  <div *ngIf="selectedTab === 'my-documents'" class="component-container">
+    <ion-list>
+      <ion-item *ngFor="let file of doctorFiles">
+        <ion-label>
+          <h2>{{ file.filename }}</h2>
+          <p [ngStyle]="{'color': file.status === 'view' ? 'green' : (file.status === 'pending' ? 'orange' : 'red')}">
+            Status: {{ file.status }}
+          </p>
+        </ion-label>
+        <ion-button fill="outline" (click)="downloadFile(file)">
+          <ion-icon name="download-outline" slot="start"></ion-icon>
+          Télécharger
+        </ion-button>
+      </ion-item>
+      <ion-item *ngIf="doctorFiles && doctorFiles.length === 0" lines="none">
+        <ion-label class="no-files-message">
+          Aucun document disponible
+        </ion-label>
+      </ion-item>
+    </ion-list>
   </div>
 </ion-content>

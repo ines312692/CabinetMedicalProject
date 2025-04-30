@@ -11,6 +11,9 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <app-document-upload (documentUploaded)="onDocumentUploaded($event)"></app-document-upload>
+  <app-document-upload
+    [doctorId]="doctorId"
+    (documentUploaded)="onDocumentUploaded($event)">
+  </app-document-upload>
   <app-document-list [documents]="documents"></app-document-list>
 </ion-content>

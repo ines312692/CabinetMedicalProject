@@ -49,9 +49,16 @@ def upload_file():
     if file:
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        # Récupérer les IDs du patient et du docteur depuis la requête
+        patient_id = request.form.get('patient_id')
+        doctor_id = request.form.get('doctor_id')
+
         mongo.db.documents.insert_one({
             "filename": filename,
-            "status": "not viewed"
+            "status": "not viewed",
+            "patient_id": patient_id,
+            "doctor_id": doctor_id
         })
         response = jsonify({"message": "File uploaded successfully"})
         response.status_code = 201
@@ -62,6 +69,28 @@ def list_documents():
     documents = mongo.db.documents.find()
     files = [File.from_mongo(doc) for doc in documents]
     return jsonify([file.__dict__ for file in files]), 200
+
+@app.route('/<doctor_id>/files', methods=['GET'])
+def get_doctor_files(doctor_id):
+    try:
+        # Récupérer les fichiers associés au docteur depuis MongoDB
+        files = mongo.db.documents.find({"doctor_id": doctor_id})
+
+        # Formater les fichiers en JSON
+        files_data = [
+            {
+                "id": str(file["_id"]),
+                "filename": file["filename"],
+                "status": file["status"],
+                "patient_id": file.get("patient_id"),
+                "doctor_id": file["doctor_id"]
+            }
+            for file in files
+        ]
+
+        return jsonify(files_data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route('/documents/<id>', methods=['DELETE'])
@@ -76,6 +105,27 @@ def delete_document(id):
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+@app.route('/update-file-status/<file_id>', methods=['PUT'])
+def update_file_status(file_id):
+    try:
+        # Vérifier si l'ID est valide
+        if not ObjectId.is_valid(file_id):
+            return jsonify({'error': 'Invalid file ID format'}), 400
+
+        # Récupérer le fichier par son ID
+        file = mongo.db.documents.find_one({"_id": ObjectId(file_id)})
+        if not file:
+            return jsonify({'error': 'File not found'}), 404
+
+        # Mettre à jour le statut en "view"
+        mongo.db.documents.update_one(
+            {"_id": ObjectId(file_id)},
+            {"$set": {"status": "view"}}
+        )
+
+        return jsonify({'message': 'File status updated to view'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/doctors', methods=['GET'])
 def list_doctors():

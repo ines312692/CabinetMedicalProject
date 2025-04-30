@@ -87,17 +87,21 @@ class Administrator:
         )
 
 class File:
-    def __init__(self, id, filename, status):
+    def __init__(self, id, filename, status, patient_id=None, doctor_id=None):
         self.id = id
         self.filename = filename
         self.status = status
+        self.patient_id = patient_id
+        self.doctor_id = doctor_id
 
     @staticmethod
     def from_mongo(doc):
         return File(
             id=doc['_id'],
             filename=doc['filename'],
-            status=doc['status']
+            status=doc['status'],
+            patient_id=doc.get('patient_id'),
+            doctor_id=doc.get('doctor_id')
         )
 
 class Appointment:
