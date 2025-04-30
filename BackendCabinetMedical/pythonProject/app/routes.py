@@ -9,8 +9,12 @@ from flask_cors import CORS
 import bcrypt
 from bcrypt import hashpw, gensalt
 from flask import send_from_directory
+
 from flask_mail import Mail, Message
 from firebase_admin import credentials, initialize_app, messaging
+
+import json
+
 
 
 
@@ -154,10 +158,12 @@ def get_doctor(id):
     if doctor:
         doctor['_id'] = str(doctor['_id'])
 
+
         if 'latitude' not in doctor:
             doctor['latitude'] = None
         if 'longitude' not in doctor:
             doctor['longitude'] = None
+=
         if 'availability' not in doctor:
             doctor['availability'] = []
 
@@ -422,6 +428,13 @@ def add_doctor():
 
     hashed_password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
 
+    availability = []
+    if 'availability' in data and data['availability']:
+        try:
+            availability = json.loads(data['availability'])
+        except json.JSONDecodeError:
+            return jsonify({"error": "Invalid availability format"}), 400
+
     doctor = {
         "name": data['name'],
         "specialty": data['specialty'],
@@ -432,10 +445,12 @@ def add_doctor():
         "password": hashed_password.decode('utf-8'),
         "image": filename,
         "role": "doctor",
+
         "latitude": float(data.get('latitude', 0)),
         "longitude": float(data.get('longitude', 0)),
         "availability": data.get('availability', []),
         "fcm_token": data.get('fcm_token', None)
+
     }
 
     result = mongo.db.doctors.insert_one(doctor)

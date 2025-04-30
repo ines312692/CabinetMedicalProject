@@ -58,6 +58,59 @@
     <div *ngIf="imagePreview" class="image-preview">
       <img [src]="imagePreview" alt="Aperçu de l'image" />
     </div>
+<!-- Disponibilités -->
+
+<div formArrayName="availability">
+  <div class="availability-header">
+    <h4>Disponibilités du médecin</h4>
+  </div>
+  
+  <div *ngFor="let availability of availabilityControls.controls; let i = index" [formGroupName]="i" class="availability-item">
+    <ion-row>
+      <ion-col size="12" size-md="5">
+        <!-- Jour -->
+        <ion-item>
+          <ion-label position="floating">Jour</ion-label>
+          <ion-select formControlName="day" interface="action-sheet">
+            <ion-select-option value="Monday">Lundi</ion-select-option>
+            <ion-select-option value="Tuesday">Mardi</ion-select-option>
+            <ion-select-option value="Wednesday">Mercredi</ion-select-option>
+            <ion-select-option value="Thursday">Jeudi</ion-select-option>
+            <ion-select-option value="Friday">Vendredi</ion-select-option>
+            <ion-select-option value="Saturday">Samedi</ion-select-option>
+            <ion-select-option value="Sunday">Dimanche</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+      
+      <ion-col size="9" size-md="5">
+        <!-- Heures -->
+        <ion-item>
+          <ion-label position="floating">Heures</ion-label>
+          <ion-input formControlName="hours" type="text" placeholder="Ex: 09:00,14:00"></ion-input>
+        </ion-item>
+      </ion-col>
+      
+      <ion-col size="3" size-md="2" class="ion-align-self-end ion-text-end">
+        <!-- Bouton Supprimer -->
+        <ion-button color="danger" size="small" (click)="removeAvailability(i)">
+          <ion-icon name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </div>
+  
+  <!-- Message si aucune disponibilité -->
+  <div *ngIf="availabilityControls.length === 0" class="no-availability">
+    <p>Aucune disponibilité ajoutée</p>
+  </div>
+</div>
+
+<!-- Ajouter une disponibilité -->
+<ion-button expand="full" color="secondary" (click)="addAvailability()">
+  <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+  Ajouter une disponibilité
+</ion-button>
 
     <ion-button expand="full" type="submit" [disabled]="!doctorForm.valid">
       Ajouter
