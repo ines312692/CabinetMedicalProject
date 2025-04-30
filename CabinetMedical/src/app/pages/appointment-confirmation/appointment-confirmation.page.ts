@@ -6,6 +6,7 @@ import { IonicModule, AlertController } from '@ionic/angular';
 import { AppointmentService } from '../../services/appointmentservice.service';
 import { AuthService } from '../../services/auth.service';
 import { LoginResponse } from '../../models/LoginResponse.interface';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-appointment-confirmation',
@@ -25,11 +26,11 @@ export class AppointmentConfirmationPage implements OnInit {
     private readonly datePipe: DatePipe,
     private readonly appointmentService: AppointmentService,
     private readonly alertController: AlertController,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly router: Router
   ) {}
 
   ngOnInit() {
-    // Get current user from AuthService
     const currentUser: LoginResponse | null = this.authService.getCurrentUser();
     if (currentUser && currentUser.role === 'patient') {
       this.patientId = currentUser.id;
@@ -72,7 +73,6 @@ export class AppointmentConfirmationPage implements OnInit {
       return;
     }
 
-    // Prepare appointment data
     const appointmentData = {
       date: this.appointment.date,
       reason: this.appointment.reason || 'General Consultation',
@@ -94,6 +94,7 @@ export class AppointmentConfirmationPage implements OnInit {
         await this.showAlert('Error', 'Failed to confirm appointment.');
       }
     );
+    this.router.navigate(['/home']);
   }
 
   async showAlert(header: string, message: string) {

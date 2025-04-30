@@ -50,7 +50,7 @@ const routes: Routes = [
   },
 
   {
-    path: 'doctor-profile',
+    path: 'doctor-profile/:doctor_id',
     loadChildren: () => import('./pages/doctor-profile/doctor-profile.module').then(m => m.DoctorProfilePageModule)
   },
   {

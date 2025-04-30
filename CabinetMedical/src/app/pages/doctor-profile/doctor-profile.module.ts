@@ -6,15 +6,21 @@ import { IonicModule } from '@ionic/angular';
 
 import { DoctorProfilePageRoutingModule } from './doctor-profile-routing.module';
 
-import { DoctorProfilePage } from './doctor-profile.page';
+
+import {ListAppointmentPage} from "../list-appointment/list-appointment.page";
+import {PatientHistoryPage} from "../patient-history/patient-history.page";
+import {DoctorProfilePage} from "./doctor-profile.page";
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    DoctorProfilePageRoutingModule
+    DoctorProfilePageRoutingModule,
+    ListAppointmentPage,
+    PatientHistoryPage,
+    DoctorProfilePage
   ],
-  declarations: [DoctorProfilePage]
+  declarations: []
 })
 export class DoctorProfilePageModule {}

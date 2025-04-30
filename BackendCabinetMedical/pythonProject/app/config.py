@@ -14,6 +14,6 @@ class Config:
         MAIL_SERVER = 'smtp.gmail.com'
         MAIL_PORT = 587
         MAIL_USE_TLS = True
-        MAIL_USERNAME = os.getenv('MAIL_USERNAME', 'testernr009@gmail.com')
-        MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', 'f5J2ox9[)39/<1/9jWj2')
-        MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'testernr009@gmail.com')
+        MAIL_USERNAME = os.getenv('MAIL_USERNAME', '')
+        MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', 'aipt kggc vdhl hene')
+        MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'inestmimi1234@gmail.com')

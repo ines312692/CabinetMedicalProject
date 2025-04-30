@@ -1,0 +1,79 @@
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  margin: 50px auto;
+}
+
+.profile-card {
+  margin: 16px;
+
+
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.profile-image-container {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 16px;
+
+  @media (min-width: 768px) {
+    margin-right: 24px;
+    margin-bottom: 0;
+  }
+}
+
+.profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+
+}
+
+.profile-details {
+  flex: 1;
+}
+
+.doctor-name {
+  font-size: 1.8rem;
+  color: #132d5e;
+  margin-bottom: 4px;
+}
+
+.doctor-specialty {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.tabs-section {
+  margin: 16px;
+}
+
+.component-container {
+  margin-top: 16px;
+}
+
+ion-segment {
+  --background: transparent;
+}
+
+ion-segment-button {
+  --color: #666;
+  --color-checked: #132d5e;
+  --indicator-color: #132d5e;
+
+  ion-icon {
+    margin-right: 6px;
+  }
+}

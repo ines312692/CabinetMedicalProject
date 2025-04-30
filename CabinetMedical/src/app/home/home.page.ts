@@ -112,12 +112,15 @@ export class HomePage implements OnInit, OnDestroy {
     this.searchDoctors({ target: { value: '' } });
   }
 
-  // Méthode mise à jour pour naviguer vers profile-patient avec le patient_id
   goToProfile() {
     if (this.isLoggedIn && this.currentUserId) {
-      this.router.navigate(['/profile-patient', this.currentUserId]);
+      const currentUser = this.authService.getCurrentUser();
+      if (currentUser?.role === 'patient') {
+        this.router.navigate(['/profile-patient', this.currentUserId]);
+      } else {
+        this.router.navigate(['/doctor-profile', this.currentUserId]);
+      }
     } else {
-      // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
       this.router.navigate(['/login']);
     }
   }

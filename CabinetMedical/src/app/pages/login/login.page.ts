@@ -65,7 +65,7 @@ export class LoginPage implements OnInit {
         console.log('Login successful', response);
         this.presentToast('Connexion réussie!', 'success');
         if (response.role === 'doctor') {
-          this.router.navigate(['/doctor-profile']);
+          this.router.navigate(['/home']);
         } else if (response.role === 'patient') {
           this.router.navigate(['/home']);
         } else if (response.role === 'admin') {
