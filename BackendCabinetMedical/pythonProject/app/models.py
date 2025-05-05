@@ -3,15 +3,15 @@ from typing import List, Dict
 from datetime import datetime
 
 class Doctor:
+
     def __init__(self, id, name, specialty, description, address, phone, latitude, longitude, image, password, email, role="doctor", availability=None, fcm_token=None):
+
         self.id = id
         self.name = name
         self.specialty = specialty
         self.description = description
         self.address = address
         self.phone = phone
-        self.latitude = latitude
-        self.longitude = longitude
         self.image = image
         self.password = password
         self.email = email
@@ -28,8 +28,6 @@ class Doctor:
             description=doc['description'],
             address=doc['address'],
             phone=doc['phone'],
-            latitude=doc['latitude'],
-            longitude=doc['longitude'],
             availability=doc['availability'],
             image=doc['image'],
             password=doc['password'],
