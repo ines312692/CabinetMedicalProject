@@ -54,7 +54,6 @@ def upload_file():
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-        # Récupérer les IDs du patient et du docteur depuis la requête
         patient_id = request.form.get('patient_id')
         doctor_id = request.form.get('doctor_id')
 
@@ -77,10 +76,8 @@ def list_documents():
 @app.route('/<doctor_id>/files', methods=['GET'])
 def get_doctor_files(doctor_id):
     try:
-        # Récupérer les fichiers associés au docteur depuis MongoDB
         files = mongo.db.documents.find({"doctor_id": doctor_id})
 
-        # Formater les fichiers en JSON
         files_data = [
             {
                 "id": str(file["_id"]),
@@ -112,16 +109,13 @@ def delete_document(id):
 @app.route('/update-file-status/<file_id>', methods=['PUT'])
 def update_file_status(file_id):
     try:
-        # Vérifier si l'ID est valide
         if not ObjectId.is_valid(file_id):
             return jsonify({'error': 'Invalid file ID format'}), 400
 
-        # Récupérer le fichier par son ID
         file = mongo.db.documents.find_one({"_id": ObjectId(file_id)})
         if not file:
             return jsonify({'error': 'File not found'}), 404
 
-        # Mettre à jour le statut en "view"
         mongo.db.documents.update_one(
             {"_id": ObjectId(file_id)},
             {"$set": {"status": "view"}}
@@ -163,7 +157,7 @@ def get_doctor(id):
             doctor['latitude'] = None
         if 'longitude' not in doctor:
             doctor['longitude'] = None
-=
+
         if 'availability' not in doctor:
             doctor['availability'] = []
 
@@ -519,7 +513,6 @@ def list_advertisements():
     advertisements_list = []
     for ad in advertisements:
         ad_dict = ad
-        # Ajouter l'URL complète de l'image
         if 'image' in ad:
             ad_dict['image'] = f"/uploads/{ad['image']}"
         advertisements_list.append(ad_dict)
@@ -530,19 +523,16 @@ def list_advertisements():
 @app.route('/administrators/<id>', methods=['GET'])
 def get_administrator(id):
     try:
-        # Convertir l'ID string en ObjectId
         admin_id = ObjectId(id)
     except:
         return jsonify({'error': 'Invalid ID format'}), 400
 
-    # Rechercher l'administrateur dans la base de données
     administrator = mongo.db.administrators.find_one({"_id": admin_id})
 
     if administrator:
-        # Convertir ObjectId en string pour la sérialisation JSON
+
         administrator['_id'] = str(administrator['_id'])
 
-        # Retourner les données de l'administrateur
         response = jsonify(administrator)
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response, 200
@@ -573,8 +563,6 @@ def get_appointment(id):
 
 
 import logging
-
-# Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -605,7 +593,6 @@ def add_appointment():
 
     result = mongo.db.appointments.insert_one(appointment)
 
-    # Fetch doctor and patient
     doctor = mongo.db.doctors.find_one({"_id": ObjectId(data['doctor_id'])})
     if not doctor:
         return jsonify({"error": "Doctor not found"}), 404
@@ -613,7 +600,19 @@ def add_appointment():
     patient = mongo.db.patients.find_one({"_id": ObjectId(data['patient_id'])})
     if not patient:
         return jsonify({"error": "Patient not found"}), 404
+    doctor_notification = create_notification(
+        user_id=str(doctor['_id']),
+        title="New Appointment Request",
+        body=f"New appointment scheduled with {patient.get('first_name', 'Unknown')} on {data['date']} at {data['time']}.",
+        data={"type": "appointment", "appointment_id": str(appointment['_id'])}
+    )
 
+    patient_notification = create_notification(
+        user_id=str(patient['_id']),
+        title="Appointment Scheduled",
+        body=f"Your appointment with Dr. {doctor.get('name', 'Unknown')} on {data['date']} at {data['time']} is pending.",
+        data={"type": "appointment", "appointment_id": str(appointment['_id'])}
+    )
     # Notify doctor
     if doctor.get('fcm_token'):
         try:
@@ -625,7 +624,6 @@ def add_appointment():
             )
         except Exception as e:
             logger.error(f"Failed to send FCM to doctor {doctor['email']}: {str(e)}")
-            # Optionally, clear invalid token
             if "Requested entity was not found" in str(e):
                 mongo.db.doctors.update_one(
                     {"_id": ObjectId(data['doctor_id'])},
@@ -638,7 +636,6 @@ def add_appointment():
         body=f"Dear Dr. {doctor.get('name', 'Unknown')},\n\nA new appointment has been scheduled with {patient.get('first_name', 'Unknown')} on {data['date']} at {data['time']}.\n\nBest regards,\nMedical Team"
     )
 
-    # Notify patient
     if patient.get('fcm_token'):
         try:
             send_fcm_notification(
@@ -649,7 +646,6 @@ def add_appointment():
             )
         except Exception as e:
             logger.error(f"Failed to send FCM to patient {patient['email']}: {str(e)}")
-            # Optionally, clear invalid token
             if "Requested entity was not found" in str(e):
                 mongo.db.patients.update_one(
                     {"_id": ObjectId(data['patient_id'])},
@@ -1038,31 +1034,23 @@ def export_combined_pdf(patient_id):
     except Exception:
         return jsonify({"error": "Invalid patient ID format"}), 400
 
-    # Fetch patient data
     patient = mongo.db.patients.find_one({"_id": patient_id_obj})
     if not patient:
         return jsonify({"error": "Patient not found"}), 404
-
-    # Fetch diagnostics, consultations, and prescriptions
     diagnostics = list(mongo.db.diagnostics.find({"patient_id": patient_id_obj}))
     consultations = list(mongo.db.consultations.find({"patient_id": patient_id_obj}))
     prescriptions = list(mongo.db.prescriptions.find({"patient_id": patient_id_obj}))
-
-    # Initialize PDF buffer
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
 
-    # Set fonts
     p.setFont("Helvetica-Bold", 16)
     p.drawString(100, height - 50, f"Patient Report for {patient['first_name']} {patient['last_name']}")
     p.setFont("Helvetica", 12)
     p.drawString(100, height - 70, f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-    # Starting Y position for content
     y = height - 100
 
-    # Helper function to add section header
     def add_section_header(title):
         nonlocal y
         p.setFont("Helvetica-Bold", 14)
@@ -1075,7 +1063,7 @@ def export_combined_pdf(patient_id):
         nonlocal y
         if items:
             for item in items:
-                if y < 50:  # Check for page overflow
+                if y < 50:
                     p.showPage()
                     y = height - 50
                 p.drawString(120, y, format_fn(item))
@@ -1131,10 +1119,6 @@ def export_combined_pdf(patient_id):
         mimetype='application/pdf'
     )
 
-
-
-
-
 def send_fcm_notification(fcm_token, title, body, data=None):
     """Send an FCM notification to the specified token."""
     try:
@@ -1182,3 +1166,78 @@ def tester_notification():
     except Exception as e:
         logger.error(f"Server error in tester_notification: {str(e)}")
         return jsonify({"erreur": f"Erreur serveur: {str(e)}"}), 500
+
+
+def create_notification(user_id, title, body, data=None):
+    notification = {
+        "_id": ObjectId(),
+        "user_id": ObjectId(user_id),
+        "title": title,
+        "body": body,
+        "data": data or {},
+        "is_read": False,
+        "timestamp": datetime.utcnow()
+    }
+    mongo.db.notifications.insert_one(notification)
+    return notification
+
+@app.route('/notifications', methods=['POST'])
+def create_notification_endpoint():
+    try:
+        data = request.json
+        if not data or 'user_id' not in data or 'title' not in data or 'body' not in data:
+            return jsonify({"error": "user_id, title, and body are required"}), 400
+
+        notification = create_notification(
+            user_id=data['user_id'],
+            title=data['title'],
+            body=data['body'],
+            data=data.get('data', {})
+        )
+        return jsonify({"message": "Notification created successfully", "notification": notification}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/notifications/count/<user_id>', methods=['GET'])
+def get_notification_count(user_id):
+    try:
+        user_id_obj = ObjectId(user_id)
+        count = mongo.db.notifications.count_documents({
+            "user_id": user_id_obj,
+            "is_read": False
+        })
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/notifications/<user_id>', methods=['GET'])
+def get_notifications(user_id):
+    try:
+        user_id_obj = ObjectId(user_id)
+        page = int(request.args.get("page", 1))
+        per_page = 10
+        notifications = list(mongo.db.notifications.find({"user_id": user_id_obj})
+                            .sort("timestamp", -1)
+                            .skip((page - 1) * per_page)
+                            .limit(per_page))
+        for notif in notifications:
+            notif["_id"] = str(notif["_id"])
+            notif["user_id"] = str(notif["user_id"])
+        return jsonify({"notifications": notifications, "page": page}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+@app.route('/notifications/<notification_id>/read', methods=['PUT'])
+def mark_notification_read(notification_id):
+    try:
+        result = mongo.db.notifications.update_one(
+            {"_id": ObjectId(notification_id)},
+            {"$set": {"is_read": True}}
+        )
+        if result.matched_count == 1:
+            return jsonify({"message": "Notification marked as read"}), 200
+        else:
+            return jsonify({"error": "Notification not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400

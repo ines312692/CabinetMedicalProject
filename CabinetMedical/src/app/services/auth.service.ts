@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { LoginResponse } from '../models/LoginResponse.interface';
 import { LoginData } from '../models/LoginData.interface';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -37,5 +38,14 @@ export class AuthService {
   }
   getCurrentUser(): LoginResponse | null {
     return this.currentUserSubject.value;
+  }
+  getNotificationCount(userId: string): Observable<number> {
+    return this.http
+      .get<{ count: number }>(`http://localhost:5000/notifications/count/${userId}`)
+      .pipe(map((response) => response.count));
+  }
+  getUserRole(): string | null {
+    const currentUser = this.getCurrentUser();
+    return currentUser ? currentUser.role : null;
   }
 }

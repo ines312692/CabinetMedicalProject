@@ -9,8 +9,8 @@ import { IonicModule } from '@ionic/angular';
 import { PatientHistoryPage } from "../patient-history/patient-history.page";
 import { ListAppointmentPage } from "../list-appointment/list-appointment.page";
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { Router } from '@angular/router';
+import { ActivatedRoute,Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-profile-patient',
@@ -20,7 +20,6 @@ import { Router } from '@angular/router';
   imports: [
     IonicModule,
     NgIf,
-    NgForOf,
     PatientHistoryPage,
     ListAppointmentPage,
     FormsModule
@@ -29,14 +28,14 @@ import { Router } from '@angular/router';
 export class ProfilePatientPage implements OnInit {
   patientDetails: Patient | null = null;
   isLoadingPatient = false;
-  selectedTab = 'history'; // Default tab
+  selectedTab = 'history';
 
   constructor(
-    private patientService: PatientService,
-    private authService: AuthService,
-    private dataService: DataService,
-    private route: ActivatedRoute,
-    private router: Router
+    private readonly patientService: PatientService,
+    private readonly authService: AuthService,
+    private readonly dataService: DataService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
   ) {}
 
   ngOnInit() {
@@ -46,7 +45,6 @@ export class ProfilePatientPage implements OnInit {
     if (patientIdFromRoute) {
       this.loadPatientData(patientIdFromRoute);
     } else {
-      // If no ID in route, try to get the current logged-in user
       const user: LoginResponse | null = this.authService.getCurrentUser();
       if (user && user.role === 'patient') {
         this.loadPatientData(user.id);
@@ -61,7 +59,6 @@ export class ProfilePatientPage implements OnInit {
     this.isLoadingPatient = true;
     this.patientService.getPatientDetails(patientId).subscribe({
       next: (data: any) => {
-        // Transformation des IDs MongoDB si nécessaire
         this.patientDetails = this.dataService.transformMongoId(data) as Patient;
         console.log('Patient details loaded:', this.patientDetails);
         this.isLoadingPatient = false;

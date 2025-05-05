@@ -1,0 +1,115 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/patient-details" (click)="goBack()"></ion-back-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-spinner *ngIf="isLoading" name="crescent" class="loading-spinner"></ion-spinner>
+
+  <ion-card *ngIf="appointment && !isLoading" class="appointment-card">
+    <ion-card-header>
+      <ion-card-title style="color: blue;">Rendez-vous du {{ appointment.date }}</ion-card-title>
+      <ion-card-subtitle>{{ appointment.time }}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-list lines="none">
+        <ion-item>
+          <ion-icon name="calendar-outline" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h2>Date</h2>
+            <p>{{ appointment.date }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon name="time-outline" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h2>Heure</h2>
+            <p>{{ appointment.time }}</p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item>
+          <ion-icon [name]="getStatusIcon()" slot="start" [color]="appointment.status === 'accepted' ? 'success' : appointment.status === 'pending' ? 'warning' : 'danger'"></ion-icon>
+          <ion-label>
+            <h2>Statut</h2>
+            <p [ngClass]="getStatusClass()">
+              {{ appointment.status === 'accepted' ? 'Accepté' : appointment.status === 'pending' ? 'En attente' : 'Refusé' }}
+            </p>
+          </ion-label>
+        </ion-item>
+
+        <ion-item *ngIf="appointment.reason">
+          <ion-icon name="document-text-outline" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h2>Motif</h2>
+            <p>{{ appointment.reason }}</p>
+          </ion-label>
+        </ion-item>
+
+
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="doctor && !isLoading" class="doctor-card">
+
+
+    <ion-card-content>
+      <div class="doctor-info">
+        <ion-avatar *ngIf="doctor.image" class="doctor-avatar">
+          <img [src]="'http://localhost:5000/uploads/'+doctor.image || '/assets/img/doctor-default.jpg'" alt="Doctor profile image">
+        </ion-avatar>
+
+        <ion-list lines="none">
+          <ion-item>
+            <ion-icon name="person-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h2>Nom</h2>
+              <p>{{ doctor.name }} </p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item *ngIf="doctor.specialty">
+            <ion-icon name="medical-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h2>Spécialité</h2>
+              <p>{{ doctor.specialty }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item *ngIf="doctor.email">
+            <ion-icon name="mail-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h2>Email</h2>
+              <p>{{ doctor.email }}</p>
+            </ion-label>
+          </ion-item>
+
+          <ion-item *ngIf="doctor.phone">
+            <ion-icon name="call-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h2>Téléphone</h2>
+              <p>{{ doctor.phone }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <div *ngIf="errorMessage" class="error-container">
+    <ion-icon name="alert-circle-outline" color="danger" size="large"></ion-icon>
+    <p>{{ errorMessage }}</p>
+  </div>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" >
+    <ion-fab-button color="primary" (click)="openDocumentUpload()">
+      <ion-icon name="document-attach-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

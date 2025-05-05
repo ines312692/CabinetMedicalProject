@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Notifications</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngIf="isLoading">
+    <ion-item *ngFor="let i of [1, 2, 3]">
+      <ion-label>
+        <div class="loading-placeholder" style="height: 20px; width: 60%; margin-bottom: 8px;"></div>
+        <div class="loading-placeholder" style="height: 15px; width: 80%;"></div>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list *ngIf="!isLoading && notifications.length > 0">
+    <ion-item
+      *ngFor="let notification of notifications"
+      (click)="goToNotificationDetails(notification)"
+      [class.read]="notification.is_read"
+      button
+      detail
+    >
+      <ion-label>
+        <h2>{{ notification.title }}</h2>
+        <p>{{ notification.body }}</p>
+        <p class="timestamp">{{ notification.timestamp | date: 'short' }}</p>
+      </ion-label>
+      <ion-badge *ngIf="!notification.is_read" color="danger" slot="end">New</ion-badge>
+    </ion-item>
+  </ion-list>
+
+  <ion-item *ngIf="!isLoading && notifications.length === 0">
+    <ion-label>No notifications available</ion-label>
+  </ion-item>
+</ion-content>

@@ -1,0 +1,90 @@
+.loading-spinner {
+  display: flex;
+  margin: 40px auto;
+}
+
+.appointment-card, .doctor-card {
+  margin: 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+ion-card-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--ion-color-dark);
+}
+
+ion-card-subtitle {
+  font-size: 1rem;
+  color: var(--ion-color-medium);
+}
+
+ion-list {
+  padding: 0;
+}
+
+ion-item {
+  --padding-start: 0;
+}
+
+ion-item h2 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: var(--ion-color-medium);
+}
+
+ion-item p {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--ion-color-dark);
+}
+
+.doctor-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.doctor-avatar {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 16px;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.error-container ion-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.error-container p {
+  font-size: 16px;
+  color: var(--ion-color-medium);
+}
+
+.status-approved {
+  color: var(--ion-color-success);
+}
+
+.status-pending {
+  color: var(--ion-color-warning);
+}
+
+.status-refused {
+  color: var(--ion-color-danger);
+}
+
+ion-back-button {
+  --color: var(--ion-color-primary);
+}

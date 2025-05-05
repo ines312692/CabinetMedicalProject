@@ -1,13 +1,13 @@
-
 ion-header {
-
   --color: #132d5e;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
 
-ion-toolbar {
-
-  --color: #0c52d6;
+  ion-toolbar {
+    --min-height: 44px; // Reduce toolbar height (default is ~56px)
+    --padding-top: 4px; // Reduce top padding
+    --padding-bottom: 4px; // Reduce bottom padding
+    --color: #0c52d6;
+  }
 }
 
 ion-title {
@@ -42,7 +42,6 @@ ion-card-content p {
 ion-button {
   margin: 20px;
   --background: #132d5e;
-
   border-radius: 5px;
   transition: background-color 0.3s ease;
 }
@@ -52,23 +51,28 @@ ion-button:hover {
 }
 
 .loading-placeholder {
-
   border-radius: var(--border-radius);
   height: 150px;
   animation: pulse 1.5s infinite;
 }
+
 @keyframes pulse {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { opacity: 0.6; }
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
 }
 
 swiper-container {
   width: 100%;
   height: auto;
-  margin: 10px 0;  /* Réduit de 20px à 10px */
+  margin: 10px 0;
   padding-bottom: 20px;
-
   --swiper-pagination-bullet-inactive-color: #6c757d;
   --swiper-pagination-bullet-inactive-opacity: 0.4;
   --swiper-pagination-color: #132d5e;
@@ -98,7 +102,6 @@ swiper-slide {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-
 .swiper-zoom-container img {
   width: 100%;
   height: 100%;
@@ -110,52 +113,17 @@ swiper-slide {
   transform: scale(1.05);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
-// home.page.scss
-ion-header {
-  ion-toolbar {
-
-    --min-height: 44px; // Reduce toolbar height (default is ~56px)
-    --padding-top: 4px; // Reduce top padding
-    --padding-bottom: 4px; // Reduce bottom padding
-
-  }
-
-  .profile-button {
-    --padding-start: 8px;
-    --padding-end: 8px;
-    --border-radius: 50%; // Circular button
-    --background: transparent; // No default background
-    --background-activated: rgba(0, 123, 255, 0.1); // Subtle blue on tap
-    margin-right: 8px; // Space from edge
-  }
-
-  .profile-icon {
-    font-size: 28px; // Slightly larger for prominence
-    color: #0e4787; // Vibrant blue
-    transition: transform 0.2s ease; // Smooth scaling
-  }
-
-  // Scale icon on hover or tap (for web and mobile)
-  .profile-button:hover .profile-icon,
-  .profile-button:active .profile-icon {
-    transform: scale(1.2); // Slight zoom effect
-  }
-}
-
 
 :host ::ng-deep .swiper-pagination-bullet {
   transition: background-color 0.3s ease;
 }
 
-
 :host ::ng-deep .swiper-pagination-bullet-active {
   transform: scale(1.2);
 }
 
-
 ion-searchbar {
   margin: 5px 10px 15px;
-
   --color: #132d5e;
   --placeholder-color: #6c757d;
   --icon-color: #132d5e;
@@ -186,11 +154,9 @@ ion-searchbar {
   }
 
   &:hover {
-
     --box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   }
 }
-
 
 .chips-container {
   display: flex;
@@ -199,16 +165,15 @@ ion-searchbar {
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling sur iOS */
-  scrollbar-width: none; /* Cache la scrollbar sur Firefox */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 
   &::-webkit-scrollbar {
-    display: none; /* Cache la scrollbar sur Chrome/Safari */
+    display: none;
   }
 
   ion-chip {
-
     --color: #132d5e;
     --background-activated: var(--ion-color-primary);
     --color-activated: white;
@@ -217,15 +182,13 @@ ion-searchbar {
     --padding-start: 16px;
     --padding-end: 16px;
     --height: 36px;
-
     margin: 0;
     border: 1px solid rgba(0, 0, 0, 0.1);
     font-size: 0.875rem;
     font-weight: 500;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    flex-shrink: 0; /* Empêche le rétrécissement */
+    flex-shrink: 0;
 
-    /* Style pour l'état sélectionné */
     &[color="primary"] {
       --background: var(--ion-color-primary);
       --color: white;
@@ -233,12 +196,10 @@ ion-searchbar {
       border-color: transparent;
     }
 
-    /* Feedback tactile */
     &:active {
       transform: scale(0.96);
       opacity: 0.9;
     }
-
 
     @media (max-width: 360px) {
       --padding-start: 12px;
@@ -246,7 +207,6 @@ ion-searchbar {
       font-size: 0.8125rem;
     }
   }
-
 
   ion-chip:first-child {
     margin-left: auto;
@@ -256,19 +216,14 @@ ion-searchbar {
     margin-right: auto;
   }
 }
+
 .governorats-row {
-
-
-
   ion-chip {
-
     --color: #1b5e20;
     --background-activated: var(--ion-color-success);
 
-
     &[color="success"] {
       --background: var(--ion-color-success);
-
       --box-shadow: 0 2px 6px rgba(var(--ion-color-success-rgb), 0.3);
       border-color: transparent;
     }
@@ -279,26 +234,82 @@ ion-searchbar {
     }
   }
 }
+
 ion-content {
-   // Optional: Light background for content
-  scrollbar-width: thin; // For Firefox
-  scrollbar-color: #007BFF #ffffff; // Thumb and track for Firefox
+  scrollbar-width: thin;
+  scrollbar-color: #007bff #ffffff;
 
   &::-webkit-scrollbar {
-    width: 8px; // Scrollbar width
+    width: 8px;
   }
 
   &::-webkit-scrollbar-track {
-
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #007BFF; // Vibrant blue thumb
+    background: #007bff;
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #0056b3; // Darker blue on hover
+    background: #0056b3;
   }
+}
+
+/* Notification and Profile Button Styles */
+.notification-button {
+  position: relative;
+  --padding-start: 4px; /* Reduced padding */
+  --padding-end: 4px;
+  --border-radius: 50%;
+  --background: transparent;
+  --background-activated: rgba(0, 123, 255, 0.1);
+  margin: 0 4px; /* Reduced margin to bring buttons closer */
+}
+
+.notification-badge {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  font-size: 10px;
+  border-radius: 50%;
+  padding: 2px 4px;
+  min-width: 18px;
+  min-height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ff4961; /* Ionic's danger color */
+}
+
+.notification-button ion-icon {
+  font-size: 24px;
+  color: #0e4787; /* Match profile icon color */
+  transition: transform 0.2s ease;
+}
+
+.notification-button:hover ion-icon,
+.notification-button:active ion-icon {
+  transform: scale(1.2);
+}
+
+.profile-button {
+  --padding-start: 4px; /* Reduced padding */
+  --padding-end: 4px;
+  --border-radius: 50%;
+  --background: transparent;
+  --background-activated: rgba(0, 123, 255, 0.1);
+  margin: 0 4px; /* Reduced margin to bring buttons closer */
+}
+
+.profile-icon {
+  font-size: 24px;
+  color: #0e4787;
+  transition: transform 0.2s ease;
+}
+
+.profile-button:hover .profile-icon,
+.profile-button:active .profile-icon {
+  transform: scale(1.2);
 }

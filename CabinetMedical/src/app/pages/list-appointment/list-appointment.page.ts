@@ -12,8 +12,7 @@ import { Router } from "@angular/router";
   imports: [
     IonicModule,
     NgForOf,
-    NgClass,
-    NgIf
+    NgClass
   ]
 })
 export class ListAppointmentPage implements OnInit, OnChanges {
