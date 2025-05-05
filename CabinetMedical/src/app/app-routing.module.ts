@@ -115,6 +115,10 @@ const routes: Routes = [
   {
     path: 'appointment-details',
     loadChildren: () => import('./pages/appointment-details/appointment-details.module').then( m => m.AppointmentDetailsPageModule)
+  },
+  {
+    path: 'notifications',
+    loadChildren: () => import('./pages/notifications/notifications.module').then( m => m.NotificationsPageModule)
   }
 
 

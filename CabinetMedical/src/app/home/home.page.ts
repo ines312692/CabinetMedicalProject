@@ -1,8 +1,10 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {DoctorService} from "../services/doctor.service";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { DoctorService } from '../services/doctor.service';
 import { PubserviceService } from '../services/pubservice.service';
-import {Router} from "@angular/router";
+import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { interval } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -14,20 +16,52 @@ export class HomePage implements OnInit, OnDestroy {
   doctors: any[] = [];
   pubs: any[] = [];
   filteredDoctors: any[] = [];
+  filteredPubs: any[] = [];
   currentDoctorIndex: number = 0;
   intervalId: any;
   selectedSpecialty: string | null = null;
-  allSpecialties: string[] = ['Médecine Générale', 'Cardiologie', 'Dermatologie', 'Pédiatrie','Orthopédie','Gynécologie-Obstétrique','Ophtalmologie','Psychiatrie','ORL','Dentisterie'];
+  allSpecialties: string[] = [
+    'Médecine Générale',
+    'Cardiologie',
+    'Dermatologie',
+    'Pédiatrie',
+    'Orthopédie',
+    'Gynécologie-Obstétrique',
+    'Ophtalmologie',
+    'Psychiatrie',
+    'ORL',
+    'Dentisterie',
+  ];
   selectedGovernorat: string | null = null;
   allGovernorats: string[] = [
-    'Tunis', 'Ariana', 'Ben Arous', 'Manouba', 'Nabeul', 'Zaghouan',
-    'Bizerte', 'Béja', 'Jendouba', 'Kef', 'Siliana', 'Sousse',
-    'Monastir', 'Mahdia', 'Sfax', 'Kairouan', 'Kasserine', 'Sidi Bouzid',
-    'Gabès', 'Medenine', 'Tataouine', 'Gafsa', 'Tozeur', 'Kebili'
+    'Tunis',
+    'Ariana',
+    'Ben Arous',
+    'Manouba',
+    'Nabeul',
+    'Zaghouan',
+    'Bizerte',
+    'Béja',
+    'Jendouba',
+    'Kef',
+    'Siliana',
+    'Sousse',
+    'Monastir',
+    'Mahdia',
+    'Sfax',
+    'Kairouan',
+    'Kasserine',
+    'Sidi Bouzid',
+    'Gabès',
+    'Medenine',
+    'Tataouine',
+    'Gafsa',
+    'Tozeur',
+    'Kebili',
   ];
-  filteredPubs: any[] = [];
   isLoggedIn: boolean = false;
   currentUserId: string | null = null;
+  notificationCount: number = 0; // New property for notification count
 
   constructor(
     private doctorService: DoctorService,
@@ -37,26 +71,59 @@ export class HomePage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.loadDoctors();
-    this.loadPubs();
-    this.startImageRotation();
-
     // Subscribe to authentication state changes
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.subscribe((user) => {
       console.log('User:', user);
       this.isLoggedIn = !!user;
       if (user) {
         this.currentUserId = user.id;
+        this.fetchNotificationCount();
+        // Poll for notification updates every 30 seconds
+        this.startNotificationPolling();
       } else {
         this.currentUserId = null;
+        this.notificationCount = 0;
       }
     });
+
+    // Load doctors and pubs
+    this.loadDoctors();
+    this.loadPubs();
+    this.startImageRotation();
   }
 
   ngOnDestroy() {
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
+  }
+
+  // Fetch notification count
+  fetchNotificationCount() {
+    if (this.currentUserId) {
+      this.authService.getNotificationCount(this.currentUserId).subscribe({
+        next: (count) => {
+          this.notificationCount = count;
+        },
+        error: (err) => {
+          console.error('Error fetching notification count:', err);
+        },
+      });
+    }
+  }
+
+  // Start polling for notification updates
+  startNotificationPolling() {
+    interval(30000) // Every 30 seconds
+      .pipe(switchMap(() => this.authService.getNotificationCount(this.currentUserId!)))
+      .subscribe({
+        next: (count) => {
+          this.notificationCount = count;
+        },
+        error: (err) => {
+          console.error('Error polling notification count:', err);
+        },
+      });
   }
 
   loadDoctors() {
@@ -76,6 +143,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.pubService.getPubs().subscribe(
       (data2) => {
         this.pubs = data2;
+        this.filterPubsByDate();
         console.log('Pubs récupérées :', this.pubs);
       },
       (error) => {
@@ -90,7 +158,7 @@ export class HomePage implements OnInit, OnDestroy {
     }, 3000); // Change image every 3 seconds
   }
 
-  swiperSlideChanged(e:any) {
+  swiperSlideChanged(e: any) {
     console.log('slide changed', e);
   }
 
@@ -99,11 +167,9 @@ export class HomePage implements OnInit, OnDestroy {
     this.searchDoctors({ target: { value: '' } });
   }
 
- 
   clearSpecialtyFilter() {
     this.selectedSpecialty = null;
     this.searchDoctors({ target: { value: '' } });
-
   }
 
   toggleGovernoratFilter(governorat: string) {
@@ -129,20 +195,31 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
+  goToNotifications() {
+    if (this.isLoggedIn && this.currentUserId) {
+      this.router.navigate(['/notifications']);
+    } else {
+      this.router.navigate(['/login']);
+    }
+  }
+
   searchDoctors(event: any) {
     const query = event.target.value.toLowerCase();
-    this.filteredDoctors = this.doctors.filter(doctor => {
-      // Filtre par recherche
-      const matchesSearch = !query ||
+    this.filteredDoctors = this.doctors.filter((doctor) => {
+      // Filter by search query
+      const matchesSearch =
+        !query ||
         doctor.name.toLowerCase().includes(query) ||
         doctor.specialty.toLowerCase().includes(query);
 
-      // Filtre par spécialité
-      const matchesSpecialty = !this.selectedSpecialty ||
+      // Filter by specialty
+      const matchesSpecialty =
+        !this.selectedSpecialty ||
         doctor.specialty.toLowerCase().includes(this.selectedSpecialty.toLowerCase());
 
-      // Filtre par gouvernorat (nouveau)
-      const matchesGovernorat = !this.selectedGovernorat ||
+      // Filter by governorate
+      const matchesGovernorat =
+        !this.selectedGovernorat ||
         doctor.address.toLowerCase().includes(this.selectedGovernorat.toLowerCase());
 
       return matchesSearch && matchesSpecialty && matchesGovernorat;
@@ -151,10 +228,10 @@ export class HomePage implements OnInit, OnDestroy {
 
   filterPubsByDate() {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Pour ignorer l'heure dans la comparaison
+    today.setHours(0, 0, 0, 0); // Ignore time for comparison
 
-    this.filteredPubs = this.pubs.filter(pub => {
-      if (!pub.dateFin) return true; // Si pas de date de fin, on affiche
+    this.filteredPubs = this.pubs.filter((pub) => {
+      if (!pub.dateFin) return true; // Show if no end date
 
       const dateFin = new Date(pub.dateFin);
       dateFin.setHours(0, 0, 0, 0);
