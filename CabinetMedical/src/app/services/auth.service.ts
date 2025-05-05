@@ -44,4 +44,8 @@ export class AuthService {
       .get<{ count: number }>(`http://localhost:5000/notifications/count/${userId}`)
       .pipe(map((response) => response.count));
   }
+  getUserRole(): string | null {
+    const currentUser = this.getCurrentUser();
+    return currentUser ? currentUser.role : null;
+  }
 }

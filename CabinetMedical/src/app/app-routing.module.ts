@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { DoctorDetailsPage } from "./pages/doctor-details/doctor-details.page";
-
+import { AdminGuard } from "./guards/admin.guard";
+import { DoctorGuard } from "./guards/doctor.guard";
+import {PatientGuard} from "./guards/patient.guard";
 const routes: Routes = [
   {
     path: 'home',
@@ -52,10 +54,13 @@ const routes: Routes = [
   {
     path: 'doctor-profile/:doctor_id',
     loadChildren: () => import('./pages/doctor-profile/doctor-profile.module').then(m => m.DoctorProfilePageModule)
+    ,canActivate: [DoctorGuard],
+
   },
   {
     path: 'admin-profile',
     loadChildren: () => import('./pages/admin-profile/admin-profile.module').then(m => m.AdminProfilePageModule)
+    ,canActivate: [AdminGuard],
   },
   {
     path: 'calender',
@@ -108,7 +113,9 @@ const routes: Routes = [
   {
     path: 'profile-patient/:patient_id',
     loadChildren: () => import('./pages/profile-patient/profile-patient.module').then( m => m.ProfilePatientPageModule)
-  },  {
+    ,canActivate: [PatientGuard],
+  },
+  {
     path: 'settings',
     loadChildren: () => import('./pages/settings/settings.module').then( m => m.SettingsPageModule)
   },
