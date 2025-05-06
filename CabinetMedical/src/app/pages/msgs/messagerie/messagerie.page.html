@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mes conversations</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngIf="conversations.length > 0; else noMessages">
+    <ion-item button *ngFor="let convo of conversations" (click)="openConversation(convo.otherUserId)">
+      <ion-label>
+        <h2>{{ convo.otherUserName }}</h2>
+        <p>{{ convo.lastMessage.content }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  
+  <ng-template #noMessages>
+    <div class="ion-padding">
+      <p>Aucune conversation trouvée.</p>
+    </div>
+  </ng-template>
+</ion-content>

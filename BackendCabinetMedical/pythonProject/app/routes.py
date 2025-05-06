@@ -1,6 +1,6 @@
 from flask import request, jsonify, current_app as app, make_response
 from werkzeug.utils import secure_filename
-from .models import File
+from .models import File, Message
 from bson import ObjectId
 import os
 from . import mongo
@@ -12,10 +12,8 @@ from flask import send_from_directory
 
 from flask_mail import Mail, Message
 from firebase_admin import credentials, initialize_app, messaging
-
 import json
-
-
+from datetime import datetime
 
 
 CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS"]}})
@@ -131,6 +129,7 @@ def list_doctors():
     doctors_list = []
     for doctor in doctors:
         doctor_dict = doctor
+        # Ajouter l'URL complète de l'image
         if 'image' in doctor:
             doctor_dict['image_url'] = f"/uploads/{doctor['image']}"
         doctors_list.append(doctor_dict)
@@ -147,9 +146,11 @@ def get_doctor(id):
     except:
         return jsonify({'error': 'Invalid ID format'}), 400
 
+    # Find the doctor in the database
     doctor = mongo.db.doctors.find_one({"_id": doctor_id})
 
     if doctor:
+        # Convert ObjectId to string for JSON serialization
         doctor['_id'] = str(doctor['_id'])
 
 
@@ -161,6 +162,7 @@ def get_doctor(id):
         if 'availability' not in doctor:
             doctor['availability'] = []
 
+        # Add the complete image URL
         if 'image' in doctor:
             doctor['image_url'] = f"/uploads/{doctor['image']}"
 
@@ -317,15 +319,21 @@ def get_patient_diagnostics(patient_id):
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
+    # Check if the patient exists
     patient = mongo.db.patients.find_one({"_id": patient_id_obj})
+    print("Patient query result:", patient)
     if not patient:
         response = jsonify({"error": "Patient not found"})
         response.status_code = 404
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
+    # Retrieve diagnostics and prescriptions
     diagnostics = list(mongo.db.diagnostics.find({"patient_id": patient_id_obj}))
     prescriptions = list(mongo.db.prescriptions.find({"patient_id": patient_id_obj}))
+
+    print("Diagnostics query result:", diagnostics)
+    print("Prescriptions query result:", prescriptions)
 
     if not diagnostics and not prescriptions:
         response = jsonify({"error": "No diagnostics or prescriptions found"})
@@ -355,6 +363,7 @@ def get_patient_diagnostics(patient_id):
     response.status_code = 200
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
+
 
 @app.route('/patients', methods=['GET'])
 def list_patients():
@@ -414,6 +423,7 @@ def add_doctor():
 
     data = request.form
     required_fields = ['name', 'specialty', 'description', 'address', 'phone', 'email', 'password']
+
     if not all(field in data for field in required_fields):
         return jsonify({"error": "All fields are required"}), 400
 
@@ -513,6 +523,7 @@ def list_advertisements():
     advertisements_list = []
     for ad in advertisements:
         ad_dict = ad
+        # Ajouter l'URL complète de l'image
         if 'image' in ad:
             ad_dict['image'] = f"/uploads/{ad['image']}"
         advertisements_list.append(ad_dict)
@@ -523,16 +534,19 @@ def list_advertisements():
 @app.route('/administrators/<id>', methods=['GET'])
 def get_administrator(id):
     try:
+        # Convertir l'ID string en ObjectId
         admin_id = ObjectId(id)
     except:
         return jsonify({'error': 'Invalid ID format'}), 400
 
+    # Rechercher l'administrateur dans la base de données
     administrator = mongo.db.administrators.find_one({"_id": admin_id})
 
     if administrator:
 
         administrator['_id'] = str(administrator['_id'])
 
+        # Retourner les données de l'administrateur
         response = jsonify(administrator)
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response, 200
@@ -745,6 +759,9 @@ def delete_appointment(id):
 
         response = jsonify({"message": "Appointment deleted successfully"})
         response.status_code = 200
+    else:
+        response = jsonify({"error": "Appointment not found"})
+        response.status_code = 404
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
@@ -861,26 +878,6 @@ from datetime import datetime
 from bson import ObjectId
 from .models import Message
 from . import mongo
-
-@app.route('/api/messages', methods=['POST'])
-def send_message():
-    """Route pour envoyer un message."""
-    data = request.json
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-
-    message = {
-        "_id": ObjectId(),
-        "unique_id": data.get("unique_id"),
-        "sender_id": ObjectId(data.get("sender_id")),
-        "receiver_id": ObjectId(data.get("receiver_id")),
-        "message": data.get("message"),
-        "timestamp": datetime.utcnow(),
-        "first_message": data.get("first_message", False)
-    }
-
-    mongo.db.messages.insert_one(message)
-    return jsonify({"status": "success", "message_id": str(message["_id"])}), 201
 
 
 @app.route('/api/messages', methods=['GET'])
@@ -1239,5 +1236,121 @@ def mark_notification_read(notification_id):
             return jsonify({"message": "Notification marked as read"}), 200
         else:
             return jsonify({"error": "Notification not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, ObjectId):
+            return str(obj)
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return json.JSONEncoder.default(self, obj)
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    data = request.json
+    if not data or 'sender_id' not in data or 'receiver_id' not in data or 'content' not in data:
+        return jsonify({"error": "Données incomplètes"}), 400
+
+    # Validate ObjectIds before creating the message
+    try:
+        # Check if IDs are valid ObjectIds
+        if not data["sender_id"] or not ObjectId.is_valid(data["sender_id"]):
+            return jsonify({"error": "sender_id invalide"}), 400
+        if not data["receiver_id"] or not ObjectId.is_valid(data["receiver_id"]):
+            return jsonify({"error": "receiver_id invalide"}), 400
+
+        message_obj = Message(
+            sender_id=ObjectId(data["sender_id"]),
+            receiver_id=ObjectId(data["receiver_id"]),
+            content=data["content"]
+        )
+        result = mongo.db.messages.insert_one(message_obj.to_dict())
+        message = mongo.db.messages.find_one({"_id": result.inserted_id})
+        return JSONEncoder().encode(message), 201, {'Content-Type': 'application/json'}
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route('/get_messages', methods=['GET'])
+def get_user_messages():
+    user_id = request.args.get('user_id')
+
+    if not user_id:
+        return jsonify({"error": "ID utilisateur requis"}), 400
+
+    # Validate ObjectId
+    if not ObjectId.is_valid(user_id):
+        return jsonify({"error": "ID utilisateur invalide"}), 400
+
+    messages = list(mongo.db.messages.find({
+        "$or": [
+            {"sender_id": ObjectId(user_id)},
+            {"receiver_id": ObjectId(user_id)}
+        ]
+    }).sort("timestamp", -1))
+
+    return JSONEncoder().encode(messages), 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/conversation/<sender_id>/<receiver_id>', methods=['GET'])
+def get_conversation(sender_id, receiver_id):
+    # Validate ObjectIds
+    if not ObjectId.is_valid(sender_id):
+        return jsonify({"error": "sender_id invalide"}), 400
+    if not ObjectId.is_valid(receiver_id):
+        return jsonify({"error": "receiver_id invalide"}), 400
+
+    messages = list(mongo.db.messages.find({
+        "$or": [
+            {"sender_id": ObjectId(sender_id), "receiver_id": ObjectId(receiver_id)},
+            {"sender_id": ObjectId(receiver_id), "receiver_id": ObjectId(sender_id)}
+        ]
+    }).sort("timestamp", 1))
+
+    return JSONEncoder().encode(messages), 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/mark_read/<message_id>', methods=['PUT'])
+def mark_as_read(message_id):
+    # Validate ObjectId
+    if not ObjectId.is_valid(message_id):
+        return jsonify({"error": "ID message invalide"}), 400
+
+    try:
+        result = mongo.db.messages.update_one(
+            {"_id": ObjectId(message_id)},
+            {"$set": {"read": True}}
+        )
+
+        if result.matched_count == 0:
+            return jsonify({"error": "Message non trouvé"}), 404
+
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route('/get_username/<user_id>', methods=['GET'])
+def get_username(user_id):
+    # Validate ObjectId
+    if not ObjectId.is_valid(user_id):
+        return jsonify({"error": "ID utilisateur invalide"}), 400
+
+    try:
+        object_id = ObjectId(user_id)
+
+        doctor = mongo.db.doctors.find_one({"_id": object_id})
+        if doctor and 'name' in doctor:
+            return jsonify({"name": doctor['name']}), 200
+
+        patient = mongo.db.patients.find_one({"_id": object_id})
+        if patient and 'first_name' in patient and 'last_name' in patient:
+            full_name = f"{patient['first_name']} {patient['last_name']}"
+            return jsonify({"name": full_name}), 200
+
+        return jsonify({"error": "Utilisateur introuvable"}), 404
+
     except Exception as e:
         return jsonify({"error": str(e)}), 400

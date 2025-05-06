@@ -27,32 +27,66 @@ import { FormsModule } from '@angular/forms';
 })
 export class DoctorDetailsPage implements OnInit {
   doctor!: Doctor;
-  daysOfWeek: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  daysOfWeek: string[] = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
   selectedTime: string | undefined;
   availableTimes: string[] = [];
   isDateCardVisible = true;
+  idCurrentUser: string = localStorage.getItem('userId') || '';
+
+
 
   constructor(private readonly route: ActivatedRoute, private readonly doctorService: DoctorService, private readonly router: Router, private readonly alertController: AlertController) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
-    this.doctorService.getDoctorById(id).subscribe(doctor => {
+    this.doctorService.getDoctorById(id).subscribe( doctor => {
 
+      // 1) si availability est JSON sérialisé, on parse
       if (typeof doctor.availability === 'string') {
         try {
           doctor.availability = JSON.parse(doctor.availability);
-        } catch (e) {
-          console.error('Error parsing availability:', e);
-          doctor.availability = []; // Fallback to empty array
+        } catch {
+          doctor.availability = [];
         }
       }
 
+      // 2) on normalise chaque slot.hours en véritable string[]
+      doctor.availability = (doctor.availability || []).map(slot => {
+        // on “oublie” le type statique string[]
+        const raw: unknown = (slot as any).hours;
+
+        let hoursArray: string[];
+        if (typeof raw === 'string') {
+          // soit c’est du JSON, soit du “09:00,14:00”
+          try {
+            hoursArray = JSON.parse(raw);
+          } catch {
+            hoursArray = raw.split(',').map(h => h.trim());
+          }
+        } else if (Array.isArray(raw)) {
+          hoursArray = raw as string[];
+        } else {
+          hoursArray = [];
+        }
+
+        return {
+          day: slot.day,
+          hours: hoursArray
+        };
+      });
+
       this.doctor = doctor;
-      this.isDateCardVisible = true;
-      setTimeout(() => {
-        this.loadMap();
-      }, 100);
+      setTimeout(() => this.loadMap(), 100);
     });
+  }
+
+
+  openConversation() {
+
+    const senderId = this.idCurrentUser;  // Assure-toi que ton token contient bien user_id
+    const receiverId = this.doctor._id;
+
+    this.router.navigate(['/conversation', senderId, receiverId]);
   }
 
   loadMap() {
@@ -89,12 +123,12 @@ export class DoctorDetailsPage implements OnInit {
   }
 
   isAvailable(day: string): boolean {
-    return this.doctor.availability?.some(slot => slot.day === day) ?? false;
+    return this.doctor.availability?.some(slot => slot.day == day) ?? false;
   }
 
   getHours(day: string): string[] {
-    const slot = this.doctor.availability.find(slot => slot.day === day);
-    return slot ? slot.hours : [];
+    const slot = this.doctor.availability.find(slot => slot.day == day);
+    return slot ? slot.hours: [];
   }
 
   async openBookingModal(day: string) {
@@ -128,8 +162,8 @@ export class DoctorDetailsPage implements OnInit {
       await alert.present();
     } else {
       const alert = await this.alertController.create({
-        header: 'No Availability',
-        message: 'Please select an available day.',
+        header: 'Aucune disponibilité',
+        message: 'Veuillez choisir un autre créneau horaire.',
         buttons: ['OK']
       });
 
@@ -142,22 +176,22 @@ export class DoctorDetailsPage implements OnInit {
     if (this.selectedTime) {
       const appointmentDetails = {
         doctor: this.doctor,
-        service: 'General Consultation',
-        date: new Date().toISOString().split('T')[0], // Current date
+        service: 'Consultation générale',
+        date: new Date().toISOString().split('T')[0],
         time: this.selectedTime,
         location: { latitude: this.doctor.latitude, longitude: this.doctor.longitude }
       };
       this.doctorService.saveAppointmentDetails(appointmentDetails);
       this.isDateCardVisible = false;
 
-      // Use _id instead of id
+
       const doctorId = this.doctor._id ;
       // @ts-ignore
       this.router.navigate(['/appointment-confirmation'], {
         queryParams: {appointmentId: doctorId.toString()}
       }).then(r => console.log('Navigated to appointment confirmation page'));
     } else {
-      alert('Please select a valid time for the appointment.');
+      alert('Veuillez choisir un horaire valide.');
     }
   }
 }

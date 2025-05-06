@@ -80,10 +80,7 @@ const routes: Routes = [
   },
 
   { path: 'manage-appointments/:doctor_id',  loadChildren: () => import('./pages/manage-appointments/manage-appointments.module').then( m => m.ManageAppointmentsPageModule)},
-  {
-    path: 'chat',
-    loadChildren: () => import('./pages/chat/chat.module').then( m => m.ChatPageModule)
-  },
+
   {
     path: 'list-appointment/:patient_id',
     loadChildren: () => import('./pages/list-appointment/list-appointment.module').then( m => m.ListAppointmentPageModule)
@@ -111,6 +108,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/modif-profil-patient/modif-profil-patient.module').then( m => m.ModifProfilPatientPageModule)
   },
   {
+
     path: 'profile-patient/:patient_id',
     loadChildren: () => import('./pages/profile-patient/profile-patient.module').then( m => m.ProfilePatientPageModule)
     ,canActivate: [PatientGuard],
@@ -126,7 +124,17 @@ const routes: Routes = [
   {
     path: 'notifications',
     loadChildren: () => import('./pages/notifications/notifications.module').then( m => m.NotificationsPageModule)
+  },
+  {
+    path: 'messagerie',
+    loadChildren: () => import('./pages/msgs/messagerie/messagerie.module').then( m => m.MessageriePageModule)
+  },
+  {
+    path: 'conversation/:senderId/:receiverId',
+    loadChildren: () => import('./pages/msgs/conversation/conversation.module').then( m => m.ConversationPageModule)
   }
+
+
 
 
 

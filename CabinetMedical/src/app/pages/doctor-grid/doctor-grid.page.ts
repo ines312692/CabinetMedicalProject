@@ -20,14 +20,15 @@ import {NgForOf} from "@angular/common";
 export class DoctorGridPage implements OnInit {
   @Input() doctors: Doctor[] = [];
 
+currentUserId: string = localStorage.getItem('userId') || '';
 
   constructor(private doctorService: DoctorService) { }
 
+ 
   ngOnInit() {
     this.doctorService.getDoctors().subscribe(doctors => {
-       this.doctors = doctors;
-
-   });
-  
+      this.doctors = doctors.filter(doctor => doctor.id != this.currentUserId);
+    });
   }
+  
 }

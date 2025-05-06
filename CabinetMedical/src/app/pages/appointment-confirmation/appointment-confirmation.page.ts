@@ -73,6 +73,7 @@ export class AppointmentConfirmationPage implements OnInit {
       return;
     }
 
+
     const appointmentData = {
       date: this.appointment.date,
       reason: this.appointment.reason || 'General Consultation',

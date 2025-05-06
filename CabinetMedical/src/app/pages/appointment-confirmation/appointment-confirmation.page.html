@@ -20,8 +20,11 @@
     <ion-card-content>
       <ion-item *ngIf="appointment.doctor">
         <ion-avatar slot="start">
-          <img *ngIf="appointment.doctor.image" [src]="'http://localhost:5000/uploads/'  + appointment.doctor.image" alt="Doctor Avatar">
+
+          <img *ngIf="appointment.doctor.image" [src]="'http://localhost:5000/uploads/' + appointment.doctor.image" alt="Doctor Avatar">
+
         </ion-avatar>
+
         <ion-label>
           <h2>Doctor: {{ appointment.doctor.name }}</h2>
           <p>Specialty: {{ appointment.doctor.specialty }}</p>
@@ -48,7 +51,7 @@
           <h2>Location: {{ appointment.doctor.address }}</h2>
         </ion-label>
       </ion-item>
-      <ion-button expand="full" color="primary" (click)="confirmAppointment()">Confirm Appointment</ion-button>
+      <ion-button expand="full" color="primary" (click)="confirmAppointment()">Confirmer rendez-vous</ion-button>
     </ion-card-content>
   </ion-card>
 </ion-content>

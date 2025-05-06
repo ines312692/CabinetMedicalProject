@@ -61,9 +61,12 @@ export class LoginPage implements OnInit {
     };
 
     this.authService.login(loginData).subscribe({
-      next: (response: { role: string }) => {
+      next: (response: { role: string,id:string}) => {
         console.log('Login successful', response);
         this.presentToast('Connexion réussie!', 'success');
+
+        localStorage.setItem('userId', response.id);
+
         if (response.role === 'doctor') {
           this.router.navigate(['/home']);
         } else if (response.role === 'patient') {

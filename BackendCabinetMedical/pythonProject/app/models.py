@@ -84,6 +84,9 @@ class Administrator:
             fcm_token=doc.get('fcm_token', None)
         )
 
+
+from bson import ObjectId
+
 class File:
     def __init__(self, id, filename, status, patient_id=None, doctor_id=None):
         self.id = id
@@ -101,6 +104,10 @@ class File:
             patient_id=doc.get('patient_id'),
             doctor_id=doc.get('doctor_id')
         )
+
+
+from bson import ObjectId
+from typing import List, Dict
 
 class Appointment:
     def __init__(self, _id: ObjectId, date: str, reason: str, time: str, location: Dict[str, float], doctor_id: ObjectId, patient_id: ObjectId, status: str = "pending"):
@@ -158,10 +165,15 @@ class Prescription:
         self.date = date
         self.medication = medication
 
+# models.py
 class DiagnosticsData:
     def __init__(self, diagnostics, prescriptions):
         self.diagnostics = diagnostics
         self.prescriptions = prescriptions
+
+
+from bson import ObjectId
+from datetime import datetime
 
 class Message:
     def __init__(self, _id: ObjectId, unique_id: str, sender_id: ObjectId, receiver_id: ObjectId, message: str, timestamp: datetime, first_message: bool = False):
@@ -195,6 +207,7 @@ class Message:
             "timestamp": self.timestamp,
             "first_message": self.first_message
         }
+        self.prescriptions = prescriptionscd
 
 class Advertisement:
     def __init__(self, id, title, description, image, end_date):
@@ -212,4 +225,31 @@ class Advertisement:
             description=doc['description'],
             image=doc['image'],
             end_date=doc['dateFin']
+        )
+
+class Message:
+    def __init__(self, sender_id, receiver_id, content, timestamp=None, read=False):
+        self.sender_id = sender_id
+        self.receiver_id = receiver_id
+        self.content = content
+        self.timestamp = timestamp or datetime.utcnow()
+        self.read = read
+
+    def to_dict(self):
+        return {
+            "sender_id": ObjectId(self.sender_id),
+            "receiver_id": ObjectId(self.receiver_id),
+            "content": self.content,
+            "timestamp": self.timestamp,
+            "read": self.read
+        }
+
+    @staticmethod
+    def from_mongo(doc):
+        return Message(
+            sender_id=doc['sender_id'],
+            receiver_id=doc['receiver_id'],
+            content=doc['content'],
+            timestamp=doc.get('timestamp', datetime.utcnow()),
+            read=doc.get('read', False)
         )
