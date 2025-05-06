@@ -1,14 +1,23 @@
-[{
-  "_id": {
-    "$oid": "67be16638e0ebb047b728245"
+[
+  {
+    "_id": { "$oid": "67be16638e0ebb047b728245" },
+    "filename": "report.pdf",
+    "status": "viewed",
+    "patient_id": { "$oid": "67c60b5093571287063294be" },
+    "uploaded_at": "2025-04-24T10:00:00Z"
   },
-  "filename": "algo.pdf",
-  "status": "not viewed"
-},
-{
-  "_id": {
-    "$oid": "67beeaf472fa3313793f3542"
+  {
+    "_id": { "$oid": "67beeaf472fa3313793f3542" },
+    "filename": "scan.jpg",
+    "status": "pending",
+    "patient_id": { "$oid": "67c6186f68b9c75e329439e8" },
+    "uploaded_at": "2025-04-26T14:00:00Z"
   },
-  "filename": "3.jpg",
-  "status": "not viewed"
-}]
+  {
+    "_id": { "$oid": "67beeaf472fa3313793f3543" },
+    "filename": "results.pdf",
+    "status": "viewed",
+    "patient_id": { "$oid": "67c60b5093571287063294be" },
+    "uploaded_at": "2025-04-20T09:00:00Z"
+  }
+]

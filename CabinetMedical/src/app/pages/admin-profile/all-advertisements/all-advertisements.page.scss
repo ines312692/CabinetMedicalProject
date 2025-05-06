@@ -1,0 +1,24 @@
+ion-item {
+    --padding-start: 8px;
+    --inner-padding-end: 8px;
+    margin-bottom: 12px;
+    
+    ion-avatar {
+      width: 60px;
+      height: 60px;
+    }
+    
+    h2 {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    p {
+      color: var(--ion-color-medium);
+      font-size: 0.9rem;
+    }
+  }
+  
+  ion-badge {
+    font-weight: 400;
+  }

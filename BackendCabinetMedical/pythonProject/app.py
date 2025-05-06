@@ -11,7 +11,17 @@ mongo = PyMongo()
 def create_app():
     app = Flask(__name__)
     app.config.from_object('config.Config')
-    CORS(app)
+    CORS(app, resources={
+        r"/admin/*": {
+            "origins": ["http://localhost:8100"],
+            "methods": ["GET", "POST", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"]
+        },
+        r"/*": {
+            "origins": "*",
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+        }
+    })
     mongo.init_app(app)
     print("UPLOAD_FOLDER path:", app.config['UPLOAD_FOLDER'])
 

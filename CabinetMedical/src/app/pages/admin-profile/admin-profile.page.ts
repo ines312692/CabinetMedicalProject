@@ -11,7 +11,9 @@ export class AdminProfilePage implements OnInit {
 
   constructor(private router: Router) {} // Injecter Router
 
- 
+  navigateToDashboard() {
+    this.router.navigate(['/admin-profile/dashboard']);
+  }
 
   ngOnInit() {
   }
@@ -22,4 +24,9 @@ export class AdminProfilePage implements OnInit {
 onButtonClick2() {
   this.router.navigate(['/add-pub']); 
 }
+viewAllAdvertisements() {
+  this.router.navigate(['/admin-profile/all-advertisements']);
+}
+
+
 }

@@ -8,6 +8,7 @@ interface Publicite {
   description: string;
   dateFin: string;
   image?: string; // Correspond à ce que renvoie le backend
+  active?: boolean;
 }
 
 @Injectable({
@@ -37,5 +38,9 @@ export class PubserviceService {
    */
   deletePub(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  toggleAdStatus(id: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/toggle-status`, {});
   }
 }

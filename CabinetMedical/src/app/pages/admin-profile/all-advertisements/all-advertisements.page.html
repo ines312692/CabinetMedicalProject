@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button 
+        defaultHref="/admin-profile/dashboard"
+        (click)="goBack()">
+      </ion-back-button>
+    </ion-buttons>
+    <ion-title>All Advertisements</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list *ngIf="advertisements && advertisements.length > 0; else noAds">
+    <ion-item *ngFor="let ad of advertisements">
+      <ion-avatar slot="start">
+        <img [src]="'assets/images/ads/' + (ad.image || 'default.jpg')">
+      </ion-avatar>
+      <ion-label>
+        <h3>{{ ad.titre || 'No title' }}</h3>
+        <p>Ends: {{ ad.dateFin | date:'mediumDate' }}</p>
+        <p>Status: 
+          <ion-badge [color]="ad.active ? 'success' : 'warning'">
+            {{ ad.active ? 'Active' : 'Inactive' }}
+          </ion-badge>
+        </p>
+      </ion-label>
+      <ion-button 
+        slot="end" 
+        fill="clear"
+        (click)="toggleAdStatus(ad)">
+        <ion-icon 
+          [name]="ad.active ? 'power-sharp' : 'power-outline'" 
+          [color]="ad.active ? 'danger' : 'success'">
+        </ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <ng-template #noAds>
+    <ion-item>
+      <ion-label class="ion-text-center">
+        No advertisements found
+      </ion-label>
+    </ion-item>
+  </ng-template>
+</ion-content>
