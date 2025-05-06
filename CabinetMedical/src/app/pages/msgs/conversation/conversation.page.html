@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar>
+    <!-- Bouton de retour -->
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/messagerie"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Discussion avec {{ receiverName }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<!-- <ion-content>
+  <div class="message-container" *ngFor="let msg of messages">
+    <div [ngClass]="{'sent': msg.sender_id === senderId, 'received': msg.sender_id !== senderId}">
+      {{ msg.content }}
+    </div>
+  </div>
+</ion-content> -->
+<ion-content>
+  <div class="message-container" *ngFor="let msg of messages">
+    <div [ngClass]="msg.sender_id === senderId ? 'sent' : 'received'">
+      {{ msg.content }}
+    </div>
+  </div>
+</ion-content>
+
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-item>
+      <ion-input [(ngModel)]="newMessage" placeholder="Écrire un message..."></ion-input>
+      <ion-button (click)="sendMessage()" slot="end" fill="clear">
+        <ion-icon name="send" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-toolbar>
+</ion-footer>
+

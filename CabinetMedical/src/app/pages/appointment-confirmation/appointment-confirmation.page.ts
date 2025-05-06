@@ -53,6 +53,8 @@ export class AppointmentConfirmationPage implements OnInit {
       return;
     }
 
+   
+
     // Prepare appointment data
     const appointmentData = {
       date: this.appointment.date,

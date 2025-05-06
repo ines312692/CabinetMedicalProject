@@ -1,6 +1,6 @@
 from flask import request, jsonify, current_app as app, make_response
 from werkzeug.utils import secure_filename
-from .models import File
+from .models import File, Message
 from bson import ObjectId
 import os
 from . import mongo
@@ -10,6 +10,8 @@ import bcrypt
 from bcrypt import hashpw, gensalt
 from flask import send_from_directory
 import json
+from datetime import datetime
+
 
 
 
@@ -586,58 +588,6 @@ def export_diagnostics_pdf(patient_id):
     return send_file(buffer, as_attachment=True, download_name='diagnostics.pdf', mimetype='application/pdf')
 
 
-from flask import request, jsonify
-from datetime import datetime
-from bson import ObjectId
-from .models import Message
-from . import mongo
-
-@app.route('/api/messages', methods=['POST'])
-def send_message():
-    """Route pour envoyer un message."""
-    data = request.json
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-
-    message = {
-        "_id": ObjectId(),
-        "unique_id": data.get("unique_id"),
-        "sender_id": ObjectId(data.get("sender_id")),
-        "receiver_id": ObjectId(data.get("receiver_id")),
-        "message": data.get("message"),
-        "timestamp": datetime.utcnow(),
-        "first_message": data.get("first_message", False)
-    }
-
-    mongo.db.messages.insert_one(message)
-    return jsonify({"status": "success", "message_id": str(message["_id"])}), 201
-
-
-@app.route('/api/messages', methods=['GET'])
-def get_messages():
-    """Route pour récupérer les messages entre un docteur et un patient."""
-    sender_id = request.args.get("sender_id")
-    receiver_id = request.args.get("receiver_id")
-    page = int(request.args.get("page", 1))
-    per_page = 10
-
-    if not sender_id or not receiver_id:
-        return jsonify({"error": "Sender ID and Receiver ID are required"}), 400
-
-    messages = list(mongo.db.messages.find({
-        "$or": [
-            {"sender_id": ObjectId(sender_id), "receiver_id": ObjectId(receiver_id)},
-            {"sender_id": ObjectId(receiver_id), "receiver_id": ObjectId(sender_id)}
-        ]
-    }).sort("timestamp", -1).skip((page - 1) * per_page).limit(per_page))
-
-    for message in messages:
-        message["_id"] = str(message["_id"])
-        message["sender_id"] = str(message["sender_id"])
-        message["receiver_id"] = str(message["receiver_id"])
-
-    return jsonify({"data": messages, "page": page}), 200
-
 @app.route('/patient/<patient_id>/appointments', methods=['GET'])
 def get_patient_appointments(patient_id):
     try:
@@ -655,3 +605,101 @@ def get_patient_appointments(patient_id):
         appointment["patient_id"] = str(appointment["patient_id"])
 
     return jsonify({"appointments": appointments}), 200
+
+# Encoder pour ObjectId et datetime
+class JSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, ObjectId):
+            return str(obj)
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return json.JSONEncoder.default(self, obj)
+
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    data = request.json
+    if not data or 'sender_id' not in data or 'receiver_id' not in data or 'content' not in data:
+        return jsonify({"error": "Données incomplètes"}), 400
+
+    try:
+        message_obj = Message(
+            sender_id=data["sender_id"],
+            receiver_id=data["receiver_id"],
+            content=data["content"]
+        )
+        result = mongo.db.messages.insert_one(message_obj.to_dict())
+        message = mongo.db.messages.find_one({"_id": result.inserted_id})
+        return JSONEncoder().encode(message), 201, {'Content-Type': 'application/json'}
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+
+@app.route('/get_messages', methods=['GET'])
+def get_user_messages():
+    user_id = request.args.get('user_id')
+
+    if not user_id:
+        return jsonify({"error": "ID utilisateur requis"}), 400
+
+    messages = list(mongo.db.messages.find({
+        "$or": [
+            {"sender_id": ObjectId(user_id)},
+            {"receiver_id": ObjectId(user_id)}
+        ]
+    }).sort("timestamp", -1))
+
+    return JSONEncoder().encode(messages), 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/conversation/<sender_id>/<receiver_id>', methods=['GET'])
+def get_conversation(sender_id, receiver_id):
+    messages = list(mongo.db.messages.find({
+        "$or": [
+            {"sender_id": ObjectId(sender_id), "receiver_id": ObjectId(receiver_id)},
+            {"sender_id": ObjectId(receiver_id), "receiver_id": ObjectId(sender_id)}
+        ]
+    }).sort("timestamp", 1))
+
+    return JSONEncoder().encode(messages), 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/mark_read/<message_id>', methods=['PUT'])
+def mark_as_read(message_id):
+    try:
+        result = mongo.db.messages.update_one(
+            {"_id": ObjectId(message_id)},
+            {"$set": {"read": True}}
+        )
+
+        if result.matched_count == 0:
+            return jsonify({"error": "Message non trouvé"}), 404
+
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+from flask import jsonify
+from bson.objectid import ObjectId
+
+@app.route('/get_username/<user_id>', methods=['GET'])
+def get_username(user_id):
+    try:
+        object_id = ObjectId(user_id)
+
+        
+        doctor = mongo.db.doctors.find_one({"_id": object_id})
+        if doctor and 'name' in doctor:
+            return jsonify({"name": doctor['name']}), 200
+
+        
+        patient = mongo.db.patients.find_one({"_id": object_id})
+        if patient and 'first_name' in patient and 'last_name' in patient:
+            full_name = f"{patient['first_name']} {patient['last_name']}"
+            return jsonify({"name": full_name}), 200
+
+        return jsonify({"error": "Utilisateur introuvable"}), 404
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
