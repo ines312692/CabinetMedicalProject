@@ -1,0 +1,18 @@
+[{
+    "_id": {
+      "$oid": "67efe5a9d0dbfdb52c29e722"
+    },
+    "titre": "doliprane",
+    "description": "edrctfvgybhunj,l;",
+    "dateFin": "2025-04-27",
+    "image": "doliprane.jpg"
+  },
+  {
+    "_id": {
+      "$oid": "67fbe821141e70886196f593"
+    },
+    "titre": "Tensiomètre",
+    "description": "aéqsztfrghyuijko;lm",
+    "dateFin": "2025-04-19",
+    "image": "tensiometre.jpg"
+  }]

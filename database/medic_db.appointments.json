@@ -1,10 +1,35 @@
-[{
-  "_id": {
-    "$oid": "67c613bafaa7888ffdfc5387"
+[
+  {
+    "_id": { "$oid": "67c613bafaa7888ffdfc5387" },
+    "patient_id": { "$oid": "67c60b5093571287063294be" },
+    "doctor_id": { "$oid": "507f1f77bcf86cd799439011" },
+    "date": "2025-04-25",
+    "time": "09:00",
+    "reason": "Routine check-up",
+    "status": "accepted",
+    "created_at": "2025-04-20T10:00:00Z",
+    "updated_at": "2025-04-21T11:30:00Z"
   },
-  "patient_id": {
-    "$oid": "67c60b5093571287063294be"
+  {
+    "_id": { "$oid": "67c613bafaa7888ffdfc5388" },
+    "patient_id": { "$oid": "67c60b5093571287063294be" },
+    "doctor_id": { "$oid": "507f1f77bcf86cd799439011" },
+    "date": "2025-04-26",
+    "time": "14:00",
+    "reason": "Follow-up",
+    "status": "pending",
+    "created_at": "2025-04-22T09:00:00Z",
+    "updated_at": "2025-04-22T09:00:00Z"
   },
-  "date": "2023-01-15",
-  "reason": "Routine check-up"
-}]
+  {
+    "_id": { "$oid": "67c613bafaa7888ffdfc5389" },
+    "patient_id": { "$oid": "67c6186f68b9c75e329439e8" },
+    "doctor_id": { "$oid": "507f1f77bcf86cd799439012" },
+    "date": "2025-04-20",
+    "time": "11:00",
+    "reason": "Consultation",
+    "status": "rejected",
+    "created_at": "2025-04-15T08:00:00Z",
+    "updated_at": "2025-04-16T10:00:00Z"
+  }
+]

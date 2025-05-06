@@ -1,17 +1,197 @@
+from flask import current_app
+from datetime import datetime, timedelta
+from bson import ObjectId
+from flask import jsonify, request, current_app as app
 from flask import request, jsonify, current_app as app, make_response
 from werkzeug.utils import secure_filename
-from .models import File
 from bson import ObjectId
-import os
 from . import mongo
 from .services import get_doctor_by_id
 from flask_cors import CORS
 import bcrypt
 from bcrypt import hashpw, gensalt
 from flask import send_from_directory
+from datetime import datetime, timedelta  # Add this import at the top
+from flask import Flask
+from flask_cors import CORS
+from flask import Blueprint
+from .models import File, History, Appointment, Consultation, DiagnosticsData, Diagnostic, Prescription, Message
+from bson import ObjectId
+import os
+from .services import get_doctor_by_id
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+import io
+
+# Create a Blueprint for admin routes
+admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
+
+#rayen===============================================================================================================================
+#=========================================================================================================================================
+#=========================================================================================================================================
+#=========================================================================================================================================
+#=========================================================================================================================================
+#here to add the admin stuff
+@admin_bp.route('/stats', methods=['GET'])
+def get_stats():
+    try:
+        period = request.args.get('period', 'week')
+        current_app.logger.info(f"Received stats request for period: {period}")
+        
+        # Calculate date range based on period
+        end_date = datetime.utcnow()
+        if period == 'day':
+            start_date = end_date - timedelta(days=1)
+        elif period == 'week':
+            start_date = end_date - timedelta(weeks=1)
+        elif period == 'month':
+            start_date = end_date - timedelta(days=30)
+        else:  # year
+            start_date = end_date - timedelta(days=365)
+
+        # Convert to strings for MongoDB query
+        start_str = start_date.strftime("%Y-%m-%d")
+        end_str = end_date.strftime("%Y-%m-%d")
+
+        # Appointments statistics
+        appointments = list(mongo.db.appointments.find({
+            "date": {"$gte": start_str, "$lte": end_str}
+        }))
+        
+        appointment_stats = {
+            "total": len(appointments),
+            "accepted": len([a for a in appointments if a.get("status") in ["accepted", "confirmed"]]),
+            "pending": len([a for a in appointments if a.get("status") == "pending"]),
+            "rejected": len([a for a in appointments if a.get("status") in ["rejected", "cancelled"]])
+        }
+
+        # Documents statistics
+        documents = list(mongo.db.documents.find({
+            "uploaded_at": {
+                "$gte": start_date.isoformat(),
+                "$lte": end_date.isoformat()
+            }
+        }))
+        
+        # Group by file extension and count statuses
+        doc_types = {}
+        viewed_count = 0
+        pending_count = 0
+        
+        for doc in documents:
+            if 'filename' in doc:
+                file_type = doc['filename'].split('.')[-1].lower()
+                doc_types[file_type] = doc_types.get(file_type, 0) + 1
+            
+            if doc.get("status") == "viewed":
+                viewed_count += 1
+            elif doc.get("status") == "pending":
+                pending_count += 1
+        
+        document_stats = {
+            "byType": [{"type": k, "count": v} for k, v in doc_types.items()],
+            "viewed": viewed_count,
+            "pending": pending_count
+        }
+
+                # Response time statistics
+        response_times = []
+        doctor_response_times = {}
+
+        for app in appointments:
+            if 'created_at' in app and 'updated_at' in app:
+                try:
+                    # Handle both string and datetime formats
+                    created = app['created_at'] if isinstance(app['created_at'], datetime) else datetime.fromisoformat(app['created_at'].replace('Z', '+00:00'))
+                    updated = app['updated_at'] if isinstance(app['updated_at'], datetime) else datetime.fromisoformat(app['updated_at'].replace('Z', '+00:00'))
+                    
+                    # Calculate difference in hours
+                    hours = (updated - created).total_seconds() / 3600
+                    response_times.append(hours)
+                    
+                    # Handle doctor_id format
+                    doctor_id = str(app['doctor_id']['$oid']) if isinstance(app['doctor_id'], dict) else str(app['doctor_id'])
+                    
+                    if doctor_id not in doctor_response_times:
+                        doctor_response_times[doctor_id] = []
+                    doctor_response_times[doctor_id].append(hours)
+                except Exception as e:
+                    current_app.logger.error(f"Error processing appointment {app.get('_id', 'unknown')}: {str(e)}")
+                    continue  # Skip this appointment if there's an error
+
+        # Calculate overall average
+        avg_response = sum(response_times) / len(response_times) if response_times else 0
+
+        # Get doctor names and calculate their averages
+        doctor_stats = []
+        if doctor_response_times:
+            try:
+                # Convert string IDs to ObjectId for query
+                doctor_ids = [ObjectId(id) for id in doctor_response_times.keys()]
+                doctors = list(mongo.db.doctors.find({"_id": {"$in": doctor_ids}}))
+                
+                # Create a proper mapping
+                doctor_map = {}
+                for d in doctors:
+                    doc_id = str(d['_id'])
+                    doctor_map[doc_id] = d.get('name', f"Dr. {doc_id[:6]}")  # Fallback name
+                    
+                for doctor_id, times in doctor_response_times.items():
+                    doctor_avg = sum(times) / len(times) if times else 0
+                    doctor_stats.append({
+                        "doctorId": doctor_id,
+                        "doctorName": doctor_map.get(doctor_id, "Unknown Doctor"),
+                        "averageTime": round(doctor_avg, 1)  # Round to 1 decimal
+                    })
+            except Exception as e:
+                current_app.logger.error(f"Error processing doctor data: {e}")
+                # Continue with empty doctor_stats if there's an error
+
+        try:
+            current_date = datetime.utcnow().date()
+            advertisements = list(mongo.db.advertisments.find({}))  # Note the collection name
+            ad_stats = []
+            
+            for ad in advertisements:
+                try:
+                    # Handle date format (assuming dateFin is in YYYY-MM-DD format)
+                    end_date = datetime.strptime(ad['dateFin'], "%Y-%m-%d").date()
+                    active = end_date >= current_date
+                    
+                    ad_stats.append({
+                        "titre": ad['titre'],
+                        "description": ad['description'],
+                        "dateFin": ad['dateFin'],
+                        "image": ad.get('image', 'default.jpg'),  # Fallback image
+                        "active": active
+                    })
+                except Exception as e:
+                    current_app.logger.error(f"Error processing ad {ad.get('_id')}: {str(e)}")
+        except Exception as e:
+            current_app.logger.error(f"Error fetching ads: {str(e)}")
+            ad_stats = []
+
+        return jsonify({
+            "appointments": appointment_stats,
+            "documents": document_stats,
+            "responseTime": {
+                "average": round(avg_response, 1) if avg_response else 0,
+                "byDoctor": doctor_stats
+            },
+            "advertisements": ad_stats
+        })
+
+    except Exception as e:
+        current_app.logger.error(f"Error in get_stats: {str(e)}", exc_info=True)
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
+#=========================================================================================================================================
+#=========================================================================================================================================
+#=========================================================================================================================================
+#=========================================================================================================================================
+#=========================================================================================================================================
 
 
-CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "DELETE", "PUT", "OPTIONS"]}})
 
 @app.route('/')
 def index():

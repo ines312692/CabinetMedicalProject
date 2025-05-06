@@ -1,8 +1,8 @@
-<ion-header [translucent]="true">
+<!--ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>adminProfile</ion-title>
   </ion-toolbar>
-</ion-header>
+</ion-header-->
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
@@ -10,6 +10,8 @@
       <ion-title size="large">adminProfile</ion-title>
     </ion-toolbar>
   </ion-header>
+  <ion-button routerLink="/admin-profile/dashboard">Medical Dashboard</ion-button>
   <ion-button (click)="onButtonClick()">Ajouter un médecin</ion-button>
   <ion-button (click)="onButtonClick2()">Ajouter une pub</ion-button>
+  <router-outlet></router-outlet>
 </ion-content>

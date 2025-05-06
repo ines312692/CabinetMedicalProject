@@ -1,0 +1,7 @@
+src/app/interfaces/stats.interface.ts
+src/app/services/stats.service.ts
+routes.py
+admin-dashboard component (admin-profile en generale)
+requirements.txt
+app-routing.module.ts
+angular.json
