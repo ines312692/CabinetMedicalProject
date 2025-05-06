@@ -1,15 +1,20 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Appointment } from '../../models/Appointment.interface';
-import { ActivatedRoute } from '@angular/router';
+import {ActivatedRoute,Router} from '@angular/router';
 import { AppointmentService } from '../../services/appointmentservice.service';
 import { CommonModule } from '@angular/common';
 import { AlertController, IonicModule } from '@ionic/angular';
+import { Patient } from '../../models/Patient.interface';
+import { PatientService } from '../../services/patient.service';
+import { forkJoin } from 'rxjs';
+
+
 
 @Component({
   selector: 'app-manage-appointments',
   templateUrl: './manage-appointments.page.html',
   styleUrls: ['./manage-appointments.page.scss'],
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule,],
   standalone: true
 })
 export class ManageAppointmentsPage implements OnInit {
@@ -20,7 +25,9 @@ export class ManageAppointmentsPage implements OnInit {
   constructor(
     private readonly route: ActivatedRoute,
     private readonly appointmentService: AppointmentService,
-    private readonly alertController: AlertController
+    private readonly alertController: AlertController,
+    private readonly patientService: PatientService,
+    private readonly router: Router
   ) {}
 
   ngOnInit() {
@@ -41,17 +48,40 @@ export class ManageAppointmentsPage implements OnInit {
 
     this.isLoading = true;
     this.appointmentService.getDoctorAppointments(this.doctorId).subscribe({
-      next: (data) => {
-        console.log('Appointments data:', data);
-        this.appointments = data;
-        this.isLoading = false;
+      next: (appointmentsData) => {
+        const uniquePatientIds = Array.from(
+          new Set(appointmentsData.map((appt: Appointment) =>
+            typeof appt.patient_id === 'string' ? appt.patient_id : appt.patient_id.$oid
+          ))
+        );
 
-        // Debug appointments data
-        if (this.appointments.length > 0) {
-          console.log('First appointment details:', JSON.stringify(this.appointments[0]));
-        } else {
-          console.log('No appointments found for this doctor');
-        }
+        const patientRequests = uniquePatientIds.map(id =>
+          this.patientService.getPatientDetails(id)
+        );
+
+        forkJoin(patientRequests).subscribe({
+          next: (patients) => {
+            const patientMap = new Map<string, Patient>();
+            patients.forEach(p => patientMap.set(p._id, p));
+
+            // Ajouter patientName à chaque rendez-vous
+            this.appointments = appointmentsData.map((appt: Appointment) => {
+              const patientId = typeof appt.patient_id === 'string' ? appt.patient_id : appt.patient_id.$oid;
+              const patient = patientMap.get(patientId);
+              return {
+                ...appt,
+                patientName: patient ? `${patient.first_name} ${patient.last_name}` : 'Unknown'
+              };
+            });
+
+            this.isLoading = false;
+          },
+          error: (err) => {
+            console.error('Failed to load patient details:', err);
+            this.isLoading = false;
+            this.showAlert('Error', 'Failed to load patient information');
+          }
+        });
       },
       error: (error) => {
         console.error('Error fetching appointments', error);
@@ -60,6 +90,7 @@ export class ManageAppointmentsPage implements OnInit {
       }
     });
   }
+
 
   async acceptAppointment(appointment: Appointment): Promise<void> {
     console.log('Accepting appointment:', appointment);
@@ -137,4 +168,19 @@ export class ManageAppointmentsPage implements OnInit {
     });
     await alert.present();
   }
+
+  async viewUserDetails(patientId: { $oid: string } | string): Promise<void> {
+    console.log('Received patientId:', patientId);
+
+    const id = typeof patientId === 'string' ? patientId : patientId.$oid;
+
+    if (!id) {
+      console.error('Patient ID is missing');
+      return;
+    }
+
+    this.router.navigate(['/details-patient', id]);
+  }
+
+
 }

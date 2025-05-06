@@ -23,7 +23,7 @@ const routes: Routes = [
     path: 'admin-profile',
     loadChildren: () => import('./pages/admin-profile/admin-profile.module').then(m => m.AdminProfilePageModule)
   },
- 
+
 
   //=======================================================================================
   //=======================================================================================
@@ -147,7 +147,12 @@ const routes: Routes = [
   {
     path: 'conversation/:senderId/:receiverId',
     loadChildren: () => import('./pages/msgs/conversation/conversation.module').then( m => m.ConversationPageModule)
+  },
+  {
+    path: 'details-patient/:patient_id',
+    loadChildren: () => import('./pages/details-patient/details-patient.module').then( m => m.DetailsPatientPageModule)
   }
+
 
 
 

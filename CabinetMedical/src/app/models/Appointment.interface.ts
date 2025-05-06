@@ -10,4 +10,5 @@ export interface Appointment {
   doctor_id: { $oid: string } | string;
   patient_id: { $oid: string } | string;
   status: string;
+  patientName?: string;
 }

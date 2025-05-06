@@ -1,59 +1,71 @@
-<div class="appointments-container" >
-    <ion-card *ngIf="appointments.length === 0" class="empty-card">
-      <ion-card-content>
-        <div class="empty-state">
-          <ion-icon name="calendar-outline" size="large"></ion-icon>
-          <h3>No Appointments Found</h3>
-          <p>There are currently no appointments scheduled.</p>
-        </div>
-      </ion-card-content>
-    </ion-card>
-    <ion-card *ngIf="appointments.length > 0">
-      <ion-card-content>
-        <ion-list>
-          <ion-item *ngFor="let appointment of appointments; let i = index" [lines]="i === appointments.length - 1 ? 'none' : 'inset'" class="appointment-item">
-            <div class="appointment-content">
-              <!-- Left side: Appointment info -->
-              <div class="appointment-info">
-                <h2 class="appointment-reason">{{ appointment.reason }}</h2>
-                <p class="appointment-date">
-                  <ion-icon name="time-outline"></ion-icon>
-                  {{ appointment.date }} at {{ appointment.time }}
-                </p>
+<div class="appointments-container">
+  <ion-card *ngIf="appointments.length === 0" class="empty-card">
+    <ion-card-content>
+      <div class="empty-state">
+        <ion-icon name="calendar-outline" size="large"></ion-icon>
+        <h3>No Appointments Found</h3>
+        <p>There are currently no appointments scheduled.</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+  <ion-card *ngIf="appointments.length > 0">
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let appointment of appointments; let i = index" [lines]="i === appointments.length - 1 ? 'none' : 'inset'" class="appointment-item">
+          <div class="appointment-content">
+            <!-- Left side: Appointment info -->
+            <div class="appointment-info">
+              <h2 class="appointment-reason">{{ appointment.reason }}</h2>
+              <p class="appointment-date">
+                <ion-icon name="time-outline"></ion-icon>
+                {{ appointment.date }} at {{ appointment.time }}
+              </p>
 
-                <div class="status-badge" [ngClass]="{
+              <div class="appointment-user-container">
+                <div class="user-avatar">
+                  <ion-icon name="person-circle-outline"></ion-icon>
+                </div>
+                <div class="user-details">
+                  <span class="patient-name" title="{{ appointment['patientName'] }}">{{ appointment['patientName'] }}</span>
+                  <ion-button fill="clear" size="small" class="view-details-btn" (click)="viewUserDetails(appointment.patient_id)">
+                    <span class="details-text">Details</span>
+                    <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+                  </ion-button>
+                </div>
+              </div>
+
+              <div class="status-badge" [ngClass]="{
                   'status-pending': appointment.status === 'pending',
                   'status-accepted': appointment.status === 'accepted',
                   'status-rejected': appointment.status === 'rejected'
                 }">
-                  {{ appointment.status }}
-                </div>
-              </div>
-              <div class="appointment-actions">
-                <ion-button
-                  (click)="acceptAppointment(appointment)"
-                  [disabled]="appointment.status === 'accepted'"
-                  color="success"
-                  fill="solid"
-                  size="small">
-                  <ion-icon name="checkmark-outline" slot="start"></ion-icon>
-                  Accept
-                </ion-button>
-
-                <ion-button
-                  (click)="rejectAppointment(appointment)"
-                  [disabled]="appointment.status === 'rejected'"
-                  color="danger"
-                  fill="solid"
-                  size="small">
-                  <ion-icon name="close-outline" slot="start"></ion-icon>
-                  Reject
-                </ion-button>
+                {{ appointment.status }}
               </div>
             </div>
-          </ion-item>
-        </ion-list>
-      </ion-card-content>
-    </ion-card>
-  </div>
+            <div class="appointment-actions">
+              <ion-button
+                (click)="acceptAppointment(appointment)"
+                [disabled]="appointment.status === 'accepted'"
+                color="success"
+                fill="solid"
+                size="small">
+                <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+                Accept
+              </ion-button>
 
+              <ion-button
+                (click)="rejectAppointment(appointment)"
+                [disabled]="appointment.status === 'rejected'"
+                color="danger"
+                fill="solid"
+                size="small">
+                <ion-icon name="close-outline" slot="start"></ion-icon>
+                Reject
+              </ion-button>
+            </div>
+          </div>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</div>
