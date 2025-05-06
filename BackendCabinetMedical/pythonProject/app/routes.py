@@ -149,7 +149,7 @@ def get_stats():
 
         try:
             current_date = datetime.utcnow().date()
-            advertisements = list(mongo.db.advertisments.find({}))  # Note the collection name
+            advertisements = list(mongo.db.advertisements.find({}))  # Note the collection name
             ad_stats = []
             
             for ad in advertisements:
@@ -184,7 +184,33 @@ def get_stats():
     except Exception as e:
         current_app.logger.error(f"Error in get_stats: {str(e)}", exc_info=True)
         return jsonify({"error": "Internal server error", "details": str(e)}), 500
+#=========================================================================================================================================
+@admin_bp.route('/advertisements/<ad_id>/toggle-status', methods=['PUT'])
+def toggle_ad_status(ad_id):
+    try:
+        # Convert string ID to ObjectId
+        ad_object_id = ObjectId(ad_id)
+        ad = mongo.db.advertisements.find_one({"_id": ad_object_id})
+        
+        if not ad:
+            return jsonify({"error": "Advertisement not found"}), 404
 
+        # Toggle the active status
+        new_status = not ad.get('active', True)
+        
+        # Update in database
+        mongo.db.advertisements.update_one(
+            {"_id": ad_object_id},
+            {"$set": {"active": new_status}}
+        )
+        
+        return jsonify({
+            "success": True, 
+            "newStatus": new_status,
+            "message": f"Advertisement {'activated' if new_status else 'deactivated'} successfully"
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 #=========================================================================================================================================
 #=========================================================================================================================================
 #=========================================================================================================================================
@@ -563,7 +589,7 @@ def add_advertisement():
     filename = secure_filename(image.filename)
     upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
-    # Créer le dossier s'il n'existe pas
+    # Create directory if it doesn't exist
     os.makedirs(os.path.dirname(upload_path), exist_ok=True)
     image.save(upload_path)
 
@@ -577,7 +603,8 @@ def add_advertisement():
         "titre": data['titre'],
         "description": data['description'],
         "dateFin": data['dateFin'],
-        "image": filename
+        "image": filename,
+        "active": True  # Default to active when created
     }
 
     result = mongo.db.advertisements.insert_one(advertisement)

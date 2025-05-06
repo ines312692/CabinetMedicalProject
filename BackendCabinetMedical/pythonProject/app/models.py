@@ -200,20 +200,45 @@ class Message:
         self.prescriptions = prescriptionscd
 
 class Advertisement:
-    def __init__(self, id, title, description, image, end_date):
+    def __init__(self, id, title, description, image, end_date, active=True):
         self.id = id
         self.title = title
         self.description = description
         self.image = image
         self.end_date = end_date
+        self.active = active
 
+    #@staticmethod
+    #def from_mongo(doc):
+    #    return Advertisement(
+    #        id=doc['_id'],
+    #        title=doc['title'],
+    #        description=doc['description'],
+    #        image=doc['image'],
+    #        end_date=doc['end_date']
+    #    )
     @staticmethod
     def from_mongo(doc):
+        # Calculate active status based on dateFin
+        end_date = datetime.strptime(doc['dateFin'], "%Y-%m-%d").date()
+        current_date = datetime.utcnow().date()
+        is_active = end_date >= current_date
+        
         return Advertisement(
             id=doc['_id'],
-            title=doc['title'],
+            titre=doc['titre'],
             description=doc['description'],
             image=doc['image'],
-            end_date=doc['end_date']
+            dateFin=doc['dateFin'],
+            active=doc.get('active', is_active)  # Use stored active status or calculate
         )
+    def to_mongo(self):
+        return {
+            "_id": self.id,
+            "titre": self.titre,
+            "description": self.description,
+            "image": self.image,
+            "dateFin": self.dateFin,
+            "active": self.active
+        }
 
