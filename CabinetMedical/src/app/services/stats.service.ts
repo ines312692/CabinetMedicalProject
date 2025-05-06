@@ -1,9 +1,7 @@
-// stats.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
-import { delay } from 'rxjs/operators';
-import { StatsResponse } from '../models/stats.interface';
+
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +16,7 @@ export class StatsService {
         catchError((error: HttpErrorResponse) => {
           console.error('API Error:', error);
           return throwError(() => new Error(
-            error.error?.message || 
+            error.error?.message ||
             'Failed to toggle ad status. Please try again later.'
           ));
         })
@@ -30,37 +28,11 @@ export class StatsService {
       catchError((error: HttpErrorResponse) => {
         console.error('API Error:', error);
         return throwError(() => new Error(
-          error.error?.message || 
+          error.error?.message ||
           'Failed to load statistics. Please try again later.'
         ));
       })
     );
-    
-    // For testing without backend:
-    /*
-    const mockData: StatsResponse = {
-      appointments: {
-        total: 15,
-        accepted: 10,
-        pending: 3,
-        rejected: 2
-      },
-      documents: {
-        byType: [
-          { type: 'pdf', count: 5 },
-          { type: 'jpg', count: 3 }
-        ],
-        byStatus: []
-      },
-      responseTime: {
-        average: 2.5,
-        byDoctor: [
-          { doctorId: '1', doctorName: 'Dr. Smith', averageTime: 2.0 },
-          { doctorId: '2', doctorName: 'Dr. Johnson', averageTime: 3.0 }
-        ]
-      }
-    };
-    return of(mockData).pipe(delay(500));
-    */
+
   }
 }

@@ -1,44 +1,29 @@
 
-<!-- admin-dashboard.component.html -->
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-profile"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Medical Dashboard</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content class="ion-padding">
   <div class="dashboard-container">
-    <!-- Period Selector -->
     <ion-segment [(ngModel)]="selectedPeriod" (ionChange)="onPeriodChange($event.detail.value)">
       <ion-segment-button *ngFor="let period of periods" [value]="period.value">
         {{ period.label }}
       </ion-segment-button>
     </ion-segment>
 
-    <!-- Loading State -->
     <div *ngIf="loading" class="loading-state">
       <ion-spinner name="crescent"></ion-spinner>
       <p>Loading statistics...</p>
     </div>
 
-    <!-- Error State -->
     <ion-card *ngIf="error" color="danger">
       <ion-card-content>
         {{ error }}
       </ion-card-content>
     </ion-card>
 
-    <!-- Stats Display -->
     <div *ngIf="stats && !loading" class="stats-grid">
-      <!-- Appointments Card -->
       <ion-card>
         <ion-card-header>
           <ion-card-title>Appointments</ion-card-title>
         </ion-card-header>
-        <ion-card-content class="appointments-content"> 
+        <ion-card-content class="appointments-content">
           <h2 class="text-center">{{ stats.appointments.total }}</h2>
           <ion-grid>
             <ion-row class="ion-justify-content-center">
@@ -55,7 +40,7 @@
         </ion-card-content>
       </ion-card>
 
-    
+
       <!-- Documents Card -->
 <ion-card>
   <ion-card-header>
@@ -83,7 +68,6 @@
   </ion-card-content>
 </ion-card>
 
-      <!-- Replace your current advertisements card with this -->
 <ion-card>
   <ion-card-header>
     <ion-card-title>Active Advertisements</ion-card-title>
@@ -92,7 +76,7 @@
     <ion-list *ngIf="stats.advertisements && stats.advertisements.length > 0; else noAds">
       <ion-item *ngFor="let ad of stats.advertisements | slice:0:3">
         <ion-avatar slot="start">
-          <img [src]="'assets/images/ads/' + (ad.image || 'default.jpg')">
+          <img [src]="'http://localhost:5000/'+ ad.image" alt="Advertisement Image">
         </ion-avatar>
         <ion-label>
           <h3>{{ ad.titre || 'No title' }}</h3>
@@ -103,15 +87,15 @@
         </ion-badge>
       </ion-item>
     </ion-list>
-    
+
     <ng-template #noAds>
       <p>No advertisements found</p>
     </ng-template>
 
-    <ion-button 
+    <ion-button
       *ngIf="stats.advertisements && stats.advertisements.length > 3"
-      expand="block" 
-      fill="clear" 
+      expand="block"
+      fill="clear"
       (click)="viewAllAdvertisements()"
       class="show-more-button">
       Show All ({{stats.advertisements.length - 3}} more)

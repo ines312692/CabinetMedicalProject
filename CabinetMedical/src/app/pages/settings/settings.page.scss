@@ -1,21 +1,166 @@
-ion-item {
-
-  border-radius: 8px;
-  margin: 8px 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+:root {
+  --primary-color: #0f52d1;
+  --primary-light: #e7eefb;
+  --primary-dark: #0b42a8;
+  --success-color: #4caf50;
+  --error-color: #f44336;
+  --text-color: #0956e8;
+  --card-bg: #ffffff;
+  --border-radius: 12px;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.icon-style {
-  color: #0b4ecc;
-  font-size: 1.5rem;
+/* Header styling */
+main-toolbar {
+  --background: var(--primary-color);
+  --color: white;
+}
+
+menu-button {
+  --color: white;
+}
+
+profile-icon {
+  font-size: 24px;
+  color: white;
+}
+
+/* Content styling */
+settings-content {
+  --background: #f5f7fa;
+  padding-bottom: 32px;
+}
+
+/* Card styling */
+ion-card {
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  margin: 16px 0;
+}
+
+profile-card, .preferences-card {
+  overflow: visible;
+}
+
+ion-card-header {
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 8px;
+}
+
+ion-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+}
+
+section-icon {
+  margin-right: 8px;
+  font-size: 20px;
+  color: var(--primary-color);
+
+}
+
+/* Form styling */
+form-grid {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+form-col {
+  flex: 1;
+  min-width: 0;
+}
+
+form-item {
+  --background: var(--primary-light);
+  --border-color: transparent;
+  --border-radius: 8px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  margin: 0 0 4px 0;
+  box-shadow: none;
+}
+
+ion-item.form-item {
+  margin-bottom: 4px;
+}
+
+ion-item {
+  --highlight-color-focused: var(--primary-color);
+  --highlight-color-valid: var(--success-color);
+  --highlight-color-invalid: var(--error-color);
 }
 
 ion-label {
-  font-weight: bold;
-  color: #105ae6;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--primary-dark);
 }
 
-ion-toggle {
-  --handle-background: #0956e8;
-  --background-checked: #4caf50;
+ion-input {
+  --padding-top: 12px;
+  --padding-bottom: 12px;
+  font-size: 16px;
+}
+
+error-message {
+  font-size: 12px;
+  margin-left: 16px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+submit-container {
+  margin-top: 16px;
+}
+
+submit-button {
+  --background: var(--primary-color);
+  --background-hover: var(--primary-dark);
+  --border-radius: 8px;
+  --box-shadow: 0 4px 8px rgba(15, 82, 209, 0.3);
+  height: 48px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Toggle styling */
+toggle-item {
+  --background: transparent;
+  --border-color: transparent;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --inner-padding-end: 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+icon-style {
+  font-size: 22px;
+  color: var(--primary-color);
+  margin-right: 16px;
+}
+
+custom-toggle {
+  --background: #e0e0e0;
+  --background-checked: var(--primary-light);
+  --handle-background: #ffffff;
+  --handle-background-checked: var(--primary-color);
+  --handle-height: 24px;
+  --handle-width: 24px;
+  --handle-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --handle-border-radius: 24px;
+  height: 28px;
+  width: 56px;
+}
+
+/* Dark mode variables can be added here */
+dark-mode {
+  --primary-light: #1a2b4b;
+  --card-bg: #1c1c1c;
+  --text-color: #ffffff;
+  /* Add more dark mode specific variables as needed */
 }

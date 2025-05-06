@@ -82,7 +82,6 @@ def get_stats():
             }
         }))
 
-        # Group by file extension and count statuses
         doc_types = {}
         viewed_count = 0
         pending_count = 0
@@ -91,7 +90,6 @@ def get_stats():
             if 'filename' in doc:
                 file_type = doc['filename'].split('.')[-1].lower()
                 doc_types[file_type] = doc_types.get(file_type, 0) + 1
-
             if doc.get("status") == "viewed":
                 viewed_count += 1
             elif doc.get("status") == "pending":
@@ -103,67 +101,53 @@ def get_stats():
             "pending": pending_count
         }
 
-                # Response time statistics
+        # Response time statistics
         response_times = []
         doctor_response_times = {}
 
         for app in appointments:
             if 'created_at' in app and 'updated_at' in app:
                 try:
-                    # Handle both string and datetime formats
                     created = app['created_at'] if isinstance(app['created_at'], datetime) else datetime.fromisoformat(app['created_at'].replace('Z', '+00:00'))
                     updated = app['updated_at'] if isinstance(app['updated_at'], datetime) else datetime.fromisoformat(app['updated_at'].replace('Z', '+00:00'))
-
-                    # Calculate difference in hours
                     hours = (updated - created).total_seconds() / 3600
                     response_times.append(hours)
 
-                    # Handle doctor_id format
                     doctor_id = str(app['doctor_id']['$oid']) if isinstance(app['doctor_id'], dict) else str(app['doctor_id'])
-
                     if doctor_id not in doctor_response_times:
                         doctor_response_times[doctor_id] = []
                     doctor_response_times[doctor_id].append(hours)
                 except Exception as e:
                     current_app.logger.error(f"Error processing appointment {app.get('_id', 'unknown')}: {str(e)}")
-                    continue  # Skip this appointment if there's an error
+                    continue
 
-        # Calculate overall average
         avg_response = sum(response_times) / len(response_times) if response_times else 0
 
-        # Get doctor names and calculate their averages
         doctor_stats = []
         if doctor_response_times:
             try:
-                # Convert string IDs to ObjectId for query
                 doctor_ids = [ObjectId(id) for id in doctor_response_times.keys()]
                 doctors = list(mongo.db.doctors.find({"_id": {"$in": doctor_ids}}))
-
-                # Create a proper mapping
-                doctor_map = {}
-                for d in doctors:
-                    doc_id = str(d['_id'])
-                    doctor_map[doc_id] = d.get('name', f"Dr. {doc_id[:6]}")  # Fallback name
+                doctor_map = {str(d['_id']): d.get('name', f"Dr. {str(d['_id'])[:6]}") for d in doctors}
 
                 for doctor_id, times in doctor_response_times.items():
                     doctor_avg = sum(times) / len(times) if times else 0
                     doctor_stats.append({
                         "doctorId": doctor_id,
                         "doctorName": doctor_map.get(doctor_id, "Unknown Doctor"),
-                        "averageTime": round(doctor_avg, 1)  # Round to 1 decimal
+                        "averageTime": round(doctor_avg, 1)
                     })
             except Exception as e:
                 current_app.logger.error(f"Error processing doctor data: {e}")
-                # Continue with empty doctor_stats if there's an error
 
+        # Advertisements statistics
         try:
             current_date = datetime.utcnow().date()
-            advertisements = list(mongo.db.advertisements.find({}))  # Note the collection name
+            advertisements = list(mongo.db.advertisements.find({}))
             ad_stats = []
 
             for ad in advertisements:
                 try:
-                    # Handle date format (assuming dateFin is in YYYY-MM-DD format)
                     end_date = datetime.strptime(ad['dateFin'], "%Y-%m-%d").date()
                     active = end_date >= current_date
 
@@ -171,7 +155,7 @@ def get_stats():
                         "titre": ad['titre'],
                         "description": ad['description'],
                         "dateFin": ad['dateFin'],
-                        "image": ad.get('image', 'default.jpg'),  # Fallback image
+                        "image": f"/uploads/{ad.get('image', 'default.jpg')}",  # Full URL path
                         "active": active
                     })
                 except Exception as e:
@@ -1606,3 +1590,82 @@ def get_username(user_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
+
+@app.route('/users/<user_id>', methods=['GET'])
+def get_user(user_id):
+    try:
+        # Validation de l'ID utilisateur
+        user_id_obj = ObjectId(user_id)
+    except:
+        return jsonify({'error': 'Invalid user ID format'}), 400
+
+    # Recherche de l'utilisateur dans les collections
+    user = None
+    for collection in [mongo.db.patients, mongo.db.doctors, mongo.db.administrators]:
+        user = collection.find_one({"_id": user_id_obj})
+        if user:
+            break
+
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    # Conversion de l'ObjectId en chaîne pour JSON
+    user['_id'] = str(user['_id'])
+
+    return jsonify(user), 200
+
+@app.route('/users/<user_id>', methods=['PUT'])
+def update_user(user_id):
+    try:
+        user_id_obj = ObjectId(user_id)
+    except:
+        return jsonify({"error": "Invalid user ID format"}), 400
+
+    data = request.json
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    allowed_fields = ["first_name", "last_name", "birth_date", "email", "password"]
+    update_data = {key: data[key] for key in allowed_fields if key in data}
+
+    if "password" in update_data:
+        update_data["password"] = bcrypt.hashpw(update_data["password"].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    user = None
+    collection = None
+    role = None
+    for col, r in [
+        (mongo.db.patients, 'patient'),
+        (mongo.db.doctors, 'doctor'),
+        (mongo.db.administrators, 'admin')
+    ]:
+        user = col.find_one({"_id": user_id_obj})
+        if user:
+            collection = col
+            role = r
+            break
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    if "email" in update_data and update_data["email"] != user["email"]:
+        if mongo.db.patients.find_one({"email": update_data["email"]}) or \
+           mongo.db.doctors.find_one({"email": update_data["email"]}) or \
+           mongo.db.administrators.find_one({"email": update_data["email"]}):
+            return jsonify({"error": "Email already exists"}), 409
+
+    result = collection.update_one(
+        {"_id": user_id_obj},
+        {"$set": update_data}
+    )
+
+    if result.matched_count == 1:
+        if "email" in update_data or "password" in update_data:
+            send_email(
+                recipient=user["email"],
+                subject="Account Details Updated",
+                body=f"Dear {user.get('first_name', 'User')},\n\nYour account details have been updated successfully.\n\nBest regards,\nMedical Team"
+            )
+        return jsonify({"message": "User updated successfully"}), 200
+    else:
+        return jsonify({"error": "Failed to update user"}), 500

@@ -1,17 +1,54 @@
-<!--ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>adminProfile</ion-title>
-  </ion-toolbar>
-</ion-header-->
+    <ion-buttons slot="start" style="color: #1358dc;">
+      <ion-menu-button menu="main-menu"></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons slot="end" >
+      <!-- Notification button with badge -->
+      <ion-button class="notification-button" >
+        <ion-icon name="notifications"></ion-icon>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+      </ion-button>
+      <ion-button class="profile-button">
+        <ion-icon name="person-circle" class="profile-icon"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+<br>
+
+<ion-content [fullscreen]="true" class="admin-content">
+  <ion-header collapse="condense" class="condensed-header">
     <ion-toolbar>
-      <ion-title size="large">adminProfile</ion-title>
+      <ion-title size="large">Admin Dashboard</ion-title>
     </ion-toolbar>
   </ion-header>
-  <ion-button routerLink="/admin-profile/dashboard">Medical Dashboard</ion-button>
-  <ion-button (click)="onButtonClick()">Ajouter un médecin</ion-button>
-  <ion-button (click)="onButtonClick2()">Ajouter une pub</ion-button>
-  <router-outlet></router-outlet>
+
+
+
+    <div class="action-cards">
+      <ion-card class="action-card" routerLink="/admin-profile/dashboard" routerLinkActive="active-card">
+        <ion-icon name="stats-chart-outline" class="card-icon"></ion-icon>
+        <h2>Medical Dashboard</h2>
+        <p>Voir les statistiques et rapports</p>
+      </ion-card>
+
+      <ion-card class="action-card" (click)="onButtonClick()">
+        <ion-icon name="person-add-outline" class="card-icon"></ion-icon>
+        <h2>Ajouter un médecin</h2>
+        <p>Créer un nouveau compte médecin</p>
+      </ion-card>
+
+      <ion-card class="action-card" (click)="onButtonClick2()">
+        <ion-icon name="megaphone-outline" class="card-icon"></ion-icon>
+        <h2>Ajouter une pub</h2>
+        <p>Créer une nouvelle publicité</p>
+      </ion-card>
+    </div>
+
+
+
+    <router-outlet></router-outlet>
+
 </ion-content>

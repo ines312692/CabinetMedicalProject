@@ -1,27 +1,122 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start" style="color: #0f52d1;">
-      <ion-menu-button menu="main-menu"></ion-menu-button>
+  <ion-toolbar class="main-toolbar">
+    <ion-buttons slot="start">
+      <ion-menu-button menu="main-menu" class="menu-button"></ion-menu-button>
     </ion-buttons>
+
     <ion-buttons slot="end">
-      <ion-button class="profile-button">
+      <ion-button class="profile-button" aria-label="Profile">
         <ion-icon name="person-circle" class="profile-icon"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content>
-  <ion-list>
-    <ion-item>
-      <ion-icon name="notifications-outline" slot="start" class="icon-style"></ion-icon>
-      <ion-label>Activer les notifications</ion-label>
-      <ion-toggle [(ngModel)]="notificationsEnabled"></ion-toggle>
-    </ion-item>
 
-    <ion-item>
-      <ion-icon name="moon-outline" slot="start" class="icon-style"></ion-icon>
-      <ion-label>Mode sombre</ion-label>
-      <ion-toggle (ionChange)="toggleDarkMode()"></ion-toggle>
-    </ion-item>
-  </ion-list>
+<ion-content class="ion-padding settings-content">
+  <ion-card class="profile-card">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="person" class="section-icon"></ion-icon>
+        Edit Profile
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          <div class="form-col">
+            <ion-item class="form-item">
+              <ion-label position="floating">First Name</ion-label>
+              <ion-input formControlName="firstName" type="text"></ion-input>
+            </ion-item>
+            <ion-text color="danger" class="error-message" *ngIf="form.get('firstName')?.touched && form.get('firstName')?.errors?.['required']">
+              First name is required
+            </ion-text>
+          </div>
+
+          <div class="form-col">
+            <ion-item class="form-item">
+              <ion-label position="floating">Last Name</ion-label>
+              <ion-input formControlName="lastName" type="text"></ion-input>
+            </ion-item>
+            <ion-text color="danger" class="error-message" *ngIf="form.get('lastName')?.touched && form.get('lastName')?.errors?.['required']">
+              Last name is required
+            </ion-text>
+          </div>
+        </div>
+
+        <ion-item class="form-item">
+          <ion-label position="floating">Birth Date</ion-label>
+          <ion-input formControlName="birthDate" type="date"></ion-input>
+        </ion-item>
+        <ion-text color="danger" class="error-message" *ngIf="form.get('birthDate')?.touched && form.get('birthDate')?.errors?.['required']">
+          Birth date is required
+        </ion-text>
+
+        <ion-item class="form-item">
+          <ion-label position="floating">Email</ion-label>
+          <ion-input formControlName="email" type="email"></ion-input>
+        </ion-item>
+        <ion-text color="danger" class="error-message" *ngIf="form.get('email')?.touched && form.get('email')?.errors?.['required']">
+          Email is required
+        </ion-text>
+        <ion-text color="danger" class="error-message" *ngIf="form.get('email')?.touched && form.get('email')?.errors?.['email']">
+          Invalid email format
+        </ion-text>
+
+        <div class="form-grid">
+          <div class="form-col">
+            <ion-item class="form-item">
+              <ion-label position="floating">New Password (optional)</ion-label>
+              <ion-input formControlName="password" type="password"></ion-input>
+            </ion-item>
+            <ion-text color="danger" class="error-message" *ngIf="form.get('password')?.touched && form.get('password')?.errors?.['minlength']">
+              Password must be at least 8 characters
+            </ion-text>
+          </div>
+
+          <div class="form-col">
+            <ion-item class="form-item">
+              <ion-label position="floating">Confirm Password</ion-label>
+              <ion-input formControlName="confirmPassword" type="password"></ion-input>
+            </ion-item>
+            <ion-text color="danger" class="error-message" *ngIf="form.errors?.['mismatch'] && form.get('confirmPassword')?.touched">
+              Passwords do not match
+            </ion-text>
+          </div>
+        </div>
+
+        <div class="submit-container">
+          <ion-button type="submit" expand="block" class="submit-button" [disabled]="!form.valid">
+            <ion-icon name="save-outline" slot="start"></ion-icon>
+            Save Changes
+          </ion-button>
+        </div>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Settings Toggles -->
+  <ion-card class="preferences-card">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="options" class="section-icon"></ion-icon>
+        Preferences
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list lines="none">
+        <ion-item class="toggle-item">
+          <ion-icon name="notifications-outline" slot="start" class="icon-style"></ion-icon>
+          <ion-label>Activer les notifications</ion-label>
+          <ion-toggle [(ngModel)]="notificationsEnabled" class="custom-toggle"></ion-toggle>
+        </ion-item>
+
+        <ion-item class="toggle-item">
+          <ion-icon name="moon-outline" slot="start" class="icon-style"></ion-icon>
+          <ion-label>Mode sombre</ion-label>
+          <ion-toggle (ionChange)="toggleDarkMode()" class="custom-toggle"></ion-toggle>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
