@@ -829,7 +829,7 @@ import io
 def export_diagnostics_pdf(patient_id):
     try:
         patient_id_obj = ObjectId(patient_id)
-    except Exception as e:
+    except Exception:
         return jsonify({"error": "Invalid patient ID format"}), 400
 
     patient = mongo.db.patients.find_one({"_id": patient_id_obj})
