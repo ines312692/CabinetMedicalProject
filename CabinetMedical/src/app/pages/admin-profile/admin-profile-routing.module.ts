@@ -16,9 +16,15 @@ const routes: Routes = [
       {
         path: 'all-advertisements',
         component: AllAdvertisementsPage
+      },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
       }
     ]
-  },
+  }
+  /*,
   {
     path: 'admin-dashboard',
     loadChildren: () => import('./admin-dashboard/admin-dashboard.module').then( m => m.AdminDashboardPageModule)
@@ -27,6 +33,7 @@ const routes: Routes = [
     path: 'all-advertisements',
     loadChildren: () => import('./all-advertisements/all-advertisements.module').then( m => m.AllAdvertisementsPageModule)
   }
+    */
 
 ];
 

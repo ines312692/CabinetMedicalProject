@@ -119,7 +119,7 @@ loadStats(): void {
   });
 }
 viewAllAdvertisements() {
-  this.router.navigate(['/admin/all-advertisements']);
+  this.router.navigate(['/admin-profile/all-advertisements']);
 }
   // Updated method to handle possible undefined
   onPeriodChange(value: any): void {

@@ -1,7 +1,10 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin-profile/admin-dashboard"></ion-back-button>
+      <ion-back-button 
+        defaultHref="/admin-profile/dashboard"
+        (click)="goBack()">
+      </ion-back-button>
     </ion-buttons>
     <ion-title>All Advertisements</ion-title>
   </ion-toolbar>

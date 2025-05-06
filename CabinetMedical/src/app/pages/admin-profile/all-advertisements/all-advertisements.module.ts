@@ -6,6 +6,7 @@ import { AllAdvertisementsPageRoutingModule } from './all-advertisements-routing
 import { AllAdvertisementsPage } from './all-advertisements.page';
 import { StatsService } from '../../../services/stats.service';
 
+
 @NgModule({
   imports: [
     CommonModule,

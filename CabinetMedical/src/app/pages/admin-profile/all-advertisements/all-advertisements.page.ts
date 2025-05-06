@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { StatsService } from '../../../services/stats.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { StatsResponse } from '../../../models/stats.interface';
 
 import { 
@@ -45,7 +45,7 @@ export class AllAdvertisementsPage implements OnInit {
 
   constructor(
     private statsService: StatsService,
-    private route: ActivatedRoute
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -62,5 +62,8 @@ export class AllAdvertisementsPage implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+  goBack() {
+    this.router.navigate(['/admin-profile/dashboard']);
   }
 }
