@@ -1,8 +1,21 @@
-  <ion-header>
-    <ion-toolbar>
-      <ion-title>Ajouter un médecin</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start" style="color: #1358dc;">
+      <ion-menu-button menu="main-menu"></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons slot="end" >
+      <!-- Notification button with badge -->
+      <ion-button class="notification-button" >
+        <ion-icon name="notifications"></ion-icon>
+
+      </ion-button>
+      <ion-button class="profile-button">
+        <ion-icon name="person-circle" class="profile-icon"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
 
   <ion-content>
     <form [formGroup]="doctorForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
@@ -64,7 +77,7 @@
     <div class="availability-header">
       <h4>Disponibilités du médecin</h4>
     </div>
-    
+
     <div *ngFor="let availability of availabilityControls.controls; let i = index" [formGroupName]="i" class="availability-item">
       <ion-row>
         <ion-col size="12" size-md="5">
@@ -82,7 +95,7 @@
             </ion-select>
           </ion-item>
         </ion-col>
-        
+
         <ion-col size="9" size-md="5">
           <!-- Heures -->
           <ion-item>
@@ -90,7 +103,7 @@
             <ion-input formControlName="hours" type="text" placeholder="Ex: 09:00,14:00"></ion-input>
           </ion-item>
         </ion-col>
-        
+
         <ion-col size="3" size-md="2" class="ion-align-self-end ion-text-end">
           <!-- Bouton Supprimer -->
           <ion-button color="danger" size="small" (click)="removeAvailability(i)">
@@ -99,7 +112,7 @@
         </ion-col>
       </ion-row>
     </div>
-    
+
     <!-- Message si aucune disponibilité -->
     <div *ngIf="availabilityControls.length === 0" class="no-availability">
       <p>Aucune disponibilité ajoutée</p>

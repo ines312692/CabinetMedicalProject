@@ -1,24 +1,31 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Ajouter une Publicité</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="resetForm()" fill="clear">
-        <ion-icon name="close"></ion-icon>
+    <ion-buttons slot="start" style="color: #1358dc;">
+      <ion-menu-button menu="main-menu"></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons slot="end" >
+      <ion-button class="notification-button" >
+        <ion-icon name="notifications"></ion-icon>
+
+      </ion-button>
+      <ion-button class="profile-button">
+        <ion-icon name="person-circle" class="profile-icon"></ion-icon>
       </ion-button>
     </ion-buttons>
+
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
   <form [formGroup]="pubForm" (ngSubmit)="onSubmit()" class="pub-form">
-    
+
     <!-- Aperçu de l'image -->
     <div class="image-preview" *ngIf="imagePreview">
       <img [src]="imagePreview" alt="Aperçu de la publicité">
     </div>
 
     <!-- Champ Image -->
-   
+
     <ion-item class="file-input form-field" >
       <ion-label position="stacked">Image de la publicité </ion-label>
       <input type="file" accept="image/*" (change)="onImageSelected($event)" hidden #fileInput>

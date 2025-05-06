@@ -8,7 +8,7 @@
   --card-background: #ffffff;
   --border-radius: 12px;
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --transition: all 0.3s ease;
+
 }
 
 /* Main content styling */
@@ -73,7 +73,7 @@
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
   background-color: var(--card-background);
-  transition: var(--transition);
+
   cursor: pointer;
   text-align: center;
   margin: 0;
