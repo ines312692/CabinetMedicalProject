@@ -67,6 +67,6 @@ export class MessageriePage implements OnInit {
     this.router.navigate(['/conversation', this.currentUserId, otherUserId]);
   }
 
-  
-  
+
+
 }

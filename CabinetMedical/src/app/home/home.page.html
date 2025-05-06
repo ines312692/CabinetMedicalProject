@@ -7,13 +7,20 @@
       <!-- Notification button with badge -->
       <ion-button class="notification-button" (click)="goToNotifications()">
         <ion-icon name="notifications"></ion-icon>
-        <ion-badge *ngIf="notificationCount > 0" class="notification-badge">{{notificationCount}}</ion-badge>
+        <ion-badge *ngIf="notificationCount > 0" class="notification-badge">{{ notificationCount }}</ion-badge>
       </ion-button>
+
+      <!-- Messages button with badge -->
+      <ion-button class="messages-button" (click)="openMessages()">
+        <ion-icon name="mail"></ion-icon> <!-- Utilisation d'une icône Ionic native -->
+        <ion-badge *ngIf="unreadMessagesCount > 0" class="notification-badge">{{ unreadMessagesCount }}</ion-badge>
+      </ion-button>
+
+      <!-- Profile button -->
       <ion-button class="profile-button" (click)="goToProfile()">
         <ion-icon name="person-circle" class="profile-icon"></ion-icon>
       </ion-button>
     </ion-buttons>
-
   </ion-toolbar>
 </ion-header>
 <ion-content>

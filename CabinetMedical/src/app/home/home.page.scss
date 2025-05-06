@@ -1,14 +1,4 @@
-ion-header {
-  --color: #132d5e;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-  ion-toolbar {
-    --min-height: 44px; // Reduce toolbar height (default is ~56px)
-    --padding-top: 4px; // Reduce top padding
-    --padding-bottom: 4px; // Reduce bottom padding
-    --color: #0c52d6;
-  }
-}
 
 ion-title {
   font-family: 'Roboto', sans-serif;
@@ -268,20 +258,7 @@ ion-content {
   margin: 0 4px; /* Reduced margin to bring buttons closer */
 }
 
-.notification-badge {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  font-size: 10px;
-  border-radius: 50%;
-  padding: 2px 4px;
-  min-width: 18px;
-  min-height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #ff4961; /* Ionic's danger color */
-}
+
 
 .notification-button ion-icon {
   font-size: 24px;
@@ -312,4 +289,92 @@ ion-content {
 .profile-button:hover .profile-icon,
 .profile-button:active .profile-icon {
   transform: scale(1.2);
+}
+
+.notification-icon, .messages-icon {
+  position: relative;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+ion-header {
+  --color: #132d5e;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  ion-toolbar {
+    --min-height: 44px;
+    --padding-top: 4px;
+    --padding-bottom: 4px;
+    --color: #0c52d6;
+  }
+}
+
+/* Styles communs pour les boutons de la barre d'en-tête */
+.notification-button,
+.messages-button,
+.profile-button {
+  position: relative;
+  --padding-start: 4px;
+  --padding-end: 4px;
+  --border-radius: 50%;
+  --background: transparent;
+  --background-activated: rgba(0, 123, 255, 0.1);
+  margin: 0 4px;
+}
+
+.notification-button ion-icon,
+.messages-button ion-icon,
+.profile-button ion-icon {
+  font-size: 24px;
+  color: #0e4787;
+  transition: transform 0.2s ease;
+}
+
+.notification-button:hover ion-icon,
+.messages-button:hover ion-icon,
+.profile-button:hover ion-icon,
+.notification-button:active ion-icon,
+.messages-button:active ion-icon,
+.profile-button:active ion-icon {
+  transform: scale(1.2);
+}
+
+.notification-badge {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  font-size: 10px;
+  border-radius: 50%;
+  padding: 2px 4px;
+  min-width: 18px;
+  min-height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ff4961;
+  color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+/* Animation légère au survol du badge */
+.notification-button:hover .notification-badge,
+.messages-button:hover .notification-badge {
+  transform: scale(1.1);
+}
+
+/* Responsive design */
+@media (max-width: 360px) {
+  .notification-button ion-icon,
+  .messages-button ion-icon,
+  .profile-button ion-icon {
+    font-size: 20px;
+  }
+
+  .notification-badge {
+    font-size: 8px;
+    min-width: 16px;
+    min-height: 16px;
+    padding: 1px 3px;
+  }
 }

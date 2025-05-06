@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { interval } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-
+import { MessagerieService } from '../services/messagerie.service';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -13,6 +13,7 @@ import { switchMap } from 'rxjs/operators';
   standalone: false,
 })
 export class HomePage implements OnInit, OnDestroy {
+  unreadMessagesCount: number = 0;
   doctors: any[] = [];
   pubs: any[] = [];
   filteredDoctors: any[] = [];
@@ -60,17 +61,19 @@ export class HomePage implements OnInit, OnDestroy {
     'Kebili',
   ];
   isLoggedIn: boolean = false;
-  currentUserId: string | null = null;
+  currentUserId: string  = '';
   notificationCount: number = 0; // New property for notification count
 
   constructor(
     private doctorService: DoctorService,
     private pubService: PubserviceService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private messagerieService: MessagerieService,
   ) {}
 
   ngOnInit() {
+
     // Subscribe to authentication state changes
     this.authService.currentUser$.subscribe((user) => {
       console.log('User:', user);
@@ -81,10 +84,18 @@ export class HomePage implements OnInit, OnDestroy {
         // Poll for notification updates every 30 seconds
         this.startNotificationPolling();
       } else {
-        this.currentUserId = null;
+        this.currentUserId = '';
         this.notificationCount = 0;
       }
     });
+    this.messagerieService.getUnreadMessagesCount(this.currentUserId).subscribe(
+      count => {
+        this.unreadMessagesCount = count;
+      },
+      error => {
+        console.error('Erreur lors de la récupération des messages non lus', error);
+      }
+    );
 
     // Load doctors and pubs
     this.loadDoctors();
@@ -238,5 +249,8 @@ export class HomePage implements OnInit, OnDestroy {
 
       return dateFin >= today;
     });
+  }
+  openMessages(): void {
+    this.router.navigate(['/messagerie']);
   }
 }
