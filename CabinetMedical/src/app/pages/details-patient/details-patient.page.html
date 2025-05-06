@@ -1,0 +1,72 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Patient Details</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="patient-container" *ngIf="patient">
+    <ion-card>
+      <ion-card-header>
+        <ion-row class="ion-align-items-center ion-justify-content-between">
+          <ion-col size="auto">
+            <ion-card-title>
+              <ion-icon name="person-circle-outline"></ion-icon>
+              {{ patient.first_name }} {{ patient.last_name }}
+            </ion-card-title>
+          </ion-col>
+          <ion-col size="auto">
+            <ion-button fill="clear" color="primary" (click)="openConversation()">
+              <ion-icon slot="start" name="chatbubbles"></ion-icon>
+
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-label>
+              <ion-icon name="mail-outline" class="detail-icon"></ion-icon>
+              <strong>Email</strong>
+            </ion-label>
+            <ion-text>{{ patient.email }}</ion-text>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>
+              <ion-icon name="call-outline" class="detail-icon"></ion-icon>
+              <strong>Phone</strong>
+            </ion-label>
+            <ion-text>{{ patient.phone || 'Not provided' }}</ion-text>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>
+              <ion-icon name="home-outline" class="detail-icon"></ion-icon>
+              <strong>Address</strong>
+            </ion-label>
+            <ion-text>{{ patient.address || 'Not provided' }}</ion-text>
+          </ion-item>
+
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+  </div>
+
+  <div class="loading-container" *ngIf="isLoading">
+    <ion-spinner></ion-spinner>
+    <p>Loading patient details...</p>
+  </div>
+
+  <div class="error-container" *ngIf="error">
+    <ion-icon name="alert-circle-outline" size="large"></ion-icon>
+    <p>{{ error }}</p>
+    <ion-button (click)="loadPatientDetails()">Try Again</ion-button>
+  </div>
+</ion-content>
