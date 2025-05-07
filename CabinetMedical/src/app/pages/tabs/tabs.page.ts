@@ -21,7 +21,10 @@ export class TabsPage implements OnInit {
   navigateToProfile() {
     const currentUser = this.authService.getCurrentUser();
     if (currentUser) {
-      this.router.navigate([`/profile-patient/${currentUser.id}`]);
+      const route = currentUser.role === 'patient'
+        ? `/profile-patient/${currentUser.id}`
+        : `/doctor-profile/${currentUser.id}`;
+      this.router.navigate([route]);
     } else {
       this.router.navigate(['/login']);
     }

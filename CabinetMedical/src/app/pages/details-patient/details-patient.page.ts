@@ -18,7 +18,11 @@ export class DetailsPatientPage implements OnInit {
   patient: Patient | null = null;
   isLoading = false;
   error: string | null = null;
+
   idCurrentUser: string | null = null;
+
+  currentUserId: string | null = localStorage.getItem('userId') || ''; // ID de l'utilisateur connecté
+
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -84,4 +88,12 @@ export class DetailsPatientPage implements OnInit {
 
     this.router.navigate(['/conversation', senderId, receiverId]);
   }
+
+
+  goToProfile() {
+
+        this.router.navigate(['/doctor-profile', this.currentUserId]);
+  }
+
+
 }

@@ -11,20 +11,17 @@
           <span class="material-icons" slot="start">home</span>
           <ion-label>Accueil</ion-label>
         </ion-item>
-        <ion-item routerLink="/appointments">
+        <!--ion-item routerLink="/appointments">
           <span class="material-icons" slot="start">calendar_today</span>
           <ion-label>Rendez-vous</ion-label>
-        </ion-item>
-        <ion-item routerLink="/patients">
-          <span class="material-icons" slot="start">people</span>
-          <ion-label>Patients</ion-label>
-        </ion-item>
-        <ion-item routerLink="/prescriptions">
+        </!--ion-item-->
+       
+        <!--ion-item routerLink="/prescriptions">
           <span class="material-icons" slot="start">medical_services</span>
           <ion-label>Ordonnances</ion-label>
-        </ion-item>
+        </!--ion-item-->
 
-        <ion-item routerLink="/settings">
+        <ion-item *ngIf="currentUser!=''" routerLink="/settings" >
           <span class="material-icons" slot="start">settings</span>
           <ion-label>Paramètres</ion-label>
         </ion-item>
