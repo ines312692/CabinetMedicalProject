@@ -28,6 +28,7 @@ export class AppComponent implements OnInit {
   private app: any;
   isLoggedIn = false;
   userRole: string | null = null;
+  currentUser=localStorage.getItem('userId') || '';
 
   constructor(
     private http: HttpClient,

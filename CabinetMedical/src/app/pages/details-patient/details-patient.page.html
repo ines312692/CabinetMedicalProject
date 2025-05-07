@@ -1,7 +1,9 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
+      <ion-button fill="clear" (click)="goToProfile()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-title>Patient Details</ion-title>
   </ion-toolbar>
@@ -39,18 +41,18 @@
 
           <ion-item>
             <ion-label>
-              <ion-icon name="call-outline" class="detail-icon"></ion-icon>
-              <strong>Phone</strong>
+              <ion-icon name="person-outline" class="detail-icon"></ion-icon>
+              <strong>First Name</strong>
             </ion-label>
-            <ion-text>{{ patient.phone || 'Not provided' }}</ion-text>
+            <ion-text>{{ patient.first_name || 'Not provided' }}</ion-text>
           </ion-item>
 
           <ion-item>
             <ion-label>
-              <ion-icon name="home-outline" class="detail-icon"></ion-icon>
-              <strong>Address</strong>
+              <ion-icon name="people-outline" class="detail-icon"></ion-icon>
+              <strong>Last Name</strong>
             </ion-label>
-            <ion-text>{{ patient.address || 'Not provided' }}</ion-text>
+            <ion-text>{{ patient.last_name || 'Not provided' }}</ion-text>
           </ion-item>
 
         </ion-list>

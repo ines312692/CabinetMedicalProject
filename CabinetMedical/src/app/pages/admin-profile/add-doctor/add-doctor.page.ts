@@ -115,7 +115,18 @@ export class AddDoctorPage implements OnInit {
       next: async (response: any) => {
         console.log('Médecin ajouté avec succès', response);
         await this.presentToast('Médecin ajouté avec succès!', 'success');
-        this.router.navigate(['/doctors']);
+        this.doctorForm.reset(); // vide tout le formulaire
+
+  // Vide les champs dynamiques (availability array)
+  this.availabilityControls.clear();
+
+  // Réinitialise l'image sélectionnée et l'aperçu
+  this.selectedFile = undefined!;
+  this.imagePreview = '';
+
+  
+  this.router.navigate(['/admin-profile/dashboard']);
+     
       },
       error: async (error: any) => {
         console.error("Erreur lors de l'ajout du médecin", error);
