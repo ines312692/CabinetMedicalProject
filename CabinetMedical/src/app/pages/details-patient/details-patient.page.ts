@@ -18,13 +18,13 @@ export class DetailsPatientPage implements OnInit {
   patient: Patient | null = null;
   isLoading = false;
   error: string | null = null;
-  idCurrentUser: string | null = null; // Propriété pour l'utilisateur connecté
+  idCurrentUser: string | null = null;
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly patientService: PatientService,
     private readonly router: Router,
-    private readonly authService: AuthService // Injection du service AuthService
+    private readonly authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -79,8 +79,8 @@ export class DetailsPatientPage implements OnInit {
       return;
     }
 
-    const senderId = this.idCurrentUser; // Logged-in user
-    const receiverId = this.patient._id; // Patient
+    const senderId = this.idCurrentUser;
+    const receiverId = this.patient._id;
 
     this.router.navigate(['/conversation', senderId, receiverId]);
   }
