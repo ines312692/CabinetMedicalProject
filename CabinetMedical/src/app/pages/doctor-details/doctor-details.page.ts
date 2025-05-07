@@ -40,8 +40,6 @@ export class DoctorDetailsPage implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.doctorService.getDoctorById(id).subscribe( doctor => {
-
-      // 1) si availability est JSON sérialisé, on parse
       if (typeof doctor.availability === 'string') {
         try {
           doctor.availability = JSON.parse(doctor.availability);
@@ -50,14 +48,11 @@ export class DoctorDetailsPage implements OnInit {
         }
       }
 
-      // 2) on normalise chaque slot.hours en véritable string[]
       doctor.availability = (doctor.availability || []).map(slot => {
-        // on “oublie” le type statique string[]
         const raw: unknown = (slot as any).hours;
 
         let hoursArray: string[];
         if (typeof raw === 'string') {
-          // soit c’est du JSON, soit du “09:00,14:00”
           try {
             hoursArray = JSON.parse(raw);
           } catch {
@@ -83,7 +78,7 @@ export class DoctorDetailsPage implements OnInit {
 
   openConversation() {
 
-    const senderId = this.idCurrentUser;  // Assure-toi que ton token contient bien user_id
+    const senderId = this.idCurrentUser;
     const receiverId = this.doctor._id;
 
     this.router.navigate(['/conversation', senderId, receiverId]);
@@ -186,7 +181,6 @@ export class DoctorDetailsPage implements OnInit {
 
 
       const doctorId = this.doctor._id ;
-      // @ts-ignore
       this.router.navigate(['/appointment-confirmation'], {
         queryParams: {appointmentId: doctorId.toString()}
       }).then(r => console.log('Navigated to appointment confirmation page'));

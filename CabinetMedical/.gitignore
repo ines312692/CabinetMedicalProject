@@ -68,3 +68,5 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+./BackendCabinetMedical/pythonProject/app/firebase-service-account.json

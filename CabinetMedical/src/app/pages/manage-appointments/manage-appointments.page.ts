@@ -9,7 +9,6 @@ import { PatientService } from '../../services/patient.service';
 import { forkJoin } from 'rxjs';
 
 
-
 @Component({
   selector: 'app-manage-appointments',
   templateUrl: './manage-appointments.page.html',
@@ -63,8 +62,6 @@ export class ManageAppointmentsPage implements OnInit {
           next: (patients) => {
             const patientMap = new Map<string, Patient>();
             patients.forEach(p => patientMap.set(p._id, p));
-
-            // Ajouter patientName à chaque rendez-vous
             this.appointments = appointmentsData.map((appt: Appointment) => {
               const patientId = typeof appt.patient_id === 'string' ? appt.patient_id : appt.patient_id.$oid;
               const patient = patientMap.get(patientId);
@@ -110,7 +107,6 @@ export class ManageAppointmentsPage implements OnInit {
           handler: () => {
             this.appointmentService.acceptAppointment(appointmentId).subscribe({
               next: () => {
-                // Update the appointment status locally for immediate UI update
                 appointment.status = 'accepted';
                 this.showAlert('Success', 'Appointment accepted successfully');
               },
